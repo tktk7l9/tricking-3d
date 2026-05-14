@@ -1,5 +1,7 @@
 # Tricking 3D Analyzer
 
+**[▶ Open App](https://tricking-3d.vercel.app)**
+
 トリッキング/パルクールの 20 技を Three.js で 3D 表示し、タイムラインスクラブ・回転軸表示・重心軌跡可視化・キーポイント注釈などで動きを細かく分析できる Web アプリ。
 
 参考: [pt-village.com/tricking](https://pt-village.com/tricking/)
