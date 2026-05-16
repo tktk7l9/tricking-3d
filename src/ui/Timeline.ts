@@ -24,6 +24,7 @@ export class Timeline {
     this.slider.max = "1";
     this.slider.step = "0.001";
     this.slider.value = "0";
+    this.slider.setAttribute("aria-label", "再生位置");
     scrub.appendChild(this.slider);
 
     this.timeLabel = document.createElement("span");
@@ -32,6 +33,7 @@ export class Timeline {
 
     const speed = document.createElement("select");
     speed.className = "tl-speed";
+    speed.setAttribute("aria-label", "再生速度");
     for (const s of SPEEDS) {
       const opt = document.createElement("option");
       opt.value = String(s);
