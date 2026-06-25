@@ -1,5 +1,12 @@
 // Tiny entry point. The Three.js analyzer (~683KB) is loaded only when the
 // user clicks "ANALYZE START" so we get a fast FCP / LCP on mobile.
+
+// Vercel Web Analytics — production only. Script + beacon are same-origin
+// (/_vercel/insights/*), so the strict CSP (script-src/connect-src 'self') is unaffected.
+if (import.meta.env.PROD) {
+  void import("@vercel/analytics").then(({ inject }) => inject());
+}
+
 const startBtn = document.getElementById("title-start") as HTMLButtonElement | null;
 const titleOverlay = document.getElementById("title-overlay");
 
