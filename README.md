@@ -1,6 +1,6 @@
 # Tricking 3D Analyzer
 
-**[▶ Open App](https://tricking-3d.vercel.app)**
+**[▶ Open App](https://tricking-3d.saitotakuya0719.workers.dev)**
 
 トリッキング/パルクールの 20 技を Three.js で 3D 表示し、タイムラインスクラブ・回転軸表示・重心軌跡可視化・キーポイント注釈などで動きを細かく分析できる Web アプリ。
 
@@ -54,3 +54,12 @@ npm run preview
 - 技のメタデータ（名前・カテゴリ・回転軸・キーポイント）は `src/tricks/catalog.ts`。
 - 解析オーバーレイは `src/analysis/`（軸矢印、重心ライン、ラベルスプライト）。
 - UI は素の DOM + CSS で `src/ui/` に分離。
+
+## ホスティング
+
+本番は **Cloudflare Workers (static assets)**: https://tricking-3d.saitotakuya0719.workers.dev
+
+2026-08-11、Vercel 無料枠の超過でアカウントが停止（全プロジェクトが
+`402 DEPLOYMENT_DISABLED`）したため移行した。`wrangler.jsonc` の `assets` だけで
+配信し、セキュリティヘッダーは `public/_headers`（`vercel.json` の `headers` を
+移植）。`npm run deploy` で build + wrangler deploy。vercel.json は残置。
