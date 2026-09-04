@@ -1,12 +1,14 @@
 // Tiny entry point. The Three.js analyzer (~683KB) is loaded only when the
 // user clicks "ANALYZE START" so we get a fast FCP / LCP on mobile.
 
-// Vercel Web Analytics — production only. Script + beacon are same-origin
-// (/_vercel/insights/*), so the strict CSP (script-src/connect-src 'self') is
-// unaffected. Skipped off Vercel: the Cloudflare Worker has no such endpoint,
-// so injecting there would only 404 on every load.
-if (import.meta.env.PROD && location.hostname.endsWith(".vercel.app")) {
-  void import("@vercel/analytics").then(({ inject }) => inject());
+// Cloudflare Web Analytics — production only. The site token is a public
+// identifier embedded in every page, not a secret.
+if (import.meta.env.PROD) {
+  const beacon = document.createElement("script");
+  beacon.type = "module";
+  beacon.src = "https://static.cloudflareinsights.com/beacon.min.js";
+  beacon.dataset.cfBeacon = '{"token": "cd156fbf0fd24da0a12e58fdb4e63828"}';
+  document.head.appendChild(beacon);
 }
 
 const startBtn = document.getElementById("title-start") as HTMLButtonElement | null;
