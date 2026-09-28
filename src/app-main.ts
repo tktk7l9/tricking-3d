@@ -107,11 +107,13 @@ export async function startApp() {
   requestAnimationFrame(resize);
 
   // Main loop
-  const clock = new THREE.Clock();
+  // THREE.Clock is deprecated since r183; Timer needs an explicit update() per frame.
+  const timer = new THREE.Timer();
   let lastDur = state.get("duration");
 
   const tick = () => {
-    const dt = clock.getDelta();
+    timer.update();
+    const dt = timer.getDelta();
     player.update(dt);
     cameras.update();
     axisOverlay.follow();
