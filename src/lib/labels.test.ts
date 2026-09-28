@@ -7,7 +7,7 @@ describe("axisLabel", () => {
     expect(axisLabel("y")).toBe("Y 軸（縦・ひねり）");
     expect(axisLabel("z")).toBe("Z 軸（前後・側転）");
   });
-  it("says なし instead of a dash when there is no axis", () => {
+  it("spells out none instead of a dash when there is no axis", () => {
     expect(axisLabel(undefined)).toBe("なし");
   });
 });
