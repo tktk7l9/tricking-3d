@@ -1,5 +1,7 @@
 import type { AppState } from "../state/AppState";
 import { getTrick, type TrickMeta } from "../tricks/catalog";
+import { clampSeekTime } from "../lib/seek";
+import { axisLabel, categoryLabel, takeoffLabel } from "../lib/labels";
 
 export class InfoPanel {
   private host: HTMLElement;
@@ -18,36 +20,19 @@ export class InfoPanel {
   }
 
   private render(t: TrickMeta) {
-    const axisLabel = (a?: string) =>
-      a ? a.toUpperCase() + " 軸" : "—";
-    const takeoff =
-      t.takeoff === "both"
-        ? "両足"
-        : t.takeoff === "left"
-          ? "左足"
-          : "右足";
-    const cat =
-      t.category === "kick"
-        ? "キック"
-        : t.category === "flip"
-          ? "フリップ"
-          : t.category === "twist"
-            ? "ツイスト"
-            : "トランジション";
-
     this.host.innerHTML = `
       <h2>${escapeHtml(t.nameJp)}</h2>
       <div class="meta">${escapeHtml(t.nameEn)}</div>
       <dl class="meta-grid">
-        <dt>カテゴリ</dt><dd>${cat}</dd>
-        <dt>踏切</dt><dd>${takeoff}</dd>
+        <dt>カテゴリ</dt><dd>${categoryLabel(t.category)}</dd>
+        <dt>踏切</dt><dd>${takeoffLabel(t.takeoff)}</dd>
         <dt>主回転軸</dt><dd>${axisLabel(t.primaryAxis)}</dd>
         <dt>捻り軸</dt><dd>${axisLabel(t.twistAxis)}</dd>
         <dt>所要時間</dt><dd>${t.duration.toFixed(2)} s</dd>
       </dl>
       <p class="desc">${escapeHtml(t.description)}</p>
       <div class="keypoints">
-        <h3>キーポイント</h3>
+        <h3>キーポイント <span class="hint">（押すとその瞬間で止まります）</span></h3>
         <div class="kp-list"></div>
       </div>
     `;
@@ -57,8 +42,9 @@ export class InfoPanel {
     this.kpButtons = [];
     this.kpTimes = [];
     for (const kp of t.keypoints) {
-      const at = kp.t * t.duration;
+      const at = clampSeekTime(kp.t * t.duration, t.duration);
       const btn = document.createElement("button");
+      btn.type = "button";
       btn.className = "kp";
       btn.innerHTML = `<span class="t">${at.toFixed(2)}s</span><span>${escapeHtml(
         kp.label,
@@ -85,7 +71,10 @@ export class InfoPanel {
       }
     }
     for (let i = 0; i < this.kpButtons.length; i++) {
-      this.kpButtons[i].classList.toggle("active", i === bestIdx);
+      const active = i === bestIdx;
+      this.kpButtons[i].classList.toggle("active", active);
+      if (active) this.kpButtons[i].setAttribute("aria-current", "step");
+      else this.kpButtons[i].removeAttribute("aria-current");
     }
   }
 }

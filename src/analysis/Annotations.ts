@@ -2,6 +2,7 @@ import * as THREE from "three";
 import type { Character } from "../character/Character";
 import type { AnimationPlayer } from "../character/AnimationPlayer";
 import type { TrickMeta } from "../tricks/catalog";
+import { clampSeekTime } from "../lib/seek";
 
 type AnnotationItem = {
   t: number;
@@ -48,7 +49,7 @@ export class Annotations {
     player.setPlaying(false);
 
     for (const kp of trick.keypoints) {
-      const t = kp.t * duration;
+      const t = clampSeekTime(kp.t * duration, duration);
       player.setTime(t);
       const pos = new THREE.Vector3();
       this.character.bones.hips.getWorldPosition(pos);
@@ -109,7 +110,15 @@ function makeLabelSprite(text: string): THREE.Sprite {
   ctx.stroke();
   // text
   ctx.fillStyle = "#f4f7fb";
-  ctx.font = "600 56px system-ui, -apple-system, 'Hiragino Sans', sans-serif";
+  // Shrink long labels so they fit inside the pill instead of being clipped.
+  const maxWidth = canvas.width - 64;
+  let size = 56;
+  const font = (px: number) => `600 ${px}px system-ui, -apple-system, 'Hiragino Sans', sans-serif`;
+  ctx.font = font(size);
+  while (size > 24 && ctx.measureText(text).width > maxWidth) {
+    size -= 2;
+    ctx.font = font(size);
+  }
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
