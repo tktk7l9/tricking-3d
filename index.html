@@ -62,29 +62,30 @@
         border-radius: 8px;
         font-size: 15px;
         font-weight: 700;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.12em;
         cursor: pointer;
-        text-transform: uppercase;
+        min-height: 48px;
       }
       #title-start:hover { background: #79b6ff; }
       #title-start:disabled { opacity: 0.6; cursor: progress; }
     </style>
     <div id="app">
-      <aside id="sidebar"></aside>
+      <aside id="sidebar" aria-label="技一覧"></aside>
       <main id="viewport">
         <canvas id="canvas"></canvas>
         <div id="hud-top"></div>
         <div id="hud-camera"></div>
         <div id="hud-overlays"></div>
       </main>
-      <aside id="info"></aside>
+      <div id="panel-tabs"></div>
+      <aside id="info" aria-label="解説・キーポイント"></aside>
       <footer id="timeline"></footer>
     </div>
     <div id="title-overlay">
       <h1>Tricking 3D Analyzer</h1>
       <div class="tag">Three.js Trick Motion Viewer</div>
       <p>トリッキング/パルクールの20技を3Dで再生・スクラブ・回転軸表示・重心軌跡可視化で詳細に分析できます。</p>
-      <button id="title-start" type="button">Analyze Start</button>
+      <button id="title-start" type="button">3Dで見る</button>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
