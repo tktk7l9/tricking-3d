@@ -76,13 +76,17 @@ export async function startApp() {
   };
 
   state.subscribe("trickId", applyTrick, true);
-  state.subscribe("trickId", (id) => {
+  const syncHash = (id: string) => {
     const hash = hashForTrick(id);
     if (location.hash !== hash) history.replaceState(null, "", hash);
-  });
+  };
+  state.subscribe("trickId", syncHash);
+  // An unknown trick in the URL falls back to the default; make the URL say so.
+  if (location.hash) syncHash(initialId);
   window.addEventListener("hashchange", () => {
     const id = trickIdFromHash(location.hash, trickIds);
     if (id) state.set("trickId", id);
+    else syncHash(state.get("trickId"));
   });
   cameras.setUserOrbitHandler(() => state.set("cameraMode", "free"));
   state.subscribe("playing", (p) => player.setPlaying(p));

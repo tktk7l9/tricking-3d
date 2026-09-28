@@ -313,6 +313,8 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
 @media (pointer: coarse) {
   .hud-btn, .tl-button, .tl-speed, .trick-btn, .info-panel .kp, .panel-tab { min-height: 40px; }
   .tl-button { min-width: 44px; }
+  /* The native range track is ~16px tall; give the scrubber a finger-sized hit area. */
+  .tl-scrubber input[type=range] { height: 40px; margin: 0; }
 }
 
 /* Phone width: 3D view on top, then timeline, then one panel at a time (SHIG 20, 82). */

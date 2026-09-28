@@ -51,6 +51,13 @@ export class Cameras {
   setMode(mode: CameraMode) {
     // Already there (e.g. switched to free by dragging): keep the user's view.
     if (mode === this.mode) return;
+    // Controls now update every frame in every mode, so leftover damping from a
+    // recent drag would keep rotating the camera away from the preset. Flush it
+    // (one undamped update applies and clears the pending delta) before snapping.
+    const damping = this.controls.enableDamping;
+    this.controls.enableDamping = false;
+    this.controls.update();
+    this.controls.enableDamping = damping;
     this.mode = mode;
     const pos = PRESETS[mode];
     this.camera.position.copy(pos);
