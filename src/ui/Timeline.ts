@@ -1,4 +1,6 @@
 import type { AppState } from "../state/AppState";
+import { stepTime } from "../lib/seek";
+import { shortcutFor } from "../lib/shortcuts";
 
 const SPEEDS = [0.1, 0.25, 0.5, 1, 1.5, 2];
 
@@ -12,9 +14,9 @@ export class Timeline {
     this.state = state;
     host.innerHTML = "";
 
-    this.playBtn = button("▶", "tl-button primary");
-    const stepBack = button("◀", "tl-button");
-    const stepFwd = button("▶|", "tl-button");
+    this.playBtn = button("▶", "tl-button primary", "再生（Space）");
+    const stepBack = button("|◀", "tl-button", "1コマ戻る（←）");
+    const stepFwd = button("▶|", "tl-button", "1コマ進む（→）");
 
     const scrub = document.createElement("div");
     scrub.className = "tl-scrubber";
@@ -45,23 +47,14 @@ export class Timeline {
     host.append(this.playBtn, stepBack, stepFwd, scrub, this.timeLabel, speed);
 
     // Wiring
-    this.playBtn.addEventListener("click", () =>
-      state.set("playing", !state.get("playing")),
-    );
-    stepBack.addEventListener("click", () => {
+    const togglePlay = () => state.set("playing", !state.get("playing"));
+    const step = (dir: 1 | -1) => {
       state.set("playing", false);
-      const d = state.get("duration");
-      let t = state.get("time") - 1 / 30;
-      if (t < 0) t += d;
-      state.set("time", t);
-    });
-    stepFwd.addEventListener("click", () => {
-      state.set("playing", false);
-      const d = state.get("duration");
-      let t = state.get("time") + 1 / 30;
-      if (t >= d) t -= d;
-      state.set("time", t);
-    });
+      state.set("time", stepTime(state.get("time"), state.get("duration"), dir));
+    };
+    this.playBtn.addEventListener("click", togglePlay);
+    stepBack.addEventListener("click", () => step(-1));
+    stepFwd.addEventListener("click", () => step(1));
     this.slider.addEventListener("input", () => {
       state.set("playing", false);
       const u = parseFloat(this.slider.value);
@@ -72,10 +65,31 @@ export class Timeline {
       state.set("speed", parseFloat(speed.value));
     });
 
+    // Keyboard shortcuts for the most frequent analysis actions (SHIG 22).
+    window.addEventListener("keydown", (e) => {
+      const target = e.target instanceof HTMLElement ? e.target : document.body;
+      const action = shortcutFor({
+        key: e.key,
+        targetTag: target.tagName,
+        targetType: target instanceof HTMLInputElement ? target.type : undefined,
+        isContentEditable: target.isContentEditable,
+        ctrlKey: e.ctrlKey,
+        metaKey: e.metaKey,
+        altKey: e.altKey,
+      });
+      if (!action) return;
+      e.preventDefault();
+      if (action === "toggle-play") togglePlay();
+      else step(action === "step-back" ? -1 : 1);
+    });
+
     state.subscribe(
       "playing",
       (p) => {
         this.playBtn.textContent = p ? "⏸" : "▶";
+        const label = p ? "一時停止（Space）" : "再生（Space）";
+        this.playBtn.setAttribute("aria-label", label);
+        this.playBtn.title = label;
       },
       true,
     );
@@ -101,9 +115,12 @@ export class Timeline {
   }
 }
 
-function button(text: string, cls: string): HTMLButtonElement {
+function button(text: string, cls: string, label: string): HTMLButtonElement {
   const b = document.createElement("button");
+  b.type = "button";
   b.className = cls;
   b.textContent = text;
+  b.setAttribute("aria-label", label);
+  b.title = label;
   return b;
 }

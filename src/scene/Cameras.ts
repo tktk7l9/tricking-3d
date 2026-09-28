@@ -16,6 +16,8 @@ export class Cameras {
   readonly camera: THREE.PerspectiveCamera;
   readonly controls: OrbitControls;
   private mode: CameraMode = "free";
+  private interacting = false;
+  private onUserOrbit: (() => void) | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
     this.camera = new THREE.PerspectiveCamera(45, 1, 0.1, 200);
@@ -29,14 +31,30 @@ export class Cameras {
     this.controls.minDistance = 1.5;
     this.controls.maxDistance = 20;
     this.controls.maxPolarAngle = Math.PI * 0.49;
+
+    // Orbit stays enabled in every mode: dragging a preset view switches to
+    // free mode instead of silently doing nothing (SHIG 8, 9).
+    this.controls.addEventListener("start", () => (this.interacting = true));
+    this.controls.addEventListener("end", () => (this.interacting = false));
+    this.controls.addEventListener("change", () => {
+      if (!this.interacting || this.mode === "free") return;
+      this.mode = "free";
+      this.onUserOrbit?.();
+    });
+  }
+
+  /** Called when the user drags/zooms while a preset view is active. */
+  setUserOrbitHandler(fn: () => void) {
+    this.onUserOrbit = fn;
   }
 
   setMode(mode: CameraMode) {
+    // Already there (e.g. switched to free by dragging): keep the user's view.
+    if (mode === this.mode) return;
     this.mode = mode;
     const pos = PRESETS[mode];
     this.camera.position.copy(pos);
     this.controls.target.copy(TARGET);
-    this.controls.enabled = mode === "free";
     this.camera.lookAt(TARGET);
     this.controls.update();
   }
@@ -51,6 +69,6 @@ export class Cameras {
   }
 
   update() {
-    if (this.controls.enabled) this.controls.update();
+    this.controls.update();
   }
 }
