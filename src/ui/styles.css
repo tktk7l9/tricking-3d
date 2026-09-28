@@ -16,6 +16,11 @@
 
 * { box-sizing: border-box; }
 
+/* Component rules set display, so make the hidden attribute always win. */
+[hidden] { display: none !important; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
 html, body, #app { height: 100%; margin: 0; }
 
 body { background: var(--bg); color: var(--fg); overflow: hidden; }
@@ -28,7 +33,10 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
     "sidebar viewport info"
     "timeline timeline timeline";
   height: 100vh;
+  height: 100dvh;
 }
+
+#panel-tabs { display: none; }
 
 #sidebar {
   grid-area: sidebar;
@@ -96,6 +104,12 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
   font-size: 13px;
 }
 .sidebar .group { margin-bottom: 16px; }
+.sidebar .empty {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
 .sidebar .group h3 {
   margin: 4px 0 6px;
   font-size: 11px;
@@ -156,6 +170,12 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
   margin-top: 16px;
   border-top: 1px solid var(--border);
   padding-top: 12px;
+}
+.info-panel .keypoints h3 .hint {
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+  font-size: 11px;
 }
 .info-panel .keypoints h3 {
   margin: 0 0 8px;
@@ -256,8 +276,99 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
   border-radius: 50%;
   margin-right: 6px;
   vertical-align: middle;
+  border: 2px solid var(--swatch);
+  background: transparent;
 }
+/* Filled when on, hollow ring when off: state is readable without colour (SHIG 96). */
+.hud-btn.active .swatch { background: var(--swatch); }
 
 @media (max-width: 1100px) {
   #app { grid-template-columns: 220px 1fr 240px; }
+}
+
+/* Boot failure screen */
+.boot-error {
+  max-width: 520px;
+  margin: 15vh auto 0;
+  padding: 24px 16px;
+  line-height: 1.7;
+}
+.boot-error h1 { font-size: 20px; margin: 0 0 8px; }
+.boot-error p { color: #cdd5e0; margin: 0 0 16px; }
+.boot-error button {
+  background: var(--accent);
+  color: #061018;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.boot-error details { margin-top: 20px; color: var(--muted); font-size: 12px; }
+.boot-error pre { white-space: pre-wrap; word-break: break-word; }
+
+/* Touch devices: comfortable targets (SHIG 78). */
+@media (pointer: coarse) {
+  .hud-btn, .tl-button, .tl-speed, .trick-btn, .info-panel .kp, .panel-tab { min-height: 40px; }
+  .tl-button { min-width: 44px; }
+  /* The native range track is ~16px tall; give the scrubber a finger-sized hit area. */
+  .tl-scrubber input[type=range] { height: 40px; margin: 0; }
+}
+
+/* Phone width: 3D view on top, then timeline, then one panel at a time (SHIG 20, 82). */
+@media (max-width: 760px) {
+  #app {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(220px, 46dvh) auto auto minmax(0, 1fr);
+    grid-template-areas:
+      "viewport"
+      "timeline"
+      "tabs"
+      "panel";
+  }
+  #sidebar, #info {
+    grid-area: panel;
+    border: none;
+    min-height: 0;
+  }
+  #app[data-panel="tricks"] #info,
+  #app[data-panel="info"] #sidebar { display: none; }
+  #panel-tabs {
+    grid-area: tabs;
+    display: flex;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-tab {
+    flex: 1;
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 10px 8px;
+    min-height: 44px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .panel-tab[aria-selected="true"] {
+    color: var(--fg);
+    border-bottom-color: var(--accent);
+  }
+  #timeline {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .tl-scrubber { order: -1; flex-basis: 100%; }
+  .tl-time { margin-left: auto; }
+  #hud-top { top: 8px; left: 10px; right: 10px; }
+  #hud-camera { top: 8px; right: 10px; gap: 4px; }
+  #hud-overlays { bottom: 8px; left: 10px; gap: 6px; flex-wrap: wrap; }
+  .title-block { max-width: calc(100% - 200px); }
+  .title-block .jp { font-size: 17px; }
+  .title-block .en { font-size: 11px; }
+  .hud-btn { padding: 6px 8px; }
 }

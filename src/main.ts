@@ -1,5 +1,5 @@
 // Tiny entry point. The Three.js analyzer (~683KB) is loaded only when the
-// user clicks "ANALYZE START" so we get a fast FCP / LCP on mobile.
+// user clicks the start button ("3Dで見る") so we get a fast FCP / LCP on mobile.
 
 // Cloudflare Web Analytics — production only. The site token is a public
 // identifier embedded in every page, not a secret.
@@ -27,8 +27,7 @@ async function boot() {
     await mod.startApp();
   } catch (e) {
     console.error(e);
-    document.body.innerHTML =
-      '<pre style="color:#ff8;padding:20px">起動失敗: ' + String(e) + "</pre>";
+    showBootError(e);
   }
 }
 
@@ -39,7 +38,7 @@ if (startBtn) {
     "click",
     () => {
       startBtn.disabled = true;
-      startBtn.textContent = "LOADING…";
+      startBtn.textContent = "読み込み中…";
       boot();
     },
     { once: true },
@@ -47,4 +46,28 @@ if (startBtn) {
 } else {
   // Fallback: no title button found — boot immediately (preserves legacy behavior).
   boot();
+}
+
+/** Constructive boot-failure screen: what happened, why, and what to do next (SHIG 55). */
+function showBootError(e: unknown) {
+  const box = document.createElement("div");
+  box.className = "boot-error";
+  box.setAttribute("role", "alert");
+  const h = document.createElement("h1");
+  h.textContent = "3D 表示を開始できませんでした";
+  const p = document.createElement("p");
+  p.textContent =
+    "このブラウザでは 3D 描画（WebGL）が使えない可能性があります。再読み込みするか、Chrome・Safari・Edge の最新版でお試しください。";
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.textContent = "再読み込み";
+  retry.addEventListener("click", () => location.reload());
+  const details = document.createElement("details");
+  const summary = document.createElement("summary");
+  summary.textContent = "詳しい情報";
+  const pre = document.createElement("pre");
+  pre.textContent = String(e);
+  details.append(summary, pre);
+  box.append(h, p, retry, details);
+  document.body.replaceChildren(box);
 }

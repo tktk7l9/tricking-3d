@@ -11,7 +11,9 @@ import { TrickPicker } from "./ui/TrickPicker";
 import { Timeline } from "./ui/Timeline";
 import { InfoPanel } from "./ui/InfoPanel";
 import { CameraSwitcher, OverlaySwitcher } from "./ui/CameraSwitcher";
-import { DEFAULT_TRICK_ID, getTrick } from "./tricks/catalog";
+import { DEFAULT_TRICK_ID, TRICKS, getTrick } from "./tricks/catalog";
+import { hashForTrick, trickIdFromHash } from "./lib/hash";
+import { PanelTabs } from "./ui/PanelTabs";
 
 export async function startApp() {
   const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -31,9 +33,12 @@ export async function startApp() {
   annotations.setCamera(cameras.camera);
   stage.scene.add(annotations.group);
 
-  const initialTrick = getTrick(DEFAULT_TRICK_ID);
+  // The trick in the URL hash survives reloads and can be shared (SHIG 59, 12).
+  const trickIds = TRICKS.map((t) => t.id);
+  const initialId = trickIdFromHash(location.hash, trickIds) ?? DEFAULT_TRICK_ID;
+  const initialTrick = getTrick(initialId);
   const state = new AppState({
-    trickId: DEFAULT_TRICK_ID,
+    trickId: initialId,
     time: 0,
     duration: initialTrick.duration,
     speed: 1,
@@ -56,6 +61,7 @@ export async function startApp() {
   new InfoPanel(document.getElementById("info")!, state);
   new CameraSwitcher(document.getElementById("hud-camera")!, state);
   new OverlaySwitcher(document.getElementById("hud-overlays")!, state);
+  new PanelTabs(document.getElementById("panel-tabs")!, document.getElementById("app")!);
 
   // Handlers wiring state -> systems
   const applyTrick = (id: string) => {
@@ -70,6 +76,19 @@ export async function startApp() {
   };
 
   state.subscribe("trickId", applyTrick, true);
+  const syncHash = (id: string) => {
+    const hash = hashForTrick(id);
+    if (location.hash !== hash) history.replaceState(null, "", hash);
+  };
+  state.subscribe("trickId", syncHash);
+  // An unknown trick in the URL falls back to the default; make the URL say so.
+  if (location.hash) syncHash(initialId);
+  window.addEventListener("hashchange", () => {
+    const id = trickIdFromHash(location.hash, trickIds);
+    if (id) state.set("trickId", id);
+    else syncHash(state.get("trickId"));
+  });
+  cameras.setUserOrbitHandler(() => state.set("cameraMode", "free"));
   state.subscribe("playing", (p) => player.setPlaying(p));
   state.subscribe("speed", (s) => player.setSpeed(s));
   state.subscribe("cameraMode", (m) => cameras.setMode(m));
