@@ -13,6 +13,7 @@ if (import.meta.env.PROD) {
 
 const startBtn = document.getElementById("title-start") as HTMLButtonElement | null;
 const titleOverlay = document.getElementById("title-overlay");
+const app = document.getElementById("app");
 
 let loadPromise: Promise<typeof import("./app-main")> | null = null;
 function load() {
@@ -24,7 +25,11 @@ async function boot() {
   try {
     const mod = await load();
     if (titleOverlay) titleOverlay.remove();
+    if (app) app.hidden = false;
     await mod.startApp();
+    // The start button is gone; land focus on the trick title so keyboard and
+    // screen-reader users know where they are (SHIG 59).
+    document.querySelector<HTMLElement>("#hud-top .title-block")?.focus();
   } catch (e) {
     console.error(e);
     showBootError(e);

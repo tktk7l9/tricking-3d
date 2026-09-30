@@ -69,7 +69,8 @@
       #title-start:hover { background: #79b6ff; }
       #title-start:disabled { opacity: 0.6; cursor: progress; }
     </style>
-    <div id="app">
+    <!-- Hidden until the viewer starts, so the title screen is the only landmark on the page. -->
+    <div id="app" hidden>
       <aside id="sidebar" aria-label="技一覧"></aside>
       <main id="viewport">
         <canvas id="canvas"></canvas>
@@ -77,16 +78,16 @@
         <div id="hud-camera"></div>
         <div id="hud-overlays"></div>
       </main>
-      <div id="panel-tabs"></div>
+      <nav id="panel-nav" aria-label="パネルの切り替え"><div id="panel-tabs"></div></nav>
       <aside id="info" aria-label="解説・キーポイント"></aside>
-      <footer id="timeline"></footer>
+      <section id="timeline" aria-label="再生"></section>
     </div>
-    <div id="title-overlay">
-      <h1>Tricking 3D Analyzer</h1>
+    <main id="title-overlay" aria-labelledby="title-heading">
+      <h1 id="title-heading">Tricking 3D Analyzer</h1>
       <div class="tag">Three.js Trick Motion Viewer</div>
       <p>トリッキング/パルクールの20技を3Dで再生・スクラブ・回転軸表示・重心軌跡可視化で詳細に分析できます。</p>
       <button id="title-start" type="button">3Dで見る</button>
-    </div>
+    </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
