@@ -55,9 +55,13 @@ if (startBtn) {
 
 /** Constructive boot-failure screen: what happened, why, and what to do next (SHIG 55). */
 function showBootError(e: unknown) {
-  const box = document.createElement("div");
+  // The error replaces the whole body, so it must carry the page's only <main>
+  // landmark itself; role="alert" sits on an inner wrapper because it would
+  // otherwise override the landmark role.
+  const box = document.createElement("main");
   box.className = "boot-error";
-  box.setAttribute("role", "alert");
+  const message = document.createElement("div");
+  message.setAttribute("role", "alert");
   const h = document.createElement("h1");
   h.textContent = "3D 表示を開始できませんでした";
   const p = document.createElement("p");
@@ -73,6 +77,9 @@ function showBootError(e: unknown) {
   const pre = document.createElement("pre");
   pre.textContent = String(e);
   details.append(summary, pre);
-  box.append(h, p, retry, details);
+  message.append(h, p);
+  box.append(message, retry, details);
   document.body.replaceChildren(box);
+  // The start button that had focus is gone; keep keyboard users on the next step (SHIG 60).
+  retry.focus();
 }
