@@ -57,6 +57,9 @@ export class InfoPanel {
       this.kpButtons.push(btn);
       this.kpTimes.push(at);
     }
+    // A trick switch does not always move the playhead (e.g. paused at 0), so
+    // mark the current keypoint now instead of waiting for the next time change.
+    this.highlightKeypoint(this.state.get("time"));
   }
 
   private highlightKeypoint(now: number) {

@@ -1,5 +1,5 @@
 import type { AppState } from "../state/AppState";
-import { stepTime } from "../lib/seek";
+import { clampSeekTime, stepTime } from "../lib/seek";
 import { shortcutFor } from "../lib/shortcuts";
 
 const SPEEDS = [0.1, 0.25, 0.5, 1, 1.5, 2];
@@ -59,7 +59,8 @@ export class Timeline {
       state.set("playing", false);
       const u = parseFloat(this.slider.value);
       const d = state.get("duration");
-      state.set("time", u * d);
+      // The far right of the slider is the landing pose, not a wrap back to 0.
+      state.set("time", clampSeekTime(u * d, d));
     });
     speed.addEventListener("change", () => {
       state.set("speed", parseFloat(speed.value));
