@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getAllByRole, getByRole } from "@testing-library/dom";
+import { fireEvent, getAllByRole, getByRole } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 import { PanelTabs } from "./PanelTabs";
 import { mountHost } from "../test/helpers";
@@ -67,6 +67,13 @@ describe("PanelTabs", () => {
     expect(app.dataset.panel).toBe("tricks");
     expect(seenByWindow).toHaveBeenCalledTimes(1);
     window.removeEventListener("keydown", seenByWindow);
+  });
+
+  it("arrow keys on a tab cancel the browser default (no page scroll)", () => {
+    const { host } = setup();
+    const tricks = getByRole(host, "tab", { name: "技一覧" });
+    expect(fireEvent.keyDown(tricks, { key: "ArrowRight" })).toBe(false);
+    expect(fireEvent.keyDown(tricks, { key: "ArrowDown" })).toBe(true);
   });
 
   it("works without the panels it labels being in the document", () => {

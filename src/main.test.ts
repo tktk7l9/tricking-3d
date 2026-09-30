@@ -70,12 +70,24 @@ describe("start screen", () => {
   });
 
   it("hovering preloads the module without starting the app", async () => {
+    // A fresh factory counts how often the heavy module is actually evaluated.
+    let loads = 0;
+    vi.doMock("./app-main", () => {
+      loads++;
+      return { startApp };
+    });
     renderTitleScreen();
     await loadEntry();
+    await flush();
+    expect(loads).toBe(0);
     const btn = document.getElementById("title-start")!;
     btn.dispatchEvent(new Event("pointerenter"));
+    await flush();
+    expect(loads).toBe(1);
     btn.dispatchEvent(new Event("touchstart"));
     await flush();
+    // The second trigger reuses the in-flight import instead of loading again.
+    expect(loads).toBe(1);
     expect(startApp).not.toHaveBeenCalled();
     expect(document.getElementById("title-overlay")).not.toBeNull();
   });

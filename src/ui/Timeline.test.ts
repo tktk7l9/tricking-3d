@@ -119,6 +119,16 @@ describe("Timeline", () => {
       expect(state.get("playing")).toBe(true);
     });
 
+    it("claims handled keys so Space does not scroll the page or arrows move focus", () => {
+      setup({ playing: true, time: 0.5, duration: 1.6 });
+      // fireEvent returns false when a listener called preventDefault().
+      expect(fireEvent.keyDown(document.body, { key: " " })).toBe(false);
+      expect(fireEvent.keyDown(document.body, { key: "ArrowRight" })).toBe(false);
+      expect(fireEvent.keyDown(document.body, { key: "ArrowLeft" })).toBe(false);
+      // Keys the timeline does not handle keep their default behaviour.
+      expect(fireEvent.keyDown(document.body, { key: "ArrowDown" })).toBe(true);
+    });
+
     it("leaves keys alone while typing in a text field", async () => {
       const { state } = setup({ playing: true, time: 0.5 });
       const input = document.createElement("input");
