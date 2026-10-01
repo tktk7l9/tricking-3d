@@ -11,7 +11,9 @@ afterEach(() => {
 });
 
 function setup(overrides = {}) {
-  const host = mountHost("footer");
+  // Mirrors index.html: a named region, not a <footer>/contentinfo.
+  const host = mountHost("section");
+  host.setAttribute("aria-label", "再生");
   const state = makeState(overrides);
   const timeline = new Timeline(host, state);
   return { host, state, timeline };
@@ -21,6 +23,10 @@ describe("Timeline", () => {
   it("shows the time label and a 1× speed by default", () => {
     const { host } = setup({ time: 0.4, duration: 1.6 });
     expect(getByText(host, "0.40 / 1.60 s")).toBeTruthy();
+    // The 0..1 range announces seconds rather than the raw fraction.
+    const slider = getByLabelText(host, "再生位置") as HTMLInputElement;
+    expect(slider.getAttribute("aria-valuetext")).toBe("0.40秒 / 1.60秒");
+    expect(getByRole(document.body, "region", { name: "再生" })).toBe(host);
     const speed = getByLabelText(host, "再生速度") as HTMLSelectElement;
     expect(speed.value).toBe("1");
     expect(Array.from(speed.options).map((o) => o.textContent)).toEqual([

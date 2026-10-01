@@ -9,11 +9,11 @@ vi.mock("./app-main", () => ({ startApp }));
 
 function renderTitleScreen() {
   document.body.innerHTML = `
-    <div id="app"><canvas id="canvas"></canvas></div>
-    <div id="title-overlay">
-      <h1>Tricking 3D Analyzer</h1>
+    <div id="app" hidden><main id="viewport"><canvas id="canvas"></canvas><div id="hud-top"></div></main></div>
+    <main id="title-overlay" aria-labelledby="title-heading">
+      <h1 id="title-heading">Tricking 3D Analyzer</h1>
       <button id="title-start" type="button">3Dで見る</button>
-    </div>
+    </main>
   `;
 }
 
@@ -42,10 +42,21 @@ describe("start screen", () => {
     await loadEntry();
     expect(startApp).not.toHaveBeenCalled();
     expect(document.getElementById("title-overlay")).not.toBeNull();
+    // The title screen is the only landmark until the viewer starts.
+    expect(getByRole(document.body, "main", { name: "Tricking 3D Analyzer" })).not.toBeNull();
+    expect(document.getElementById("app")!.hidden).toBe(true);
   });
 
   it("pressing the button shows loading feedback, removes the title and starts the app", async () => {
     renderTitleScreen();
+    // Mimic the HUD title that startApp builds, so the focus hand-off can be observed.
+    startApp.mockImplementation(async () => {
+      const title = document.createElement("h1");
+      title.className = "title-block";
+      title.tabIndex = -1;
+      title.textContent = "バックフリップ";
+      document.getElementById("hud-top")!.appendChild(title);
+    });
     await loadEntry();
     const btn = getByRole(document.body, "button", { name: "3Dで見る" }) as HTMLButtonElement;
 
@@ -57,6 +68,10 @@ describe("start screen", () => {
     expect(startApp).toHaveBeenCalledTimes(1);
     expect(document.getElementById("title-overlay")).toBeNull();
     expect(document.getElementById("app")).not.toBeNull();
+    expect(document.getElementById("app")!.hidden).toBe(false);
+    // Focus lands on the trick title instead of being dropped on <body>.
+    const heading = getByRole(document.body, "heading", { level: 1, name: "バックフリップ" });
+    expect(document.activeElement).toBe(heading);
   });
 
   it("only starts once even if the button is activated repeatedly", async () => {
@@ -102,22 +117,36 @@ describe("start screen", () => {
     await userEvent.click(getByRole(document.body, "button", { name: "3Dで見る" }));
     await flush();
 
-    const alert = getByRole(document.body, "alert");
+    // The error screen carries the page's only main landmark; the alert is an
+    // inner wrapper so it does not override the landmark role.
+    const screen = getByRole(document.body, "main");
+    const alert = getByRole(screen, "alert");
     expect(getByRole(alert, "heading", { level: 1 }).textContent).toBe("3D 表示を開始できませんでした");
     expect(alert.textContent).toContain("WebGL");
     expect(alert.textContent).toContain("Chrome・Safari・Edge");
     expect(document.getElementById("app")).toBeNull();
-    expect(alert.querySelector("pre")!.textContent).toContain("WebGL unavailable");
-    expect(alert.querySelector("summary")!.textContent).toBe("詳しい情報");
+    expect(screen.querySelector("pre")!.textContent).toContain("WebGL unavailable");
+    expect(screen.querySelector("summary")!.textContent).toBe("詳しい情報");
     expect(console.error).toHaveBeenCalled();
 
-    await userEvent.click(getByRole(alert, "button", { name: "再読み込み" }));
+    const retry = getByRole(screen, "button", { name: "再読み込み" });
+    // Focus moves to the next step instead of the removed start button.
+    expect(document.activeElement).toBe(retry);
+    await userEvent.click(retry);
     expect(reload).toHaveBeenCalledTimes(1);
     vi.unstubAllGlobals();
   });
 
   it("boots immediately when the page has no start button", async () => {
     document.body.innerHTML = `<div id="app"></div>`;
+    await loadEntry();
+    await flush();
+    expect(startApp).toHaveBeenCalledTimes(1);
+    expect(queryByRole(document.body, "alert")).toBeNull();
+  });
+
+  it("still starts when the page has no app container to unhide", async () => {
+    document.body.innerHTML = "";
     await loadEntry();
     await flush();
     expect(startApp).toHaveBeenCalledTimes(1);
