@@ -112,6 +112,8 @@ export class Timeline {
     const t = this.state.get("time");
     const d = this.state.get("duration");
     this.timeLabel.textContent = `${t.toFixed(2)} / ${d.toFixed(2)} s`;
+    // The range runs 0..1; announce seconds instead of the raw fraction.
+    this.slider.setAttribute("aria-valuetext", `${t.toFixed(2)}秒 / ${d.toFixed(2)}秒`);
   }
 }
 

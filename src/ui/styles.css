@@ -36,7 +36,7 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
   height: 100dvh;
 }
 
-#panel-tabs { display: none; }
+#panel-nav { display: none; }
 
 #sidebar {
   grid-area: sidebar;
@@ -81,9 +81,9 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
 #hud-camera { top: 12px; right: 14px; display: flex; gap: 6px; pointer-events: auto; }
 #hud-overlays { bottom: 12px; left: 14px; display: flex; gap: 8px; pointer-events: auto; }
 
-.title-block { pointer-events: none; }
-.title-block .jp { font-size: 22px; font-weight: 700; }
-.title-block .en { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.title-block { pointer-events: none; margin: 0; font-weight: 400; }
+.title-block .jp { display: block; font-size: 22px; font-weight: 700; }
+.title-block .en { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
 
 /* Sidebar */
 .sidebar h2 {
@@ -335,12 +335,13 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
   }
   #app[data-panel="tricks"] #info,
   #app[data-panel="info"] #sidebar { display: none; }
-  #panel-tabs {
+  #panel-nav {
     grid-area: tabs;
-    display: flex;
+    display: block;
     background: var(--bg-2);
     border-bottom: 1px solid var(--border);
   }
+  #panel-tabs { display: flex; }
   .panel-tab {
     flex: 1;
     background: transparent;

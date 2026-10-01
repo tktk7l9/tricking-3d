@@ -49,10 +49,12 @@ export async function startApp() {
     showAnnotations: true,
   });
 
-  // Build HUD title (current trick name)
+  // Build HUD title (current trick name). It is the page's h1 once the title
+  // screen is gone, and focusable so boot can move focus onto it.
   const hudTop = document.getElementById("hud-top")!;
-  const titleBlock = document.createElement("div");
+  const titleBlock = document.createElement("h1");
   titleBlock.className = "title-block";
+  titleBlock.tabIndex = -1;
   hudTop.appendChild(titleBlock);
 
   // UI mount
@@ -72,7 +74,7 @@ export async function startApp() {
     axisOverlay.setTrick(meta);
     annotations.setTrick(meta);
     comTracer.bake();
-    titleBlock.innerHTML = `<div class="jp">${meta.nameJp}</div><div class="en">${meta.nameEn}</div>`;
+    titleBlock.innerHTML = `<span class="jp">${meta.nameJp}</span><span class="en">${meta.nameEn}</span>`;
   };
 
   state.subscribe("trickId", applyTrick, true);

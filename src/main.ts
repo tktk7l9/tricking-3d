@@ -13,6 +13,7 @@ if (import.meta.env.PROD) {
 
 const startBtn = document.getElementById("title-start") as HTMLButtonElement | null;
 const titleOverlay = document.getElementById("title-overlay");
+const app = document.getElementById("app");
 
 let loadPromise: Promise<typeof import("./app-main")> | null = null;
 function load() {
@@ -24,7 +25,11 @@ async function boot() {
   try {
     const mod = await load();
     if (titleOverlay) titleOverlay.remove();
+    if (app) app.hidden = false;
     await mod.startApp();
+    // The start button is gone; land focus on the trick title so keyboard and
+    // screen-reader users know where they are (SHIG 59).
+    document.querySelector<HTMLElement>("#hud-top .title-block")?.focus();
   } catch (e) {
     console.error(e);
     showBootError(e);
@@ -50,9 +55,13 @@ if (startBtn) {
 
 /** Constructive boot-failure screen: what happened, why, and what to do next (SHIG 55). */
 function showBootError(e: unknown) {
-  const box = document.createElement("div");
+  // The error replaces the whole body, so it must carry the page's only <main>
+  // landmark itself; role="alert" sits on an inner wrapper because it would
+  // otherwise override the landmark role.
+  const box = document.createElement("main");
   box.className = "boot-error";
-  box.setAttribute("role", "alert");
+  const message = document.createElement("div");
+  message.setAttribute("role", "alert");
   const h = document.createElement("h1");
   h.textContent = "3D 表示を開始できませんでした";
   const p = document.createElement("p");
@@ -68,6 +77,9 @@ function showBootError(e: unknown) {
   const pre = document.createElement("pre");
   pre.textContent = String(e);
   details.append(summary, pre);
-  box.append(h, p, retry, details);
+  message.append(h, p);
+  box.append(message, retry, details);
   document.body.replaceChildren(box);
+  // The start button that had focus is gone; keep keyboard users on the next step (SHIG 60).
+  retry.focus();
 }
