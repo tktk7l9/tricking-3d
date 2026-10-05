@@ -25,9 +25,6 @@ import { Builder } from "./authoring";
  * helpers can be layered at the same `t` (e.g. armsUp + headLookUp + spineExt).
  */
 
-const easeInOut = (u: number) => u * u * (3 - 2 * u);
-export const ease = { linear: (u: number) => u, inOut: easeInOut };
-
 /* ============================ Spine ============================ */
 
 /** Distribute a forward (+) or back (-) bend across the 3 spine bones. */
@@ -49,7 +46,7 @@ export function spineTwist(b: Builder, t: number, deg: number) {
   b.key("spine2", t, { eulerDeg: { y: deg * 0.3 } });
 }
 /** Reset spine to neutral on all axes. */
-export function spineNeutral(b: Builder, t: number) {
+function spineNeutral(b: Builder, t: number) {
   b.key("spine", t, { eulerDeg: { x: 0, y: 0, z: 0 } });
   b.key("spine1", t, { eulerDeg: { x: 0, y: 0, z: 0 } });
   b.key("spine2", t, { eulerDeg: { x: 0, y: 0, z: 0 } });
@@ -78,7 +75,7 @@ export function headTilt(b: Builder, t: number, deg: number) {
   b.key("head", t, { eulerDeg: { z: deg * 0.6 } });
 }
 /** Neutral head/neck. */
-export function headNeutral(b: Builder, t: number) {
+function headNeutral(b: Builder, t: number) {
   b.key("neck", t, { eulerDeg: { x: 0, y: 0, z: 0 } });
   b.key("head", t, { eulerDeg: { x: 0, y: 0, z: 0 } });
 }
@@ -158,15 +155,6 @@ export function armForward(b: Builder, side: "left" | "right", t: number) {
   const sign = side === "left" ? 1 : -1;
   b.key(arm, t, { eulerDeg: { x: -85, y: 0, z: -82 * sign } });
   b.key(fore, t, { eulerDeg: { x: 0, y: -50 * sign, z: 0 } });
-}
-
-/** Single-arm: swing arm overhead. */
-export function armUp(b: Builder, side: "left" | "right", t: number) {
-  const arm = side === "left" ? L : R;
-  const fore = side === "left" ? LF : RF;
-  const sign = side === "left" ? 1 : -1;
-  b.key(arm, t, { eulerDeg: { x: 0, y: 0, z: 80 * sign } });
-  b.key(fore, t, { eulerDeg: { x: 0, y: -10 * sign, z: 0 } });
 }
 
 /** Single-arm: pull arm back (windup). */
