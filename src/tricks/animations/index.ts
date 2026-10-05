@@ -33,7 +33,7 @@ const HIPS_Y = 0.95;
 const NAME = mixamoBoneName;
 
 /* ============================ BACK FLIP ============================ */
-export function buildBackFlip(): THREE.AnimationClip {
+function buildBackFlip(): THREE.AnimationClip {
   const D = 1.6;
   const b = new Builder(D);
 
@@ -77,7 +77,7 @@ export function buildBackFlip(): THREE.AnimationClip {
 }
 
 /* ============================ FRONT FLIP ============================ */
-export function buildFrontFlip(): THREE.AnimationClip {
+function buildFrontFlip(): THREE.AnimationClip {
   const D = 1.6;
   const b = new Builder(D);
 
@@ -118,7 +118,7 @@ export function buildFrontFlip(): THREE.AnimationClip {
 }
 
 /* ============================ SIDE FLIP ============================ */
-export function buildSideFlip(): THREE.AnimationClip {
+function buildSideFlip(): THREE.AnimationClip {
   const D = 1.6;
   const b = new Builder(D);
 
@@ -159,7 +159,7 @@ export function buildSideFlip(): THREE.AnimationClip {
 }
 
 /* ============================ GAINER ============================ */
-export function buildGainer(): THREE.AnimationClip {
+function buildGainer(): THREE.AnimationClip {
   const D = 1.7;
   const b = new Builder(D);
 
@@ -204,7 +204,7 @@ export function buildGainer(): THREE.AnimationClip {
 }
 
 /* ============================ CORKSCREW ============================ */
-export function buildCorkscrew(): THREE.AnimationClip {
+function buildCorkscrew(): THREE.AnimationClip {
   const D = 1.8;
   const b = new Builder(D);
 
@@ -254,7 +254,7 @@ export function buildCorkscrew(): THREE.AnimationClip {
 }
 
 /* ============================ BUTTERFLY ============================ */
-export function buildButterfly(): THREE.AnimationClip {
+function buildButterfly(): THREE.AnimationClip {
   const D = 1.7;
   const b = new Builder(D);
 
@@ -321,7 +321,7 @@ export function buildButterfly(): THREE.AnimationClip {
 }
 
 /* ============================ CHEAT KICK ============================ */
-export function buildCheatKick(): THREE.AnimationClip {
+function buildCheatKick(): THREE.AnimationClip {
   const D = 1.6;
   const b = new Builder(D);
 
@@ -376,7 +376,7 @@ export function buildCheatKick(): THREE.AnimationClip {
 }
 
 /* ============================ DOUBLE LEG ============================ */
-export function buildDoubleLeg(): THREE.AnimationClip {
+function buildDoubleLeg(): THREE.AnimationClip {
   const D = 1.4;
   const b = new Builder(D);
 
@@ -417,7 +417,7 @@ export function buildDoubleLeg(): THREE.AnimationClip {
 }
 
 /* ============================ POP KICK ============================ */
-export function buildPopKick(): THREE.AnimationClip {
+function buildPopKick(): THREE.AnimationClip {
   const D = 1.5;
   const b = new Builder(D);
 
@@ -469,7 +469,7 @@ export function buildPopKick(): THREE.AnimationClip {
 }
 
 /* ============================ SPIDER ============================ */
-export function buildSpider(): THREE.AnimationClip {
+function buildSpider(): THREE.AnimationClip {
   const D = 1.6;
   const b = new Builder(D);
 
@@ -526,7 +526,7 @@ export function buildSpider(): THREE.AnimationClip {
 }
 
 /* ============================ SWING KICK ============================ */
-export function buildSwingKick(): THREE.AnimationClip {
+function buildSwingKick(): THREE.AnimationClip {
   const D = 1.4;
   const b = new Builder(D);
 
@@ -566,7 +566,7 @@ export function buildSwingKick(): THREE.AnimationClip {
 }
 
 /* ============================ LOTUS ============================ */
-export function buildLotus(): THREE.AnimationClip {
+function buildLotus(): THREE.AnimationClip {
   const D = 1.7;
   const b = new Builder(D);
 
@@ -619,7 +619,7 @@ export function buildLotus(): THREE.AnimationClip {
 }
 
 /* ============================ FULL TWIST ============================ */
-export function buildFull(): THREE.AnimationClip {
+function buildFull(): THREE.AnimationClip {
   const D = 1.8;
   const b = new Builder(D);
 
@@ -662,7 +662,7 @@ export function buildFull(): THREE.AnimationClip {
 }
 
 /* ============================ WEBSTER ============================ */
-export function buildWebster(): THREE.AnimationClip {
+function buildWebster(): THREE.AnimationClip {
   const D = 1.7;
   const b = new Builder(D);
 
@@ -706,7 +706,7 @@ export function buildWebster(): THREE.AnimationClip {
 }
 
 /* ============================ JANITOR ============================ */
-export function buildJanitor(): THREE.AnimationClip {
+function buildJanitor(): THREE.AnimationClip {
   const D = 1.8;
   const b = new Builder(D);
 
@@ -749,7 +749,7 @@ export function buildJanitor(): THREE.AnimationClip {
 }
 
 /* ============================ AERIAL ============================ */
-export function buildAerial(): THREE.AnimationClip {
+function buildAerial(): THREE.AnimationClip {
   const D = 1.7;
   const b = new Builder(D);
 
@@ -806,7 +806,7 @@ export function buildAerial(): THREE.AnimationClip {
 }
 
 /* ============================ MASTER SWING ============================ */
-export function buildMasterSwing(): THREE.AnimationClip {
+function buildMasterSwing(): THREE.AnimationClip {
   const D = 1.4;
   const b = new Builder(D);
 
@@ -847,7 +847,7 @@ export function buildMasterSwing(): THREE.AnimationClip {
 }
 
 /* ============================ WRAP (540) ============================ */
-export function buildWrap(): THREE.AnimationClip {
+function buildWrap(): THREE.AnimationClip {
   const D = 1.7;
   const b = new Builder(D);
 
@@ -906,7 +906,7 @@ export function buildWrap(): THREE.AnimationClip {
 }
 
 /* ============================ TUCK ============================ */
-export function buildTuck(): THREE.AnimationClip {
+function buildTuck(): THREE.AnimationClip {
   const D = 1.5;
   const b = new Builder(D);
 
@@ -947,7 +947,7 @@ export function buildTuck(): THREE.AnimationClip {
 }
 
 /* ============================ RAIZ ============================ */
-export function buildRaiz(): THREE.AnimationClip {
+function buildRaiz(): THREE.AnimationClip {
   const D = 1.7;
   const b = new Builder(D);
 
