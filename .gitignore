@@ -1,7 +1,10 @@
 node_modules/
 dist/
-.env
-.env.local
+# Secrets: any .env file (incl. keyway outputs .env.development/.env.production) and wrangler local vars
+.env*
+!.env.example
+.dev.vars*
+.wrangler/
 *.tsbuildinfo
 .vercel
 coverage/
