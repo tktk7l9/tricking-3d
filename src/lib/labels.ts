@@ -11,13 +11,14 @@ export function axisLabel(a: Axis | undefined): string {
   return a ? AXIS_LABEL[a] : "なし";
 }
 
-const TAKEOFF_LABEL: Record<TrickMeta["takeoff"], string> = {
+const TAKEOFF_LABEL: Record<TrickMeta["takeoff"] | TrickMeta["landing"], string> = {
   both: "両足",
   left: "左足",
   right: "右足",
 };
 
-export function takeoffLabel(t: TrickMeta["takeoff"]): string {
+/** Label for a takeoff or landing leg. */
+export function takeoffLabel(t: TrickMeta["takeoff"] | TrickMeta["landing"]): string {
   return TAKEOFF_LABEL[t];
 }
 

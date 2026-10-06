@@ -24,6 +24,7 @@ describe("InfoPanel", () => {
     expect(getByText(host, trick.nameEn)).toBeTruthy();
     expect(getByText(host, "カテゴリ").nextElementSibling!.textContent).toBe("フリップ");
     expect(getByText(host, "踏切").nextElementSibling!.textContent).toBe("両足");
+    expect(getByText(host, "着地", { selector: "dt" }).nextElementSibling!.textContent).toBe("両足");
     expect(getByText(host, "主回転軸").nextElementSibling!.textContent).toBe("X 軸（左右・宙返り）");
     expect(getByText(host, "捻り軸").nextElementSibling!.textContent).toBe("なし");
     expect(getByText(host, "所要時間").nextElementSibling!.textContent).toBe("1.60 s");
@@ -93,7 +94,8 @@ describe("InfoPanel", () => {
     state.set("trickId", "cheat-kick");
     const trick = getTrick("cheat-kick");
     expect(getByRole(host, "heading", { level: 2 }).textContent).toBe(trick.nameJp);
-    expect(getByText(host, "踏切").nextElementSibling!.textContent).toBe("左足");
+    expect(getByText(host, "踏切").nextElementSibling!.textContent).toBe("右足");
+    expect(getByText(host, "着地", { selector: "dt" }).nextElementSibling!.textContent).toBe("左足");
     expect(getByText(host, "捻り軸").nextElementSibling!.textContent).toBe("Y 軸（縦・ひねり）");
     expect(keypointButtons(host)).toHaveLength(trick.keypoints.length);
     expect(getAllByRole(host, "heading", { level: 2 })).toHaveLength(1);

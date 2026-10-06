@@ -383,7 +383,8 @@ function buildLeg(
     new THREE.BoxGeometry(0.10, 0.05, 0.20),
     shoe,
   );
-  footMesh.position.set(0, -0.025, 0.05);
+  // The sole sits at ankle-joint height, so a foot bone at y=0 stands on the floor.
+  footMesh.position.set(0, 0.025, 0.05);
   footMesh.castShadow = true;
   foot.add(footMesh);
 
