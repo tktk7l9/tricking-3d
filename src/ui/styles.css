@@ -166,6 +166,12 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
   line-height: 1.6;
   color: #cdd5e0;
 }
+.info-panel > .hint {
+  margin: 0 0 10px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+}
 .info-panel .keypoints {
   margin-top: 16px;
   border-top: 1px solid var(--border);

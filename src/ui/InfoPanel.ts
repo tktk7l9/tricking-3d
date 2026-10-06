@@ -26,10 +26,12 @@ export class InfoPanel {
       <dl class="meta-grid">
         <dt>カテゴリ</dt><dd>${categoryLabel(t.category)}</dd>
         <dt>踏切</dt><dd>${takeoffLabel(t.takeoff)}</dd>
+        <dt>着地</dt><dd>${takeoffLabel(t.landing)}</dd>
         <dt>主回転軸</dt><dd>${axisLabel(t.primaryAxis)}</dd>
         <dt>捻り軸</dt><dd>${axisLabel(t.twistAxis)}</dd>
         <dt>所要時間</dt><dd>${t.duration.toFixed(2)} s</dd>
       </dl>
+      <p class="hint">左回り（反時計回り）に回る人を基準にしています。右回りの人は左右を読み替えてください。</p>
       <p class="desc">${escapeHtml(t.description)}</p>
       <div class="keypoints">
         <h3>キーポイント <span class="hint">（押すとその瞬間で止まります）</span></h3>

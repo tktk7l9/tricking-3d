@@ -146,26 +146,6 @@ export function armsCross(b: Builder, t: number) {
   b.key(RF, t, { eulerDeg: { x: 0, y: 130, z: 0 } });
 }
 
-/* ============================ Per-arm helpers ============================ */
-
-/** Single-arm: swing arm forward (front of body). Useful as a kick counter-balance. */
-export function armForward(b: Builder, side: "left" | "right", t: number) {
-  const arm = side === "left" ? L : R;
-  const fore = side === "left" ? LF : RF;
-  const sign = side === "left" ? 1 : -1;
-  b.key(arm, t, { eulerDeg: { x: -85, y: 0, z: -82 * sign } });
-  b.key(fore, t, { eulerDeg: { x: 0, y: -50 * sign, z: 0 } });
-}
-
-/** Single-arm: pull arm back (windup). */
-export function armBack(b: Builder, side: "left" | "right", t: number) {
-  const arm = side === "left" ? L : R;
-  const fore = side === "left" ? LF : RF;
-  const sign = side === "left" ? 1 : -1;
-  b.key(arm, t, { eulerDeg: { x: 50, y: 0, z: -100 * sign } });
-  b.key(fore, t, { eulerDeg: { x: 0, y: -30 * sign, z: 0 } });
-}
-
 /* ============================ Legs ============================ */
 
 export function legsTuck(b: Builder, t: number) {
