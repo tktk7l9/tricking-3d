@@ -213,7 +213,7 @@ describe("touchdown raiz", () => {
     expect(handDown, "left hand reaches the floor").toBeGreaterThanOrEqual(0);
     expect(handDown, "hand touches before any foot").toBeLessThan(footDown);
     expect(after[footDown].left, "left foot lands first").toBeLessThan(after[footDown].right - 0.1);
-    expect(samples.some(inverted), "inverts over the hand").toBe(true);
+    expect(samples.some(inverted), "goes past horizontal in the air").toBe(true);
     expect(samples.every((s) => s.handR > 0.1), "right hand stays off the floor").toBe(true);
     expect(samples[samples.length - 1].right, "right leg still trailing at the end").toBeGreaterThan(0.15);
   });

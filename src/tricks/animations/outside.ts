@@ -92,18 +92,17 @@ export function buildRaiz(): THREE.AnimationClip {
   return r.build("raiz");
 }
 
-/** Touchdown raiz: a low raiz whose left hand reaches back over the left
- * shoulder and touches the floor before the left foot lands; the right leg is
- * kept behind, ready to backswing into a gainer or cork. */
+/** Touchdown raiz: a low raiz that lands into a deep crouch on the left leg.
+ * Near the end of the spin the torso folds forward and the left hand reaches
+ * the floor just before the left foot; the right leg stays up behind, ready to
+ * backswing into a gainer or cork, and the hand pushes the chest back up. */
 export function buildTouchdownRaiz(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D, { hands: true });
   outsideStep(r);
-  // Steeper axis than the plain raiz (70° vs 55°): the body is properly
-  // inverted when the hand plants, so the trailing legs point up, not down.
   r.at(0.4, {
     heading: 185,
-    tilt: 70,
+    tilt: 65,
     spin: 0,
     ...legL(-40, 10, 20),
     ...legR(5, 0, 5, 0, 35),
@@ -112,80 +111,80 @@ export function buildTouchdownRaiz(): THREE.AnimationClip {
     ...torso(-20, 0, 0),
     ...head(-20, 10),
   });
-  // Low flight: the hand meets the floor while the body is still inverted.
-  r.flight(0.4, 0.6, { travel: [0.25, 0.25], apex: 0.3 });
+  // Lower and shorter than the plain raiz: the flight ends when the hand meets
+  // the floor, with the body already folding over it.
+  r.flight(0.4, 0.72, { travel: [0.3, 0.3], apex: 0.35 });
   r.at(0.5, {
     heading: 230,
-    spin: 110,
-    ...legL(-50, 20, 10),
-    ...legR(-15, -20, 10),
-    ...armL(140, 150, 5),
+    spin: 115,
+    ...legL(-45, 20, 15),
+    ...legR(-10, -20, 10),
+    ...armL(90, 160, 10),
     ...armR(170, -30, 10),
-    ...torso(-30, 0, 0),
-    ...head(-25, 10),
+    ...torso(-25, 0, 0),
+    ...head(-25, 0),
   });
   r.at(0.6, {
-    heading: 275,
-    spin: 210,
-    pitch: 0,
-    ...legL(-40, 30, 10),
-    ...legR(-20, -20, 120),
-    ...armL(145, 125, 0),
-    ...armR(150, -60, 10),
-    ...torso(-20, 0, 0),
-    ...head(-30, 30),
-  });
-  // Pivot over the planted left hand, like the second half of a one-arm
-  // cartwheel: the body passes sideways over the hand with the arm out to its
-  // left side and the right heel folded to the butt so the trailing leg clears
-  // the floor. The left knee stays bent so the foot only reaches the floor at
-  // 0.7; from then on the foot carries the weight and the hand pushes away.
-  r.pin("handL", 0.6, 0.675);
-  r.at(0.65, {
-    heading: 300,
-    spin: 265,
-    pitch: 20,
-    ...legL(10, 20, 60),
-    ...legR(-20, -15, 120),
-    ...armL(85, 108, 0),
+    heading: 280,
+    spin: 220,
+    ...legL(-20, 30, 10),
+    ...legR(-25, -25, 30),
+    ...armL(120, 120, 10),
     ...armR(140, -60, 10),
-    ...torso(-5, 0, 0),
-    ...head(-30, 30),
+    ...torso(-15, 0, 0),
+    ...head(-25, 20),
   });
-  r.at(0.7, {
-    heading: 322,
-    spin: 320,
-    pitch: 50,
-    ...legL(45, 12, 75),
-    ...legR(-25, -15, 90),
-    ...armL(66, 45, 0),
-    ...armR(110, -60, 20),
+  // Spotting the floor over the left shoulder, the arm reaches down.
+  r.at(0.67, {
+    heading: 315,
+    spin: 300,
+    pitch: 30,
+    ...legL(10, 15, 90),
+    ...legR(-25, -20, 90),
+    ...armL(56, 70, 0),
+    ...armR(120, -60, 20),
     ...torso(15, 0, 0),
     ...head(-25, 25),
   });
-  r.pin("L", 0.675, 1);
-  r.at(0.77, {
-    heading: 338,
+  r.at(0.72, {
+    heading: 335,
     spin: 345,
-    pitch: 55,
-    ...legL(55, 10, 75),
-    ...legR(-28, -15, 65),
-    ...armL(95, 50, 15),
-    ...armR(95, -60, 30),
-    ...torso(20, 0, 0),
-    ...head(-15, 20),
+    pitch: 65,
+    ...legL(50, 10, 100),
+    ...legR(-25, -15, 90),
+    ...armL(89, 14, 0),
+    ...armR(110, -60, 20),
+    ...torso(25, 0, 0),
+    ...head(-20, 20),
   });
-  r.at(0.86, {
+  r.pin("handL", 0.72, 0.74);
+  r.at(0.745, {
+    heading: 337,
+    spin: 347,
+    pitch: 70,
+    ...legL(95, 10, 115),
+    ...legR(-27, -15, 80),
+    ...armL(110, 22, 8),
+    ...armR(100, -60, 25),
+    ...torso(25, 0, 0),
+    ...head(-20, 20),
+  });
+  r.pin("L", 0.74, 1);
+  // Push: the planted arm straightens forward and lifts the hand off the floor.
+  r.at(0.76, { ...armL(118, 30, 15) });
+  // The hand pushes away and the chest comes back up over the planted foot.
+  r.at(0.84, {
     heading: 352,
     spin: 360,
-    pitch: 30,
-    ...legL(35, 5, 50),
-    ...legR(-35, -10, 50),
+    pitch: 40,
+    ...legL(70, 5, 80),
+    ...legR(-30, -10, 55),
     ...armL(100, 60, 10),
-    ...armR(60, -60, 30),
-    ...torso(15, 0, 0),
-    ...head(0, 10),
+    ...armR(70, -60, 30),
+    ...torso(20, 0, 0),
+    ...head(-5, 10),
   });
+  r.at(0.92, { pitch: 15, ...legL(40, 5, 50), ...legR(-35, -10, 45), ...torso(15, 0, 0), ...head(0, 5) });
   r.at(1, {
     heading: 360,
     pitch: 0,
