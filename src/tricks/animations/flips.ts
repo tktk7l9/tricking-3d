@@ -148,8 +148,9 @@ export function buildGainerSwitch(): THREE.AnimationClip {
 
 /** Loser: a webster entered from a backstep. The right foot steps back and
  * pushes off, the left leg swings up behind and the front flip travels backward
- * (losing ground); lands on both feet. The swing leg's elevation keeps
- * decreasing so it passes over the top instead of swinging back under the body. */
+ * (losing ground); lands on both feet. The body's rotation carries the swing
+ * leg over the top; relative to the pelvis the leg then folds forward under the
+ * body into the tuck, so the hip never bends backward past a split. */
 export function buildLoser(): THREE.AnimationClip {
   const D = 1.7;
   const r = new Rig(D);
@@ -172,18 +173,21 @@ export function buildLoser(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.flight(0.34, 0.8, { travel: [0, -0.6], apex: 0.5 });
+  // Swing leg still split behind: with the body pitched forward it now points
+  // up, leading the flip over the top.
   r.at(0.44, {
     pitch: 110,
-    ...legL(-110, 5, 40),
+    ...legL(-45, 5, 30),
     ...legR(50, -5, 80),
     ...armL(140, 40, 60),
     ...armR(140, -40, 60),
     ...torso(25, 0, 0),
     ...head(20, 0),
   });
+  r.at(0.5, { ...legL(30, 5, 90) });
   r.at(0.56, {
     pitch: 200,
-    ...legL(-230, 5, 130),
+    ...legL(120, 5, 130),
     ...legR(120, -5, 130),
     ...armsTight,
     ...torso(45, 0, 0),
@@ -191,7 +195,7 @@ export function buildLoser(): THREE.AnimationClip {
   });
   r.at(0.68, {
     pitch: 290,
-    ...legL(-300, 5, 60),
+    ...legL(60, 5, 60),
     ...legR(60, -5, 60),
     ...armsWide,
     ...torso(15, 0, 0),
@@ -199,14 +203,14 @@ export function buildLoser(): THREE.AnimationClip {
   });
   r.at(0.8, {
     pitch: 360,
-    ...legL(-335, 8, 45),
+    ...legL(25, 8, 45),
     ...legR(25, -8, 45),
     ...armsWide,
     ...torso(15, 0, 0),
     ...head(5, 0),
   });
   r.pin("L", 0.8, 1);
-  r.at(1, { pitch: 360, ...legL(-335, 8, 40), ...legR(25, -8, 40), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(1, { pitch: 360, ...legL(25, 8, 40), ...legR(25, -8, 40), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("loser");
 }
 
@@ -259,28 +263,42 @@ export function buildCorkSwipe(): THREE.AnimationClip {
     ...armsTight,
     ...head(-20, 30),
   });
+  // The swipe: the right knee chambers while the body is still tilted, the leg
+  // snaps out as the twist finishes and sweeps down into the landing, so the
+  // kick happens on the way down rather than standing upright.
   r.at(0.68, {
     heading: 95,
     pitch: -290,
     twist: 300,
     roll: -10,
-    ...legR(60, -25, 70),
+    ...legR(85, -35, 110),
     ...legL(-10, 5, 40),
     ...armL(80, 60, 30),
     ...armR(80, -60, 30),
     ...head(-10, 10),
   });
-  r.at(0.76, {
-    heading: 105,
-    pitch: -340,
-    twist: 350,
-    roll: 0,
-    ...legR(105, -5, 5),
+  r.at(0.73, {
+    heading: 102,
+    pitch: -322,
+    twist: 335,
+    roll: -5,
+    ...legR(110, -10, 5),
     ...legL(-20, 5, 40),
     ...armL(60, 110, 20),
     ...armR(70, -40, 50),
     ...torso(5, 10, -5),
     ...head(0, 0),
+  });
+  r.at(0.78, {
+    heading: 107,
+    pitch: -348,
+    twist: 355,
+    roll: 0,
+    ...legR(60, -5, 15),
+    ...legL(-25, 5, 45),
+    ...armL(70, 100, 20),
+    ...armR(70, -60, 40),
+    ...torso(8, 5, 0),
   });
   r.at(0.82, {
     heading: 110,

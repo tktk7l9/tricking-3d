@@ -266,59 +266,53 @@ function backsidePop(r: Rig, uOff: number) {
   });
 }
 
-/** Backside 720: pop from backside, ~180° in the air to face the target, then a
- * left-leg hook kick; lands on the right foot (Pop 360 Hook in TKT). */
+/** Backside 720: pop from backside and spin ~360° in the air (Pop 360 Hook in
+ * TKT), so the left-leg hook reaches the target with the same rotation as the
+ * Cheat 720 (heading ~625 with the leg out to the left side); lands on the
+ * right foot facing the target again (720 in total). */
 export function buildBackside720(): THREE.AnimationClip {
-  const D = 1.6;
+  const D = 1.7;
   const r = new Rig(D);
   backsidePop(r, 0.38);
-  r.flight(0.38, 0.8, { travel: [0.05, 0.1], apex: 0.45 });
+  r.flight(0.38, 0.8, { travel: [0.05, 0.15], apex: 0.5 });
   r.at(0.48, {
-    heading: 290,
-    ...legL(50, -30, 90),
-    ...legR(40, -10, 70),
+    heading: 345,
+    ...legL(60, 30, 110),
+    ...legR(40, -10, 90),
     ...armsTight,
-    ...torso(5, 0, 15),
+    ...torso(5, 0, 10),
     ...head(0, 40),
   });
-  r.at(0.58, {
-    heading: 330,
-    ...legL(95, -25, 70),
-    ...legR(40, -10, 80),
-    ...armL(60, 40, 60),
-    ...armR(70, -60, 40),
-    ...torso(5, 0, 10),
-    ...head(0, 30),
+  r.at(0.59, {
+    heading: 490,
+    ...legL(70, 60, 70),
+    ...legR(30, -10, 75),
+    ...armL(70, 20, 90),
+    ...armR(70, -40, 90),
+    ...torso(0, 10, 10),
+    ...head(0, 40),
   });
-  r.at(0.65, {
-    heading: 345,
-    ...legL(110, 15, 10),
-    ...legR(35, -10, 75),
-    ...armL(40, 140, 30),
-    ...armR(70, -20, 60),
-    ...torso(5, 10, 0),
-    ...head(0, 10),
-  });
-  r.at(0.72, {
-    heading: 385,
-    ...legL(90, 60, 30),
-    ...legR(30, -10, 60),
-    ...armL(60, 110, 30),
-    ...armR(60, -60, 40),
-    ...torso(5, 5, -5),
-    ...head(0, 0),
+  r.at(0.68, {
+    heading: 625,
+    ...legL(118, 95, 10, 0, 20),
+    ...legR(25, -10, 60),
+    ...armL(35, 150, 20),
+    ...armR(80, -30, 60),
+    ...torso(0, 25, 0),
+    ...head(0, 20),
   });
   r.at(0.8, {
-    heading: 420,
-    ...legL(45, 45, 60),
+    heading: 695,
+    ...legL(50, 70, 80),
     ...legR(20, 0, 30),
-    ...armsWide,
-    ...torso(10, 0, 0),
-    ...head(5, 0),
+    ...armL(60, 90, 30),
+    ...armR(60, -90, 30),
+    ...torso(8, 10, 0),
+    ...head(0, 0),
   });
   r.pin("R", 0.8, 1);
-  r.at(0.9, { heading: 430, ...legR(20, 0, 40), ...legL(10, 25, 40) });
-  r.at(1, { heading: 435, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(0.9, { heading: 712, ...legR(20, 0, 40), ...legL(0, 30, 40) });
+  r.at(1, { heading: 720, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("backside-720");
 }
 

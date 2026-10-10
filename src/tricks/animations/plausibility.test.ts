@@ -22,6 +22,13 @@ type Sample = {
   /** yaw of the hips' forward vector in degrees (counter-clockwise positive) and its z component */
   yaw: number;
   fwdZ: number;
+  /** world position of each foot's ball (the point a planted foot pivots on) and of the left palm */
+  ballL: THREE.Vector3;
+  ballR: THREE.Vector3;
+  palmL: THREE.Vector3;
+  /** how far each thigh has swung up behind the body (see thighExtension) */
+  extL: number;
+  extR: number;
 };
 
 const SOLE: [number, number, number][] = [
@@ -33,6 +40,19 @@ let character: Character;
 beforeAll(async () => {
   character = await Character.load();
 });
+
+/** Degrees a thigh has swung up behind the pelvis: 0 = straight down, 90 =
+ * horizontal behind, 180 = folded up along the back. 0 while the thigh is in
+ * front of the hips or mostly out to the side (abduction is not extension). */
+function thighExtension(upLeg: THREE.Object3D, knee: THREE.Object3D, pelvisInverse: THREE.Quaternion): number {
+  const d = knee
+    .getWorldPosition(new THREE.Vector3())
+    .sub(upLeg.getWorldPosition(new THREE.Vector3()))
+    .normalize()
+    .applyQuaternion(pelvisInverse);
+  if (d.z >= 0 || Math.abs(d.x) > 0.71) return 0;
+  return (Math.atan2(-d.z, -d.y) * 180) / Math.PI;
+}
 
 function sampleClip(trick: TrickMeta, steps = 150): Sample[] {
   const clip = buildClipFor(trick.id);
@@ -51,6 +71,8 @@ function sampleClip(trick: TrickMeta, steps = 150): Sample[] {
     const handL = character.bones.leftHand.localToWorld(v.set(0.04, 0, 0)).y;
     const handR = character.bones.rightHand.localToWorld(v.set(-0.04, 0, 0)).y;
     const fwd = new THREE.Vector3(0, 0, 1).applyQuaternion(character.bones.hips.getWorldQuaternion(q));
+    const pelvisInverse = q.clone().invert();
+    const b = character.bones;
     out.push({
       t,
       left: lowest("leftFoot"),
@@ -62,6 +84,11 @@ function sampleClip(trick: TrickMeta, steps = 150): Sample[] {
       head: character.bones.head.getWorldPosition(v).y,
       yaw: (Math.atan2(fwd.x, fwd.z) * 180) / Math.PI,
       fwdZ: fwd.z,
+      ballL: b.leftFoot.localToWorld(new THREE.Vector3(0, 0, 0.1)),
+      ballR: b.rightFoot.localToWorld(new THREE.Vector3(0, 0, 0.1)),
+      palmL: b.leftHand.localToWorld(new THREE.Vector3(0.04, 0, 0)),
+      extL: thighExtension(b.leftUpLeg, b.leftLeg, pelvisInverse),
+      extR: thighExtension(b.rightUpLeg, b.rightLeg, pelvisInverse),
     });
   }
   mixer.stopAllAction();
@@ -128,10 +155,40 @@ describe.each(TRICKS.map((t) => [t.id, t] as const))("%s", (_id, trick) => {
   });
 });
 
+/* Hip range of the rig-authored clips. The legacy Builder clips are left out:
+ * their slerped keys can take a leg the long way round (the webster's swing leg
+ * folds up over the back mid-flip) until they are re-authored on the rig. */
+describe.each(TRICKS.filter((t) => !LEGACY.has(t.id)).map((t) => [t.id, t] as const))("%s hip range", (_id, trick) => {
+  it("never swings a thigh up behind the body past a split", () => {
+    for (const s of sampleClip(trick)) {
+      expect(Math.max(s.extL, s.extR), `t=${s.t.toFixed(2)}`).toBeLessThan(100);
+    }
+  });
+});
+
 /* Contracts specific to the tricks that fill the progression tree (2026-10). */
 
 const byId = (id: string): TrickMeta => TRICKS.find((t) => t.id === id)!;
 const inverted = (s: Sample) => s.head < s.hips.y - 0.3;
+
+/** Horizontal distance between two world points. */
+const planarDistance = (p: THREE.Vector3, q: THREE.Vector3) => Math.hypot(p.x - q.x, p.z - q.z);
+
+/** Index ranges [first, last] where `height(sample)` is on the floor. */
+function contacts(samples: Sample[], height: (s: Sample) => number, eps = 0.03): [number, number][] {
+  const out: [number, number][] = [];
+  let start = -1;
+  samples.forEach((s, i) => {
+    const on = height(s) < eps;
+    if (on && start < 0) start = i;
+    if (!on && start >= 0) {
+      out.push([start, i - 1]);
+      start = -1;
+    }
+  });
+  if (start >= 0) out.push([start, samples.length - 1]);
+  return out;
+}
 
 /** Signed yaw travelled between two times, unwrapped sample to sample (counter-clockwise positive). */
 function yawTravel(samples: Sample[], from: number, to: number): number {
@@ -159,6 +216,20 @@ describe("touchdown raiz", () => {
     expect(samples.some(inverted), "inverts over the hand").toBe(true);
     expect(samples.every((s) => s.handR > 0.1), "right hand stays off the floor").toBe(true);
     expect(samples[samples.length - 1].right, "right leg still trailing at the end").toBeGreaterThan(0.15);
+  });
+
+  it("keeps the hand planted in one contact until the foot takes over", () => {
+    const samples = sampleClip(byId("touchdown-raiz"));
+    const [start] = longestFlight(samples)!;
+    const after = samples.slice(start);
+    const hand = contacts(after, (s) => s.handL);
+    expect(hand, "a single hand contact, no bounce").toHaveLength(1);
+    const footDown = after.findIndex((s) => s.left < 0.03);
+    expect(hand[0][1], "hand still down when the foot lands").toBeGreaterThanOrEqual(footDown - 1);
+    const [a, b] = hand[0];
+    for (let i = a; i <= b; i++) {
+      expect(planarDistance(after[i].palmL, after[a].palmL), `t=${after[i].t.toFixed(2)}: hand stays put`).toBeLessThan(0.05);
+    }
   });
 });
 
@@ -190,17 +261,42 @@ describe("loser", () => {
   });
 });
 
+// Overall turn counts from the opening stance: a backside start is already 180°
+// round, so the Backside 720 turns ~540° to land facing the target like the
+// Cheat 720, and the 900s turn as far as a Tornado plus a full spin.
 describe.each([
-  ["backside-720", 150, true, "left"],
-  ["backside-900", 450, true, "right"],
-  ["cheat-900", 450, false, "right"],
-] as const)("%s", (id, minTurn, backside, kickLeg) => {
-  it(`turns more than ${minTurn}° counter-clockwise in the air and kicks the ${kickLeg} foot above hip height`, () => {
+  ["backside-720", 400, 500, true, "left"],
+  ["backside-900", 450, 580, true, "right"],
+  ["cheat-900", 450, 760, false, "right"],
+] as const)("%s", (id, minAirTurn, minTurn, backside, kickLeg) => {
+  it(`turns more than ${minAirTurn}° counter-clockwise in the air (${minTurn}° overall) and kicks the ${kickLeg} foot above hip height`, () => {
     const samples = sampleClip(byId(id));
     const [a, b] = longestFlight(samples)!;
-    expect(yawTravel(samples, samples[a].t, samples[b].t)).toBeGreaterThan(minTurn);
+    expect(yawTravel(samples, samples[a].t, samples[b].t), "in the air").toBeGreaterThan(minAirTurn);
+    expect(yawTravel(samples, 0, samples[samples.length - 1].t), "overall").toBeGreaterThan(minTurn);
     if (backside) expect(samples[0].fwdZ, "starts with the back to the target").toBeLessThan(-0.9);
     else expect(samples[0].fwdZ, "starts facing the target").toBeGreaterThan(0.9);
     expect(samples.some((s) => (kickLeg === "left" ? s.left : s.right) > s.hips.y)).toBe(true);
+  });
+});
+
+describe.each(
+  ["cheat-900", "backside-720", "backside-900", "gainer-switch", "cork-swipe", "loser", "touchdown-raiz", "sideswipe"].map(
+    (id) => [id, byId(id)] as const,
+  ),
+)("%s landing", (_id, trick) => {
+  it("keeps the landing foot planted instead of sliding it", () => {
+    const samples = sampleClip(trick);
+    const [, end] = longestFlight(samples)!;
+    const after = samples.slice(end + 1);
+    const legs = trick.landing === "both" ? (["left", "right"] as const) : ([trick.landing] as const);
+    for (const leg of legs) {
+      const [first] = contacts(after, (s) => (leg === "left" ? s.left : s.right));
+      expect(first, `${leg} foot lands`).toBeDefined();
+      const ball = (s: Sample) => (leg === "left" ? s.ballL : s.ballR);
+      for (let i = first[0]; i <= first[1]; i++) {
+        expect(planarDistance(ball(after[i]), ball(after[first[0]])), `${leg} t=${after[i].t.toFixed(2)}`).toBeLessThan(0.05);
+      }
+    }
   });
 });

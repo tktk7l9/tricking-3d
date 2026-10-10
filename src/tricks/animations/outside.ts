@@ -130,40 +130,51 @@ export function buildTouchdownRaiz(): THREE.AnimationClip {
     pitch: 0,
     ...legL(-40, 30, 10),
     ...legR(-20, -20, 120),
-    ...armL(175, 120, 0),
+    ...armL(145, 125, 0),
     ...armR(150, -60, 10),
     ...torso(-20, 0, 0),
     ...head(-30, 30),
   });
-  // Pivot over the planted left hand until the left foot comes down, like the
-  // second half of a one-arm cartwheel: the body passes sideways over the hand
-  // with the arm out to its left side, the right heel folded to the butt
-  // (tail) so the trailing leg clears the floor, and the body folds over the
-  // hand so the hand is still down when the foot lands.
-  r.pin("handL", 0.6, 0.74);
-  r.at(0.68, {
-    heading: 310,
-    spin: 290,
-    pitch: 40,
-    ...legL(10, 15, 10),
-    ...legR(-20, -15, 125),
-    ...armL(100, 90, 0),
-    ...armR(120, -60, 20),
-    ...torso(10, 0, 0),
-    ...head(-25, 30),
+  // Pivot over the planted left hand, like the second half of a one-arm
+  // cartwheel: the body passes sideways over the hand with the arm out to its
+  // left side and the right heel folded to the butt so the trailing leg clears
+  // the floor. The left knee stays bent so the foot only reaches the floor at
+  // 0.7; from then on the foot carries the weight and the hand pushes away.
+  r.pin("handL", 0.6, 0.675);
+  r.at(0.65, {
+    heading: 300,
+    spin: 265,
+    pitch: 20,
+    ...legL(10, 20, 60),
+    ...legR(-20, -15, 120),
+    ...armL(85, 108, 0),
+    ...armR(140, -60, 10),
+    ...torso(-5, 0, 0),
+    ...head(-30, 30),
   });
-  r.at(0.74, {
-    heading: 335,
+  r.at(0.7, {
+    heading: 322,
+    spin: 320,
+    pitch: 50,
+    ...legL(45, 12, 75),
+    ...legR(-25, -15, 90),
+    ...armL(66, 45, 0),
+    ...armR(110, -60, 20),
+    ...torso(15, 0, 0),
+    ...head(-25, 25),
+  });
+  r.pin("L", 0.675, 1);
+  r.at(0.77, {
+    heading: 338,
     spin: 345,
-    pitch: 75,
-    ...legL(60, 10, 80),
-    ...legR(-25, -15, 60),
-    ...armL(80, 10, 0),
-    ...armR(90, -60, 30),
-    ...torso(25, 0, 0),
-    ...head(-20, 20),
+    pitch: 55,
+    ...legL(55, 10, 75),
+    ...legR(-28, -15, 65),
+    ...armL(95, 50, 15),
+    ...armR(95, -60, 30),
+    ...torso(20, 0, 0),
+    ...head(-15, 20),
   });
-  r.pin("L", 0.74, 1);
   r.at(0.86, {
     heading: 352,
     spin: 360,
