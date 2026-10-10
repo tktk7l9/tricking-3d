@@ -81,6 +81,232 @@ export function buildGainerFlash(): THREE.AnimationClip {
   return r.build("gainer-flash");
 }
 
+/** Gainer switch: a gainer flash whose legs scissor on the way down so that it
+ * lands on the plant (left) foot again, right leg trailing for a swing-through. */
+export function buildGainerSwitch(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(20, 5), ...legR(-15, -5), ...torso(8, 0, 0) });
+  r.pin("L", 0, 0.36);
+  r.at(0.2, { ...legL(25, 5, 35), ...legR(30, -5, 40), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.36, {
+    pitch: -20,
+    ...legL(0, 5, 5, 0, 35),
+    ...legR(100, -5, 5),
+    ...armsUp,
+    ...torso(-15, 0, 0),
+    ...head(-30, 0),
+  });
+  r.flight(0.36, 0.8, { travel: [0, 0.5] });
+  r.at(0.48, {
+    pitch: -120,
+    ...legR(85, 0, 5),
+    ...legL(5, 0, 40),
+    ...armL(130, 100, 10),
+    ...armR(130, -100, 10),
+    ...torso(-15, 0, 0),
+    ...head(-40, 0),
+  });
+  r.at(0.6, {
+    pitch: -210,
+    ...legR(60, 0, 10),
+    ...legL(-10, 0, 30),
+    ...armsWide,
+    ...torso(-10, 0, 0),
+    ...head(-30, 0),
+  });
+  r.at(0.7, {
+    pitch: -300,
+    ...legR(10, 0, 45),
+    ...legL(35, 0, 30),
+    ...armL(70, 90, 20),
+    ...armR(70, -90, 20),
+    ...torso(0, 0, 0),
+    ...head(-10, 0),
+  });
+  r.at(0.8, {
+    pitch: -360,
+    ...legL(20, 0, 20),
+    ...legR(-30, 0, 55),
+    ...armL(50, 90, 20),
+    ...armR(50, -90, 20),
+    ...torso(10, 0, 0),
+    ...head(0, 0),
+  });
+  r.pin("L", 0.8, 1);
+  r.at(0.9, { ...legL(25, 0, 40), ...legR(-35, -5, 50), ...torso(15, 0, 0) });
+  r.at(1, {
+    pitch: -360,
+    ...legL(20, 0, 35),
+    ...legR(-30, -5, 40),
+    ...armL(40, 60, 20),
+    ...armR(40, -60, 20),
+    ...torso(12, 0, 0),
+  });
+  return r.build("gainer-switch");
+}
+
+/** Loser: a webster entered from a backstep. The right foot steps back and
+ * pushes off, the left leg swings up behind and the front flip travels backward
+ * (losing ground); lands on both feet. The swing leg's elevation keeps
+ * decreasing so it passes over the top instead of swinging back under the body. */
+export function buildLoser(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(5, 8), ...legR(-5, -8), ...torso(5, 0, 0) });
+  r.pin("L", 0, 0.18);
+  r.at(0.18, { ...legL(10, 8, 15), ...legR(-25, -8, 15), ...armsBack, ...torso(10, 0, 0), ...head(5, 0) });
+  r.pin("R", 0.18, 0.34);
+  // Weight sinks onto the back (right) foot; at takeoff that foot is ahead of
+  // the hips so the push drives the body backward, chest kept up. The left
+  // knee folds as the leg swings through under the body so it clears the floor.
+  r.at(0.26, { pitch: 0, ...legL(30, 8, 20), ...legR(10, -8, 45), ...armsBack, ...torso(10, 0, 0) });
+  r.at(0.3, { ...legL(-10, 5, 70) });
+  r.at(0.34, {
+    pitch: 10,
+    ...legL(-55, 5, 20),
+    ...legR(20, -5, 5, 0, 35),
+    ...armL(120, 30, 10),
+    ...armR(120, -30, 10),
+    ...torso(5, 0, 0),
+    ...head(0, 0),
+  });
+  r.flight(0.34, 0.8, { travel: [0, -0.6], apex: 0.5 });
+  r.at(0.44, {
+    pitch: 110,
+    ...legL(-110, 5, 40),
+    ...legR(50, -5, 80),
+    ...armL(140, 40, 60),
+    ...armR(140, -40, 60),
+    ...torso(25, 0, 0),
+    ...head(20, 0),
+  });
+  r.at(0.56, {
+    pitch: 200,
+    ...legL(-230, 5, 130),
+    ...legR(120, -5, 130),
+    ...armsTight,
+    ...torso(45, 0, 0),
+    ...head(40, 0),
+  });
+  r.at(0.68, {
+    pitch: 290,
+    ...legL(-300, 5, 60),
+    ...legR(60, -5, 60),
+    ...armsWide,
+    ...torso(15, 0, 0),
+    ...head(10, 0),
+  });
+  r.at(0.8, {
+    pitch: 360,
+    ...legL(-335, 8, 45),
+    ...legR(25, -8, 45),
+    ...armsWide,
+    ...torso(15, 0, 0),
+    ...head(5, 0),
+  });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: 360, ...legL(-335, 8, 40), ...legR(25, -8, 40), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("loser");
+}
+
+/** Corkscrew swipe: a cork (left-foot takeoff, right leg swing, backflip with a
+ * full left twist) that finishes with a right-leg round kick and lands on the
+ * kicking leg (hyper). */
+export function buildCorkSwipe(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(20, 5), ...legR(-15, -5), ...torso(8, 0, 0) });
+  r.pin("L", 0, 0.36);
+  r.at(0.2, {
+    heading: 15,
+    ...legL(25, 5, 35),
+    ...legR(30, -5, 40),
+    ...armL(45, 10, 20),
+    ...armR(50, -150, 20),
+    ...torso(10, 0, -25),
+    ...head(0, -10),
+  });
+  r.at(0.36, {
+    heading: 45,
+    pitch: -20,
+    ...legL(0, 5, 5, 0, 35),
+    ...legR(100, -10, 5),
+    ...armL(160, 80, 10),
+    ...armR(140, -40, 15),
+    ...torso(-10, 0, 25),
+    ...head(-25, 30),
+  });
+  r.flight(0.36, 0.82, { travel: [0.3, 0.5], apex: 0.55 });
+  r.at(0.46, {
+    heading: 60,
+    pitch: -110,
+    twist: 80,
+    roll: -15,
+    ...legR(70, -10, 25),
+    ...legL(10, 5, 40),
+    ...armsTight,
+    ...torso(5, 0, 0),
+    ...head(-20, 30),
+  });
+  r.at(0.58, {
+    heading: 80,
+    pitch: -210,
+    twist: 210,
+    roll: -15,
+    ...legR(40, -5, 40),
+    ...legL(0, 5, 40),
+    ...armsTight,
+    ...head(-20, 30),
+  });
+  r.at(0.68, {
+    heading: 95,
+    pitch: -290,
+    twist: 300,
+    roll: -10,
+    ...legR(60, -25, 70),
+    ...legL(-10, 5, 40),
+    ...armL(80, 60, 30),
+    ...armR(80, -60, 30),
+    ...head(-10, 10),
+  });
+  r.at(0.76, {
+    heading: 105,
+    pitch: -340,
+    twist: 350,
+    roll: 0,
+    ...legR(105, -5, 5),
+    ...legL(-20, 5, 40),
+    ...armL(60, 110, 20),
+    ...armR(70, -40, 50),
+    ...torso(5, 10, -5),
+    ...head(0, 0),
+  });
+  r.at(0.82, {
+    heading: 110,
+    pitch: -360,
+    twist: 360,
+    roll: 0,
+    ...legR(25, 0, 25),
+    ...legL(-30, 5, 50),
+    ...armsWide,
+    ...torso(10, 0, 0),
+    ...head(0, 0),
+  });
+  r.pin("R", 0.82, 1);
+  r.at(0.91, { ...legR(25, 0, 40), ...legL(-20, 5, 40) });
+  r.at(1, {
+    heading: 115,
+    pitch: -360,
+    twist: 360,
+    ...legR(20, 0, 30),
+    ...legL(-20, 5, 25),
+    ...armsDown,
+    ...torso(5, 0, 0),
+  });
+  return r.build("cork-swipe");
+}
+
 /** Janitor flip: two-foot punch into a chest-down dive that flat-spins 180°,
  * landing on both feet facing back the way it came. */
 export function buildJanitor(): THREE.AnimationClip {

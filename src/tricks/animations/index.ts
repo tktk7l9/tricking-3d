@@ -1,9 +1,28 @@
 import * as THREE from "three";
 import { Builder, mixamoBoneName } from "../authoring";
-import { build540, buildCheat720, buildLotus, buildPop360, buildSwing360, buildTornado } from "./kicks";
+import {
+  build540,
+  buildBackside720,
+  buildBackside900,
+  buildCheat720,
+  buildCheat900,
+  buildLotus,
+  buildPop360,
+  buildSwing360,
+  buildTornado,
+} from "./kicks";
 import { buildAerial, buildButterflyKick, buildButterflyTwist, buildCartwheel, buildMasterscoot, buildScoot } from "./inside";
-import { buildDoubleleg, buildRaiz, buildSpyder } from "./outside";
-import { buildFlashKick, buildGainerFlash, buildJanitor, buildTakFull, buildWrapFull } from "./flips";
+import { buildDoubleleg, buildRaiz, buildSideswipe, buildSpyder, buildTouchdownRaiz } from "./outside";
+import {
+  buildCorkSwipe,
+  buildFlashKick,
+  buildGainerFlash,
+  buildGainerSwitch,
+  buildJanitor,
+  buildLoser,
+  buildTakFull,
+  buildWrapFull,
+} from "./flips";
 import {
   stand,
   armsOverhead,
@@ -363,18 +382,24 @@ export const TRICK_FACTORIES: Record<string, Factory> = {
   "cheat-kick": buildTornado,
   "540-kick": build540,
   "cheat-720": buildCheat720,
+  "cheat-900": buildCheat900,
   "pop-kick": buildPop360,
+  "backside-720": buildBackside720,
+  "backside-900": buildBackside900,
   "swing-kick": buildSwing360,
   // backward
   "back-flip": buildBackFlip,
   "flash-kick": buildFlashKick,
   gainer: buildGainer,
   "gainer-flash": buildGainerFlash,
+  "gainer-switch": buildGainerSwitch,
   full: buildFull,
   corkscrew: buildCorkscrew,
+  "cork-swipe": buildCorkSwipe,
   // forward
   "front-flip": buildFrontFlip,
   webster: buildWebster,
+  loser: buildLoser,
   janitor: buildJanitor,
   // inside
   butterfly: buildButterflyKick,
@@ -387,6 +412,8 @@ export const TRICK_FACTORIES: Record<string, Factory> = {
   tak: buildTakFull,
   // outside
   raiz: buildRaiz,
+  "touchdown-raiz": buildTouchdownRaiz,
+  sideswipe: buildSideswipe,
   "double-leg": buildDoubleleg,
   spider: buildSpyder,
   lotus: buildLotus,
