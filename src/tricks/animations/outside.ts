@@ -92,6 +92,187 @@ export function buildRaiz(): THREE.AnimationClip {
   return r.build("raiz");
 }
 
+/** Gumbi: the raiz with hands, an arched cartwheel to the other side. The right
+ * hand plants as the right foot leaves, the arched body passes upside down over
+ * the hands, the left hand plants, then the left foot and the right foot land. */
+export function buildGumbi(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D, { hands: true });
+  outsideStep(r);
+  // Lean over the right foot and reach down; the left heel drives up behind.
+  r.at(0.36, {
+    heading: 180,
+    tilt: 60,
+    spin: 40,
+    ...legL(-35, 10, 40),
+    ...legR(15, 0, 35),
+    ...armL(120, 120, 10),
+    ...armR(37, -114, 0),
+    ...torso(-5, 0, 0),
+    ...head(-20, 10),
+  });
+  r.at(0.4, {
+    heading: 190,
+    spin: 70,
+    ...legL(-50, 15, 70),
+    ...legR(20, 0, 30, 0, 20),
+    ...armR(67, -118, 0),
+  });
+  // The right hand takes the weight as the right foot leaves.
+  r.pin("handR", 0.4, 0.52);
+  r.at(0.44, {
+    heading: 205,
+    spin: 100,
+    ...legL(-50, 20, 50),
+    ...legR(5, -10, 10, 0, 35),
+    ...armL(150, 120, 0),
+    ...armR(98, -121, 0),
+    ...torso(-20, 0, 0),
+    ...head(-25, 10),
+  });
+  r.at(0.48, {
+    heading: 225,
+    spin: 140,
+    ...legL(-40, 25, 20),
+    ...legR(-20, -20, 10),
+    ...armL(150, 160, 0),
+    ...armR(127, -134, 0),
+    ...torso(-25, 0, 0),
+  });
+  // Arched over both hands, the left hand reaching back over the head.
+  r.pin("handL", 0.52, 0.655);
+  r.at(0.52, {
+    heading: 240,
+    spin: 175,
+    ...legL(-30, 25, 15),
+    ...legR(-30, -25, 15),
+    ...armL(145, 188, 0),
+    ...armR(150, -160, 0),
+    ...torso(-25, 0, 0),
+    ...head(-25, 10),
+  });
+  r.at(0.56, { heading: 255, spin: 210, ...armL(135, 145, 0), ...armR(140, -90, 10) });
+  r.at(0.6, {
+    heading: 275,
+    spin: 240,
+    ...legL(0, 25, 20),
+    ...legR(-40, -25, 90),
+    ...armL(110, 127, 0),
+    ...torso(-20, 0, 0),
+  });
+  r.pin("L", 0.655, 1);
+  r.at(0.66, {
+    heading: 300,
+    spin: 290,
+    ...legL(25, 15, 25),
+    ...legR(-30, -25, 105),
+    ...armL(90, 100, 20),
+    ...armR(110, -70, 20),
+    ...torso(-10, 0, 0),
+  });
+  r.at(0.74, {
+    heading: 335,
+    spin: 340,
+    ...legL(25, 10, 30),
+    ...legR(-25, -20, 70),
+    ...armsWide,
+    ...torso(0, 0, 0),
+    ...head(-10, 0),
+  });
+  // The body finishes turning before the right foot comes down, so the second
+  // foot lands where it stays instead of sliding.
+  r.at(0.82, { heading: 358, spin: 360, ...legL(25, 3, 38), ...legR(30, 0, 80), ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(0.88, { heading: 360, spin: 360, ...legsAbsorb });
+  r.at(1, { heading: 360, spin: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  return r.build("gumbi");
+}
+
+/** Sailor moon: a raiz whose right hand plants right before the right foot
+ * leaves; the body tips over the hand into the raiz spin and lands on the left
+ * foot like the raiz. */
+export function buildSailorMoon(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D, { hands: true });
+  outsideStep(r);
+  // Lean over the right foot and reach down; the left heel drives up behind.
+  r.at(0.36, {
+    heading: 180,
+    tilt: 55,
+    spin: 40,
+    ...legL(-35, 10, 40),
+    ...legR(15, 0, 35),
+    ...armL(60, 170, 10),
+    ...armR(37, -114, 0),
+    ...torso(-5, 0, 0),
+    ...head(-20, 10),
+  });
+  r.at(0.4, {
+    heading: 190,
+    spin: 70,
+    ...legL(-50, 15, 70),
+    ...legR(25, 0, 50, 0, 20),
+    ...armR(67, -118, 0),
+  });
+  // The right hand lands just before the right foot pushes off and carries the
+  // body briefly; then it lets go and the raiz spin finishes in the air.
+  r.pin("handR", 0.4, 0.47);
+  r.at(0.44, {
+    heading: 205,
+    spin: 100,
+    ...legL(-50, 20, 75),
+    ...legR(5, -10, 10, 0, 35),
+    ...armR(98, -121, 0),
+    ...torso(-20, 0, 0),
+    ...head(-25, 10),
+  });
+  r.at(0.47, { heading: 215, spin: 120, ...legL(-45, 20, 30), ...legR(-10, -15, 10), ...armR(120, -110, 10) });
+  r.flight(0.47, 0.82, { travel: [0.3, 0.3] });
+  r.at(0.56, {
+    heading: 245,
+    spin: 175,
+    ...legL(-40, 20, 15),
+    ...legR(-15, -20, 10),
+    ...armL(90, 160, 10),
+    ...armR(170, -30, 10),
+    ...torso(-25, 0, 0),
+    ...head(-25, 0),
+  });
+  r.at(0.64, {
+    heading: 280,
+    spin: 225,
+    ...legL(-20, 30, 10),
+    ...legR(-30, -30, 10),
+    ...armL(120, 120, 10),
+    ...armR(140, -60, 10),
+    ...torso(-20, 0, 0),
+    ...head(-20, 0),
+  });
+  r.at(0.74, {
+    heading: 320,
+    spin: 305,
+    ...legL(30, 15, 20),
+    ...legR(-20, -20, 10),
+    ...armsWide,
+    ...torso(-10, 0, 0),
+    ...head(-10, 0),
+  });
+  r.at(0.82, {
+    heading: 345,
+    spin: 360,
+    ...legL(25, 10, 15),
+    ...legR(-35, -10, 45),
+    ...armsWide,
+    ...torso(10, 0, 0),
+    ...head(0, 0),
+  });
+  r.pin("L", 0.82, 1);
+  // Finish the turn first, then bring the right foot straight down onto its spot.
+  r.at(0.9, { heading: 360, ...legL(25, 3, 38), ...legR(30, 0, 80), ...torso(5, 0, 0) });
+  r.at(0.96, { heading: 360, ...legsAbsorb });
+  r.at(1, { heading: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  return r.build("sailor-moon");
+}
+
 /** Touchdown raiz: a low raiz that lands into a deep crouch on the left leg.
  * Near the end of the spin the torso folds forward and the left hand reaches
  * the floor just before the left foot; the right leg stays up behind, ready to

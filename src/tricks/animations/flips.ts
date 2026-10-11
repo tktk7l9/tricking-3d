@@ -214,12 +214,10 @@ export function buildLoser(): THREE.AnimationClip {
   return r.build("loser");
 }
 
-/** Corkscrew swipe: a cork (left-foot takeoff, right leg swing, backflip with a
- * full left twist) that finishes with a right-leg round kick and lands on the
- * kicking leg (hyper). */
-export function buildCorkSwipe(): THREE.AnimationClip {
-  const D = 1.9;
-  const r = new Rig(D);
+/** Corkscrew entry shared by the Corkscrew Swipe / Corkscrew Hyper: wind to the
+ * right, left-foot takeoff with the right leg swinging up, then the first 210°
+ * of the backflip with the left twist (flight 0.36 → 0.82). */
+function corkEntry(r: Rig) {
   r.start({ ...armsDown, ...legL(20, 5), ...legR(-15, -5), ...torso(8, 0, 0) });
   r.pin("L", 0, 0.36);
   r.at(0.2, {
@@ -263,6 +261,14 @@ export function buildCorkSwipe(): THREE.AnimationClip {
     ...armsTight,
     ...head(-20, 30),
   });
+}
+
+/** Corkscrew swipe: a cork (left-foot takeoff, right leg swing, backflip with a
+ * full left twist) that finishes with a right-leg round kick and lands on the
+ * kicking leg (hyper). */
+export function buildCorkSwipe(): THREE.AnimationClip {
+  const r = new Rig(1.9);
+  corkEntry(r);
   // The swipe: the right knee chambers while the body is still tilted, the leg
   // snaps out as the twist finishes and sweeps down into the landing, so the
   // kick happens on the way down rather than standing upright.
@@ -323,6 +329,128 @@ export function buildCorkSwipe(): THREE.AnimationClip {
     ...torso(5, 0, 0),
   });
   return r.build("cork-swipe");
+}
+
+/** Corkscrew hyper: the same cork, legs kept together through the twist, and
+ * the right foot reaches down first to land in hyper. */
+export function buildCorkscrewHyper(): THREE.AnimationClip {
+  const r = new Rig(1.9);
+  corkEntry(r);
+  r.at(0.68, {
+    heading: 95,
+    pitch: -290,
+    twist: 300,
+    roll: -10,
+    ...legR(25, -5, 30),
+    ...legL(-5, 5, 45),
+    ...armL(80, 60, 30),
+    ...armR(80, -60, 30),
+    ...head(-10, 10),
+  });
+  r.at(0.76, {
+    heading: 105,
+    pitch: -340,
+    twist: 350,
+    roll: 0,
+    ...legR(30, 0, 25),
+    ...legL(-20, 5, 50),
+    ...armsWide,
+    ...torso(5, 0, 0),
+    ...head(0, 0),
+  });
+  r.at(0.82, {
+    heading: 110,
+    pitch: -360,
+    twist: 360,
+    roll: 0,
+    ...legR(25, 0, 25),
+    ...legL(-30, 5, 50),
+    ...armsWide,
+    ...torso(10, 0, 0),
+    ...head(0, 0),
+  });
+  r.pin("R", 0.82, 1);
+  r.at(0.91, { ...legR(25, 0, 40), ...legL(-20, 5, 40) });
+  r.at(1, {
+    heading: 115,
+    pitch: -360,
+    twist: 360,
+    ...legR(20, 0, 30),
+    ...legL(-20, 5, 25),
+    ...armsDown,
+    ...torso(5, 0, 0),
+  });
+  return r.build("corkscrew-hyper");
+}
+
+/** Arabian: a two-foot backflip takeoff, a half twist right after leaving the
+ * ground, then the rest of the rotation as a front flip (tuck), landing on
+ * both feet facing the way it travelled. */
+export function buildArabian(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.32);
+  r.at(0.18, { ...legL(45, 8, 70), ...legR(45, -8, 70), ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.32, {
+    pitch: -15,
+    ...legL(0, 5, 5, 0, 35),
+    ...legR(0, -5, 5, 0, 35),
+    ...armsUp,
+    ...torso(-10, 0, 0),
+    ...head(-25, 0),
+  });
+  r.flight(0.32, 0.8, { travel: [0, -0.5] });
+  // The half twist starts straight away while the body leans back, arms in.
+  r.at(0.42, {
+    pitch: -75,
+    twist: 100,
+    ...legL(15, 5, 25),
+    ...legR(15, -5, 25),
+    ...armsTight,
+    ...torso(-5, 0, 0),
+    ...head(-15, 0),
+  });
+  // Half twist done: the same rotation now carries the body forward like a front tuck.
+  r.at(0.52, {
+    pitch: -150,
+    twist: 180,
+    ...legL(90, 5, 110),
+    ...legR(90, -5, 110),
+    ...armsTight,
+    ...torso(30, 0, 0),
+    ...head(25, 0),
+  });
+  r.at(0.62, {
+    pitch: -240,
+    twist: 180,
+    ...legL(120, 5, 130),
+    ...legR(120, -5, 130),
+    ...armsTight,
+    ...torso(40, 0, 0),
+    ...head(35, 0),
+  });
+  r.at(0.72, {
+    pitch: -320,
+    twist: 180,
+    ...legL(50, 8, 50),
+    ...legR(50, -8, 50),
+    ...armsWide,
+    ...torso(15, 0, 0),
+    ...head(10, 0),
+  });
+  r.at(0.8, {
+    pitch: -360,
+    twist: 180,
+    ...legL(25, 8, 40),
+    ...legR(25, -8, 40),
+    ...armsWide,
+    ...torso(15, 0, 0),
+    ...head(5, 0),
+  });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, twist: 180, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("arabian");
 }
 
 /** Janitor flip: two-foot punch into a chest-down dive that flat-spins 180°,

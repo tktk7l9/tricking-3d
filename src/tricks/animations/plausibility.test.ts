@@ -268,6 +268,9 @@ describe.each([
   ["backside-720", 400, 500, true, "left"],
   ["backside-900", 450, 580, true, "right"],
   ["cheat-900", 450, 760, false, "right"],
+  ["pop-tornado", 250, 400, false, "right"],
+  ["pop-540", 350, 500, false, "right"],
+  ["swing-900", 450, 760, false, "right"],
 ] as const)("%s", (id, minAirTurn, minTurn, backside, kickLeg) => {
   it(`turns more than ${minAirTurn}° counter-clockwise in the air (${minTurn}° overall) and kicks the ${kickLeg} foot above hip height`, () => {
     const samples = sampleClip(byId(id));
@@ -281,7 +284,24 @@ describe.each([
 });
 
 describe.each(
-  ["cheat-900", "backside-720", "backside-900", "gainer-switch", "cork-swipe", "loser", "touchdown-raiz", "sideswipe"].map(
+  [
+    "cheat-900",
+    "backside-720",
+    "backside-900",
+    "gainer-switch",
+    "cork-swipe",
+    "loser",
+    "touchdown-raiz",
+    "sideswipe",
+    "pop-tornado",
+    "pop-540",
+    "swing-900",
+    "arabian",
+    "corkscrew-hyper",
+    "aerial-twist",
+    "gumbi",
+    "sailor-moon",
+  ].map(
     (id) => [id, byId(id)] as const,
   ),
 )("%s landing", (_id, trick) => {
@@ -298,5 +318,77 @@ describe.each(
         expect(planarDistance(ball(after[i]), ball(after[first[0]])), `${leg} t=${after[i].t.toFixed(2)}`).toBeLessThan(0.05);
       }
     }
+  });
+});
+
+/* Contracts for the third batch (2026-10). */
+
+describe("gumbi", () => {
+  it("passes over the right hand, then the left hand, before the left foot lands, never leaving the floor", () => {
+    const samples = sampleClip(byId("gumbi"));
+    const takeoff = contacts(samples, (s) => s.right).find(([, b]) => samples[b].t > 0.5)!;
+    const handR = contacts(samples, (s) => s.handR)[0];
+    const handL = contacts(samples, (s) => s.handL)[0];
+    const footL = contacts(samples, (s) => s.left).find(([a]) => a > takeoff[1])!;
+    expect(handR, "right hand plants").toBeDefined();
+    expect(handL, "left hand plants").toBeDefined();
+    expect(handR[0], "right hand before the right foot leaves").toBeLessThanOrEqual(takeoff[1]);
+    expect(handR[0]).toBeLessThan(handL[0]);
+    expect(handL[0]).toBeLessThan(footL[0]);
+    // Supported all the way from the right foot to the left foot (a cartwheel, not a flip).
+    for (let i = takeoff[1]; i <= footL[0]; i++) {
+      const s = samples[i];
+      expect(Math.min(s.left, s.right, s.handL, s.handR), `t=${s.t.toFixed(2)}`).toBeLessThan(0.03);
+    }
+    expect(samples.some(inverted), "upside down over the hands").toBe(true);
+  });
+});
+
+describe("sailor moon", () => {
+  it("plants the right hand just before the right foot leaves and uses no other hand", () => {
+    const samples = sampleClip(byId("sailor-moon"));
+    const step = contacts(samples, (s) => s.right).find(([, b]) => samples[b].t > 0.5)!;
+    const hand = contacts(samples, (s) => s.handR);
+    expect(hand, "one right-hand contact").toHaveLength(1);
+    expect(hand[0][0], "hand down before the foot leaves").toBeLessThanOrEqual(step[1]);
+    expect(samples.every((s) => s.handL > 0.1), "left hand stays off the floor").toBe(true);
+    // After the hand lets go the body is fully airborne (no hand or foot down) for a raiz-length flight.
+    let end = hand[0][1] + 1;
+    while (end < samples.length && Math.min(samples[end].left, samples[end].right, samples[end].handL, samples[end].handR) > 0.03) end++;
+    expect(samples[end - 1].t - samples[hand[0][1] + 1].t, "a real raiz flight").toBeGreaterThan(0.4);
+  });
+});
+
+describe("arabian", () => {
+  it("half twists so the flip finishes forward, landing facing the way it travelled", () => {
+    const samples = sampleClip(byId("arabian"));
+    expect(samples.some(inverted)).toBe(true);
+    expect(samples[0].fwdZ, "starts facing forward").toBeGreaterThan(0.9);
+    expect(samples[samples.length - 1].fwdZ, "lands facing back").toBeLessThan(-0.9);
+    expect(samples[samples.length - 1].hips.z, "travels backward").toBeLessThan(samples[0].hips.z - 0.3);
+  });
+});
+
+describe("corkscrew hyper", () => {
+  it("inverts and lands on the right foot without a kick", () => {
+    const samples = sampleClip(byId("corkscrew-hyper"));
+    const lastInverted = samples.reduce((acc, s, i) => (inverted(s) ? i : acc), -1);
+    expect(lastInverted).toBeGreaterThan(0);
+    // Once upright again the right leg stays under the body (the swipe kicks it out to hip height).
+    const upright = samples.slice(lastInverted).filter((s) => s.head > s.hips.y + 0.4);
+    expect(upright.length).toBeGreaterThan(10);
+    for (const s of upright) {
+      expect(s.hips.y - s.right, `t=${s.t.toFixed(2)}: no swipe`).toBeGreaterThan(0.45);
+    }
+  });
+});
+
+describe("aerial twist", () => {
+  it("inverts and lands complete (left foot) where the aerial lands hyper", () => {
+    const samples = sampleClip(byId("aerial-twist"));
+    expect(samples.some(inverted)).toBe(true);
+    expect(byId("aerial").landing).toBe("right");
+    expect(byId("aerial-twist").landing).toBe("left");
+    expect(samples[samples.length - 1].fwdZ, "ends facing the way it started").toBeGreaterThan(0.9);
   });
 });

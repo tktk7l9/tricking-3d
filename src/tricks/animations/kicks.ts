@@ -436,6 +436,207 @@ export function buildPop360(): THREE.AnimationClip {
   return r.build("pop-kick");
 }
 
+/** Frontside pop shared by the Pop Tornado / Pop 540: face the target, wind the
+ * torso to the right, pre-turn to frontside on the ground and pop off both
+ * feet at `uOff` (same wind-up as the Pop 360). */
+function frontsidePop(r: Rig, uOff: number) {
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, uOff);
+  r.at(0.2, {
+    heading: 15,
+    ...legL(35, 8, 50),
+    ...legR(35, -8, 50),
+    ...armL(45, 10, 20),
+    ...armR(55, -140, 20),
+    ...torso(15, 0, -30),
+    ...head(5, -20),
+  });
+  r.at(uOff, {
+    heading: 100,
+    ...legL(0, 5, 5, 0, 35),
+    ...legR(0, -5, 5, 0, 35),
+    ...armL(150, 90, 15),
+    ...armR(120, -30, 25),
+    ...torso(-5, 0, 35),
+    ...head(-5, 45),
+  });
+}
+
+/** Pop Tornado: frontside pop off both feet, the left knee drives while the
+ * body turns, right-leg round kick at the target, land on the left foot. */
+export function buildPopTornado(): THREE.AnimationClip {
+  const D = 1.6;
+  const r = new Rig(D);
+  frontsidePop(r, 0.38);
+  r.flight(0.38, 0.8, { travel: [0.05, 0.15], apex: 0.45 });
+  r.at(0.5, {
+    heading: 255,
+    ...legL(95, 30, 110),
+    ...legR(60, -70, 125, 70),
+    ...armL(90, 90, 40),
+    ...armR(80, -60, 60),
+    ...torso(5, 10, 10),
+    ...head(0, 40),
+  });
+  r.at(0.62, {
+    heading: 375,
+    ...legL(70, 30, 110),
+    ...legR(112, 5, 5, 70),
+    ...armL(40, 130, 30),
+    ...armR(60, -20, 70),
+    ...torso(0, 15, -10),
+    ...head(0, 0),
+  });
+  r.at(0.72, {
+    heading: 405,
+    ...legL(45, 15, 60),
+    ...legR(60, -20, 70, 30),
+    ...armL(40, 110, 30),
+    ...armR(45, -60, 40),
+    ...torso(5, 0, 0),
+  });
+  r.at(0.8, {
+    heading: 420,
+    ...legL(20, 5, 30),
+    ...legR(50, -20, 80),
+    ...armsWide,
+    ...torso(8, 0, 0),
+  });
+  r.pin("L", 0.8, 1);
+  r.at(0.9, { heading: 428, ...legL(15, 5, 35), ...legR(15, -15, 40, 0, 0) });
+  r.at(1, { heading: 430, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("pop-tornado");
+}
+
+/** Pop 540: a Pop Tornado that keeps turning and lands on the kicking (right)
+ * leg in hyper, like the 540 after a Tornado. */
+export function buildPop540(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  frontsidePop(r, 0.38);
+  r.flight(0.38, 0.8, { travel: [0.05, 0.12], apex: 0.45 });
+  r.at(0.5, {
+    heading: 265,
+    ...legL(95, 30, 115),
+    ...legR(60, -70, 125, 70),
+    ...armL(90, 90, 40),
+    ...armR(80, -60, 60),
+    ...torso(5, 10, 10),
+    ...head(0, 40),
+  });
+  r.at(0.6, {
+    heading: 385,
+    ...legL(75, 35, 120),
+    ...legR(112, 5, 5, 70),
+    ...armL(40, 130, 30),
+    ...armR(60, -20, 70),
+    ...torso(0, 15, -10),
+    ...head(0, 0),
+  });
+  r.at(0.7, {
+    heading: 455,
+    ...legL(60, 60, 110),
+    ...legR(55, -10, 60, 20),
+    ...armsTight,
+    ...torso(5, 5, 0),
+    ...head(0, 30),
+  });
+  r.at(0.8, {
+    heading: 510,
+    ...legL(45, 70, 100),
+    ...legR(20, 0, 30, 0),
+    ...armL(60, 60, 30),
+    ...armR(60, -60, 30),
+    ...torso(10, 0, 0),
+  });
+  r.pin("R", 0.8, 1);
+  r.at(0.9, { heading: 530, ...legR(20, 0, 40), ...legL(-5, 20, 40) });
+  r.at(1, { heading: 540, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("pop-540");
+}
+
+/** Swing 900: the right leg swings through and the left foot takes off in
+ * backside, ~540° in the air (the Cheat 900's rotation), the swing leg comes
+ * round again for a round kick and the left foot lands (complete). */
+export function buildSwing900(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 5), ...legR(-25, -10, 20), ...torso(5, 0, -10) });
+  r.pin("L", 0, 0.4);
+  r.at(0.18, {
+    heading: 40,
+    ...legR(45, 15, 25),
+    ...legL(10, 5, 30),
+    ...armL(40, 150, 20),
+    ...armR(50, -30, 30),
+    ...torso(5, 0, 10),
+    ...head(0, 20),
+  });
+  r.at(0.3, {
+    heading: 130,
+    ...legR(85, 40, 30),
+    ...legL(20, 5, 45),
+    ...armL(90, 60, 30),
+    ...armR(80, -110, 30),
+    ...torso(8, 0, 25),
+    ...head(0, 40),
+  });
+  r.at(0.4, {
+    heading: 230,
+    ...legR(95, 45, 60),
+    ...legL(0, 5, 5, 0, 35),
+    ...armsUp,
+    ...torso(-5, 0, 30),
+    ...head(-5, 45),
+  });
+  r.flight(0.4, 0.84, { travel: [0.05, 0.2], apex: 0.5 });
+  r.at(0.5, {
+    heading: 340,
+    ...legL(90, 30, 115),
+    ...legR(60, -60, 125, 60),
+    ...armsTight,
+    ...torso(5, 5, 10),
+    ...head(0, 40),
+  });
+  r.at(0.6, {
+    heading: 490,
+    ...legL(80, 35, 120),
+    ...legR(65, -60, 125, 70),
+    ...armsTight,
+    ...torso(5, 5, 10),
+    ...head(0, 40),
+  });
+  r.at(0.68, {
+    heading: 610,
+    ...legL(75, 35, 115),
+    ...legR(75, -60, 120, 70),
+    ...armL(80, 90, 50),
+    ...armR(80, -60, 60),
+    ...torso(5, 10, 5),
+    ...head(0, 30),
+  });
+  r.at(0.74, {
+    heading: 715,
+    ...legL(70, 30, 110),
+    ...legR(112, 5, 5, 70),
+    ...armL(40, 130, 30),
+    ...armR(60, -20, 70),
+    ...torso(0, 15, -10),
+    ...head(0, 0),
+  });
+  r.at(0.84, {
+    heading: 790,
+    ...legL(20, 5, 30),
+    ...legR(50, -20, 80),
+    ...armsWide,
+    ...torso(8, 0, 0),
+  });
+  r.pin("L", 0.84, 1);
+  r.at(0.92, { heading: 798, ...legL(15, 5, 35), ...legR(15, -15, 40, 0, 0) });
+  r.at(1, { heading: 800, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("swing-900");
+}
+
 /** Swing 360: the right leg swings through, takeoff from the left foot, 360°
  * with a left-leg outside crescent/hook, land on both feet. */
 export function buildSwing360(): THREE.AnimationClip {
