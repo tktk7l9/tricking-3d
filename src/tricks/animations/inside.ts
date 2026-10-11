@@ -191,6 +191,41 @@ export function buildAerial(): THREE.AnimationClip {
   return r.build("aerial");
 }
 
+/** Aerial twist: the aerial's takeoff and side-to-side rotation with a full
+ * left twist about the body's long axis while upside down (an inverted
+ * butterfly twist); arms and legs pull in to twist, and the left foot lands
+ * first (complete). */
+export function buildAerialTwist(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -10), ...head(0, 0, 10) });
+  r.pin("L", 0, 0.3);
+  r.at(0.14, { roll: -15, ...legL(40, 70, 50), ...legR(-10, -10, 10), ...torso(10, 10, 0), ...armL(60, 60, 20), ...armR(50, -150, 20) });
+  r.at(0.3, {
+    roll: -55,
+    twist: 0,
+    ...legL(55, 80, 25, 0, 35),
+    ...legR(35, -90, 10),
+    ...torso(0, 15, 0),
+    ...armL(150, 110, 10),
+    ...armR(120, -60, 20),
+    ...head(-10, 0, 20),
+  });
+  r.flight(0.3, 0.74, { travel: [0.9, 0] });
+  r.at(0.4, { roll: -125, twist: 30, ...legL(10, 50, 10), ...legR(10, -50, 0), ...torso(0, 5, 0), ...armsTight, ...head(-10, 20, 0) });
+  r.at(0.48, { roll: -185, twist: 150, ...legL(0, 8, 0), ...legR(0, -8, 0), ...torso(0, 0, 0), ...armsTight, ...head(-10, 20, 0) });
+  r.at(0.56, { roll: -235, twist: 270, ...legL(0, 8, 0), ...legR(0, -8, 0), ...armsTight, ...head(-10, 20, 0) });
+  // The twist ends early and the roll comes almost upright before touchdown,
+  // so the straight left leg reaches the floor while the right knee stays up.
+  r.at(0.64, { roll: -290, twist: 350, ...legL(15, 25, 10), ...legR(20, -40, 40), ...armL(90, 90, 20), ...armR(90, -90, 20), ...head(-5, 0, 0) });
+  r.at(0.74, { roll: -345, twist: 360, ...legL(15, 20, 15), ...legR(45, -45, 100), ...torso(0, -5, 0), ...armsWide, ...head(0, 0, 0) });
+  r.pin("L", 0.74, 1);
+  r.at(0.82, { roll: -356, ...legL(25, 15, 35), ...legR(35, -20, 85), ...torso(0, 0, 0) });
+  r.at(0.9, { roll: -360, ...legL(25, 12, 40), ...legR(25, -12, 40) });
+  r.at(1, { roll: -360, twist: 360, ...legL(25, 12, 40), ...legR(25, -12, 40), ...torso(0, 0, 0), ...armsDown, ...head(0, 0, 0) });
+  return r.build("aerial-twist");
+}
+
 /** Scoot family: drop over the left hand, swing the right leg around, jump off
  * the right foot turning 180°, land on the left foot with the right leg behind.
  * The masterscoot uses both hands and goes more inverted. */
