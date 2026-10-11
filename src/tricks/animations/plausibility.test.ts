@@ -17,11 +17,13 @@ type Sample = {
   handR: number;
   /** world position of the hips */
   hips: THREE.Vector3;
-  /** world height of the head joint */
+  /** world height and position of the head joint */
   head: number;
-  /** yaw of the hips' forward vector in degrees (counter-clockwise positive) and its z component */
+  headPos: THREE.Vector3;
+  /** yaw of the hips' forward vector in degrees (counter-clockwise positive) and its z and y components */
   yaw: number;
   fwdZ: number;
+  fwdY: number;
   /** world position of each foot's ball (the point a planted foot pivots on) and of the left palm */
   ballL: THREE.Vector3;
   ballR: THREE.Vector3;
@@ -82,8 +84,10 @@ function sampleClip(trick: TrickMeta, steps = 150): Sample[] {
       handR,
       hips: character.bones.hips.getWorldPosition(new THREE.Vector3()),
       head: character.bones.head.getWorldPosition(v).y,
+      headPos: character.bones.head.getWorldPosition(new THREE.Vector3()),
       yaw: (Math.atan2(fwd.x, fwd.z) * 180) / Math.PI,
       fwdZ: fwd.z,
+      fwdY: fwd.y,
       ballL: b.leftFoot.localToWorld(new THREE.Vector3(0, 0, 0.1)),
       ballR: b.rightFoot.localToWorld(new THREE.Vector3(0, 0, 0.1)),
       palmL: b.leftHand.localToWorld(new THREE.Vector3(0.04, 0, 0)),
@@ -335,6 +339,7 @@ describe("loser", () => {
 describe.each([
   ["backside-720", 400, 500, true, "left"],
   ["backside-900", 450, 580, true, "right"],
+  ["backside-900-hyper", 500, 600, true, "right"],
   ["cheat-900", 450, 760, false, "right"],
   ["pop-tornado", 250, 400, false, "right"],
   ["pop-540", 350, 500, false, "right"],
@@ -378,6 +383,13 @@ describe.each(
     "one-handed-cartwheel",
     "roundoff",
     "doubleleg-twist",
+    "backside-900-hyper",
+    "back-pike",
+    "front-x-out",
+    "webster-half",
+    "butterfly-kick-switch",
+    "sailor-moon-round",
+    "spyder-twist",
   ].map(
     (id) => [id, byId(id)] as const,
   ),
@@ -499,6 +511,7 @@ describe("x-out", () => {
 describe.each([
   ["gainer-arabian", 1],
   ["front-half", 1],
+  ["webster-half", 1],
 ] as const)("%s", (id, direction) => {
   it("flips over with a half twist, landing facing back while travelling forward", () => {
     const samples = sampleClip(byId(id));
@@ -564,5 +577,81 @@ describe("doubleleg twist", () => {
     expect(byId("double-leg").landing).toBe("both");
     expect(byId("doubleleg-twist").landing).toBe("left");
     expect(twist.some(inverted), "the hips never rise over the chest").toBe(false);
+  });
+});
+
+/* Contracts for the fifth batch (2026-10). */
+
+describe("back pike", () => {
+  it("folds the straight legs up to the chest over the top of the back flip", () => {
+    const samples = sampleClip(byId("back-pike"));
+    expect(samples.some(inverted)).toBe(true);
+    const [a, b] = longestFlight(samples)!;
+    const piked = samples
+      .slice(a, b + 1)
+      .some((s) => s.ballL.distanceTo(s.headPos) < 0.8 && s.ballL.distanceTo(s.hips) > 0.85 && s.ballR.distanceTo(s.hips) > 0.85);
+    expect(piked, "feet near the head with the knees straight").toBe(true);
+    expect(samples[samples.length - 1].hips.z, "travels backward").toBeLessThan(samples[0].hips.z - 0.2);
+  });
+});
+
+describe("front x-out", () => {
+  it("splits the legs wide at the top of the front flip and closes them to land", () => {
+    const samples = sampleClip(byId("front-x-out"));
+    expect(samples.some(inverted)).toBe(true);
+    const [a, b] = longestFlight(samples)!;
+    const spread = Math.max(...samples.slice(a, b + 1).map((s) => s.ballL.distanceTo(s.ballR)));
+    expect(spread, "feet far apart in the air").toBeGreaterThan(1.2);
+    expect(samples[samples.length - 1].hips.z, "travels forward").toBeGreaterThan(samples[0].hips.z + 0.3);
+  });
+});
+
+describe("butterfly kick switch", () => {
+  it("lands on the left foot with the right leg still up, where the butterfly kick lands on the right", () => {
+    expect(byId("butterfly").landing).toBe("right");
+    const samples = sampleClip(byId("butterfly-kick-switch"));
+    const [, end] = longestFlight(samples)!;
+    const after = samples.slice(end + 1);
+    const down = after.findIndex((s) => Math.min(s.left, s.right) < 0.03);
+    expect(after[down].left, "left foot down first").toBeLessThan(0.03);
+    for (const s of after.slice(down)) expect(s.right, `t=${s.t.toFixed(2)}: right leg up behind`).toBeGreaterThan(0.12);
+  });
+});
+
+describe("scoot hyper", () => {
+  it("lands on the right foot after the hand and keeps the left leg up to the end", () => {
+    const samples = sampleClip(byId("scoot-hyper"));
+    const hand = contacts(samples, (s) => s.handL);
+    expect(hand, "one left-hand plant").toHaveLength(1);
+    const [, handUp] = hand[0];
+    const footR = contacts(samples, (s) => s.right).find(([i]) => i > 0)!;
+    expect(footR[0], "right foot back down by the time the hand lifts").toBeLessThanOrEqual(handUp + 1);
+    const leftStep = contacts(samples, (s) => s.left)[0];
+    for (const s of samples.slice(leftStep[1] + 1)) expect(s.left, `t=${s.t.toFixed(2)}: left foot up`).toBeGreaterThan(0.03);
+  });
+});
+
+describe("sailor moon round", () => {
+  it("plants only the right hand, then kicks the right foot above the hips before the left foot lands", () => {
+    const samples = sampleClip(byId("sailor-moon-round"));
+    expect(contacts(samples, (s) => s.handR), "one right-hand contact").toHaveLength(1);
+    expect(samples.every((s) => s.handL > 0.1), "left hand stays off the floor").toBe(true);
+    const lastInverted = samples.reduce((acc, s, i) => (inverted(s) ? i : acc), -1);
+    expect(lastInverted).toBeGreaterThan(0);
+    const [, end] = longestFlight(samples)!;
+    const kick = samples.slice(lastInverted, end + 1).some((s) => s.right > s.hips.y);
+    expect(kick, "round kick after the spin").toBe(true);
+  });
+});
+
+describe("spyder twist", () => {
+  it("turns over (chest up) in the air, which the Spyder never does", () => {
+    const horizontalChestUp = (s: Sample) => s.fwdY > 0.6 && Math.abs(s.head - s.hips.y) < 0.35;
+    const air = (samples: Sample[]) => {
+      const [a, b] = longestFlight(samples)!;
+      return samples.slice(a, b + 1);
+    };
+    expect(air(sampleClip(byId("spyder-twist"))).some(horizontalChestUp)).toBe(true);
+    expect(air(sampleClip(byId("spider"))).some(horizontalChestUp)).toBe(false);
   });
 });
