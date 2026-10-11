@@ -54,7 +54,7 @@ describe("TrickPicker", () => {
 
     await userEvent.type(search, "こーく");
     const shown = visibleTrickButtons(host);
-    expect(shown.map((b) => b.dataset.id)).toEqual(["corkscrew"]);
+    expect(shown.map((b) => b.dataset.id)).toEqual(["corkscrew", "cork-swipe"]);
     const groups = Array.from(host.querySelectorAll<HTMLElement>(".group"));
     const visibleHeadings = groups.filter((g) => !g.hidden).map((g) => g.querySelector("h3")!.textContent);
     expect(visibleHeadings).toEqual(["ツイスト"]);

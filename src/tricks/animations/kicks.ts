@@ -186,6 +186,190 @@ export function buildCheat720(): THREE.AnimationClip {
   return r.build("cheat-720");
 }
 
+/** Cheat 900: cheat takeoff, ~540° in the air, and the right (takeoff) leg
+ * comes round again for a round kick; lands on the left foot. */
+export function buildCheat900(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.84, { travel: [0.05, 0.2], apex: 0.5 });
+  r.at(0.5, {
+    heading: 340,
+    ...legL(90, 30, 115),
+    ...legR(60, -60, 125, 60),
+    ...armsTight,
+    ...torso(5, 5, 10),
+    ...head(0, 40),
+  });
+  r.at(0.6, {
+    heading: 490,
+    ...legL(80, 35, 120),
+    ...legR(65, -60, 125, 70),
+    ...armsTight,
+    ...torso(5, 5, 10),
+    ...head(0, 40),
+  });
+  r.at(0.68, {
+    heading: 610,
+    ...legL(75, 35, 115),
+    ...legR(75, -60, 120, 70),
+    ...armL(80, 90, 50),
+    ...armR(80, -60, 60),
+    ...torso(5, 10, 5),
+    ...head(0, 30),
+  });
+  r.at(0.74, {
+    heading: 715,
+    ...legL(70, 30, 110),
+    ...legR(112, 5, 5, 70),
+    ...armL(40, 130, 30),
+    ...armR(60, -20, 70),
+    ...torso(0, 15, -10),
+    ...head(0, 0),
+  });
+  r.at(0.84, {
+    heading: 790,
+    ...legL(20, 5, 30),
+    ...legR(50, -20, 80),
+    ...armsWide,
+    ...torso(8, 0, 0),
+  });
+  r.pin("L", 0.84, 1);
+  r.at(0.92, { heading: 798, ...legL(15, 5, 35), ...legR(15, -15, 40, 0, 0) });
+  r.at(1, { heading: 800, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("cheat-900");
+}
+
+/** Backside pop shared by the Backside 720 / 900: stand with the back to the
+ * target (heading 180), wind the torso to the right, pre-turn a little on the
+ * ground and pop off both feet at `uOff`. */
+function backsidePop(r: Rig, uOff: number) {
+  r.start({ ...armsDown, heading: 180, ...legL(0, 10), ...legR(0, -10), ...head(0, 30) });
+  r.pin("L", 0, uOff);
+  r.at(0.2, {
+    heading: 195,
+    ...legL(35, 10, 50),
+    ...legR(35, -10, 50),
+    ...armL(45, 10, 20),
+    ...armR(55, -140, 20),
+    ...torso(15, 0, -30),
+    ...head(5, 20),
+  });
+  r.at(uOff, {
+    heading: 240,
+    ...legL(0, 5, 5, 0, 35),
+    ...legR(0, -5, 5, 0, 35),
+    ...armL(150, 90, 15),
+    ...armR(120, -30, 25),
+    ...torso(-5, 0, 35),
+    ...head(-5, 45),
+  });
+}
+
+/** Backside 720: pop from backside and spin ~360° in the air (Pop 360 Hook in
+ * TKT), so the left-leg hook reaches the target with the same rotation as the
+ * Cheat 720 (heading ~625 with the leg out to the left side); lands on the
+ * right foot facing the target again (720 in total). */
+export function buildBackside720(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  backsidePop(r, 0.38);
+  r.flight(0.38, 0.8, { travel: [0.05, 0.15], apex: 0.5 });
+  r.at(0.48, {
+    heading: 345,
+    ...legL(60, 30, 110),
+    ...legR(40, -10, 90),
+    ...armsTight,
+    ...torso(5, 0, 10),
+    ...head(0, 40),
+  });
+  r.at(0.59, {
+    heading: 490,
+    ...legL(70, 60, 70),
+    ...legR(30, -10, 75),
+    ...armL(70, 20, 90),
+    ...armR(70, -40, 90),
+    ...torso(0, 10, 10),
+    ...head(0, 40),
+  });
+  r.at(0.68, {
+    heading: 625,
+    ...legL(118, 95, 10, 0, 20),
+    ...legR(25, -10, 60),
+    ...armL(35, 150, 20),
+    ...armR(80, -30, 60),
+    ...torso(0, 25, 0),
+    ...head(0, 20),
+  });
+  r.at(0.8, {
+    heading: 695,
+    ...legL(50, 70, 80),
+    ...legR(20, 0, 30),
+    ...armL(60, 90, 30),
+    ...armR(60, -90, 30),
+    ...torso(8, 10, 0),
+    ...head(0, 0),
+  });
+  r.pin("R", 0.8, 1);
+  r.at(0.9, { heading: 712, ...legR(20, 0, 40), ...legL(0, 30, 40) });
+  r.at(1, { heading: 720, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("backside-720");
+}
+
+/** Backside 900: pop from backside, ~540° in the air, right-leg round kick at
+ * the target, land on the left foot (Pop 540 Round in TKT). */
+export function buildBackside900(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  backsidePop(r, 0.38);
+  r.flight(0.38, 0.82, { travel: [0.05, 0.1], apex: 0.5 });
+  r.at(0.48, {
+    heading: 350,
+    ...legL(60, 30, 110),
+    ...legR(55, -40, 120, 50),
+    ...armsTight,
+    ...torso(5, 5, 10),
+    ...head(0, 40),
+  });
+  r.at(0.58, {
+    heading: 500,
+    ...legL(70, 35, 115),
+    ...legR(60, -50, 125, 60),
+    ...armsTight,
+    ...torso(5, 5, 10),
+    ...head(0, 40),
+  });
+  r.at(0.66, {
+    heading: 620,
+    ...legL(75, 35, 115),
+    ...legR(70, -60, 120, 70),
+    ...armL(80, 90, 50),
+    ...armR(80, -60, 60),
+    ...torso(5, 10, 5),
+    ...head(0, 30),
+  });
+  r.at(0.72, {
+    heading: 715,
+    ...legL(70, 30, 110),
+    ...legR(112, 5, 5, 70),
+    ...armL(40, 130, 30),
+    ...armR(60, -20, 70),
+    ...torso(0, 15, -10),
+    ...head(0, 0),
+  });
+  r.at(0.82, {
+    heading: 790,
+    ...legL(20, 5, 30),
+    ...legR(50, -20, 80),
+    ...armsWide,
+    ...torso(8, 0, 0),
+  });
+  r.pin("L", 0.82, 1);
+  r.at(0.92, { heading: 798, ...legL(15, 5, 35), ...legR(15, -15, 40, 0, 0) });
+  r.at(1, { heading: 800, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("backside-900");
+}
+
 /** Pop 360: two-foot takeoff from frontside, 180° in the air, left-leg outside
  * crescent at the target, land on both feet (turbo). */
 export function buildPop360(): THREE.AnimationClip {

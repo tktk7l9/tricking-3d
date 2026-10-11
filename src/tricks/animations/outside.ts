@@ -92,6 +92,176 @@ export function buildRaiz(): THREE.AnimationClip {
   return r.build("raiz");
 }
 
+/** Touchdown raiz: a low raiz that lands into a deep crouch on the left leg.
+ * Near the end of the spin the torso folds forward and the left hand reaches
+ * the floor just before the left foot; the right leg stays up behind, ready to
+ * backswing into a gainer or cork, and the hand pushes the chest back up. */
+export function buildTouchdownRaiz(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D, { hands: true });
+  outsideStep(r);
+  r.at(0.4, {
+    heading: 185,
+    tilt: 65,
+    spin: 0,
+    ...legL(-40, 10, 20),
+    ...legR(5, 0, 5, 0, 35),
+    ...armL(60, 170, 10),
+    ...armR(170, -60, 10),
+    ...torso(-20, 0, 0),
+    ...head(-20, 10),
+  });
+  // Lower and shorter than the plain raiz: the flight ends when the hand meets
+  // the floor, with the body already folding over it.
+  r.flight(0.4, 0.72, { travel: [0.3, 0.3], apex: 0.35 });
+  r.at(0.5, {
+    heading: 230,
+    spin: 115,
+    ...legL(-45, 20, 15),
+    ...legR(-10, -20, 10),
+    ...armL(90, 160, 10),
+    ...armR(170, -30, 10),
+    ...torso(-25, 0, 0),
+    ...head(-25, 0),
+  });
+  r.at(0.6, {
+    heading: 280,
+    spin: 220,
+    ...legL(-20, 30, 10),
+    ...legR(-25, -25, 30),
+    ...armL(120, 120, 10),
+    ...armR(140, -60, 10),
+    ...torso(-15, 0, 0),
+    ...head(-25, 20),
+  });
+  // Spotting the floor over the left shoulder, the arm reaches down.
+  r.at(0.67, {
+    heading: 315,
+    spin: 300,
+    pitch: 30,
+    ...legL(10, 15, 90),
+    ...legR(-25, -20, 90),
+    ...armL(56, 70, 0),
+    ...armR(120, -60, 20),
+    ...torso(15, 0, 0),
+    ...head(-25, 25),
+  });
+  r.at(0.72, {
+    heading: 335,
+    spin: 345,
+    pitch: 65,
+    ...legL(50, 10, 100),
+    ...legR(-25, -15, 90),
+    ...armL(89, 14, 0),
+    ...armR(110, -60, 20),
+    ...torso(25, 0, 0),
+    ...head(-20, 20),
+  });
+  r.pin("handL", 0.72, 0.74);
+  r.at(0.745, {
+    heading: 337,
+    spin: 347,
+    pitch: 70,
+    ...legL(95, 10, 115),
+    ...legR(-27, -15, 80),
+    ...armL(110, 22, 8),
+    ...armR(100, -60, 25),
+    ...torso(25, 0, 0),
+    ...head(-20, 20),
+  });
+  r.pin("L", 0.74, 1);
+  // Push: the planted arm straightens forward and lifts the hand off the floor.
+  r.at(0.76, { ...armL(118, 30, 15) });
+  // The hand pushes away and the chest comes back up over the planted foot.
+  r.at(0.84, {
+    heading: 352,
+    spin: 360,
+    pitch: 40,
+    ...legL(70, 5, 80),
+    ...legR(-30, -10, 55),
+    ...armL(100, 60, 10),
+    ...armR(70, -60, 30),
+    ...torso(20, 0, 0),
+    ...head(-5, 10),
+  });
+  r.at(0.92, { pitch: 15, ...legL(40, 5, 50), ...legR(-35, -10, 45), ...torso(15, 0, 0), ...head(0, 5) });
+  r.at(1, {
+    heading: 360,
+    pitch: 0,
+    ...legL(20, 5, 30),
+    ...legR(-35, -10, 40),
+    ...armL(60, 60, 20),
+    ...armR(60, -60, 20),
+    ...torso(15, 0, 0),
+    ...head(0, 0),
+  });
+  return r.build("touchdown-raiz");
+}
+
+/** Sideswipe: raiz takeoff with the left leg swung up straight, the body
+ * inverts further than a raiz, then the right leg swipes over the top (round
+ * kick) and the character lands on it (hyper). */
+export function buildSideswipe(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  outsideStep(r);
+  r.at(0.4, {
+    heading: 190,
+    tilt: 75,
+    spin: 0,
+    ...legL(-45, 15, 0),
+    ...legR(5, 0, 5, 0, 35),
+    ...armL(60, 170, 10),
+    ...armR(170, -60, 10),
+    ...torso(-25, 0, 0),
+    ...head(-25, 10),
+  });
+  r.flight(0.4, 0.82, { travel: [0.3, 0.3], apex: 0.55 });
+  r.at(0.52, {
+    heading: 220,
+    spin: 110,
+    ...legL(-70, 20, 0),
+    ...legR(-15, -15, 20),
+    ...armL(100, 160, 10),
+    ...armR(170, -40, 10),
+    ...torso(-25, 0, 0),
+    ...head(-25, 0),
+  });
+  r.at(0.62, {
+    heading: 260,
+    spin: 200,
+    ...legL(-40, 20, 70),
+    ...legR(35, -30, 40),
+    ...armL(120, 120, 10),
+    ...armR(140, -60, 10),
+    ...torso(-15, 0, 0),
+    ...head(-20, 0),
+  });
+  r.at(0.72, {
+    heading: 310,
+    spin: 290,
+    ...legL(0, 25, 90),
+    ...legR(110, -10, 5),
+    ...armL(90, 90, 20),
+    ...armR(90, -90, 20),
+    ...torso(0, 0, 0),
+    ...head(-10, 0),
+  });
+  r.at(0.82, {
+    heading: 350,
+    spin: 360,
+    ...legR(20, -5, 15),
+    ...legL(30, 20, 90),
+    ...armsWide,
+    ...torso(10, 0, 0),
+    ...head(0, 0),
+  });
+  r.pin("R", 0.82, 1);
+  r.at(0.92, { heading: 360, ...legR(20, 0, 40), ...legL(0, 15, 50) });
+  r.at(1, { heading: 365, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0) });
+  return r.build("sideswipe");
+}
+
 /** Doubleleg (armada dupla): two-foot takeoff, torso winds and lays back while
  * both legs, together and piked, swing around in a V; lands on both feet. */
 export function buildDoubleleg(): THREE.AnimationClip {
