@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { Character } from "../character/Character";
 import type { AnimationPlayer } from "../character/AnimationPlayer";
+import { clampSeekTime } from "../lib/seek";
 
 const SAMPLES = 90;
 
@@ -33,6 +34,11 @@ export class ComTracer {
     this.line.visible = v;
   }
 
+  /** Hips positions from the last bake (xyz triplets evenly spread over the clip). */
+  get samples(): Float32Array {
+    return this.positions;
+  }
+
   /** Re-bake the trajectory by stepping through the clip without disturbing playback. */
   bake() {
     const player = this.player;
@@ -43,8 +49,10 @@ export class ComTracer {
 
     const tmp = new THREE.Vector3();
     for (let i = 0; i < SAMPLES; i++) {
-      const t = (duration * i) / (SAMPLES - 1);
-      player.setTime(t);
+      // The looping player wraps t = duration to the start pose; sample the
+      // last frame instead so the trace (and the camera follow) ends where the
+      // trick lands.
+      player.setTime(clampSeekTime((duration * i) / (SAMPLES - 1), duration));
       this.character.bones.hips.getWorldPosition(tmp);
       this.positions[i * 3 + 0] = tmp.x;
       this.positions[i * 3 + 1] = tmp.y;

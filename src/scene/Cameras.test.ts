@@ -52,3 +52,52 @@ describe("Cameras.setMode", () => {
     expect(notified).toBe(1);
   });
 });
+
+describe("Cameras.setFollow", () => {
+  it("moves the camera and its orbit centre together, keeping the preset angle", () => {
+    const cams = new Cameras(fakeCanvas());
+    cams.setMode("side");
+    cams.setFollow(1.5, 2);
+    for (let i = 0; i < 30; i++) cams.update();
+    expect(cams.camera.position.x).toBeCloseTo(6.5, 5);
+    expect(cams.camera.position.y).toBeCloseTo(1.4, 5);
+    expect(cams.camera.position.z).toBeCloseTo(2, 5);
+    expect(cams.controls.target.x).toBeCloseTo(1.5, 5);
+    expect(cams.controls.target.z).toBeCloseTo(2, 5);
+    expect(cams.getMode()).toBe("side");
+  });
+
+  it("frames the follow point when the preset changes", () => {
+    const cams = new Cameras(fakeCanvas());
+    cams.setFollow(2, -1);
+    cams.setMode("front");
+    expect(cams.camera.position.x).toBeCloseTo(2, 5);
+    expect(cams.camera.position.z).toBeCloseTo(4, 5);
+    expect(cams.controls.target.x).toBeCloseTo(2, 5);
+    expect(cams.controls.target.z).toBeCloseTo(-1, 5);
+  });
+
+  it("returns to the fixed framing when the offset goes back to zero", () => {
+    const cams = new Cameras(fakeCanvas());
+    cams.setMode("top");
+    cams.setFollow(3, 1);
+    cams.setFollow(0, 0);
+    for (let i = 0; i < 10; i++) cams.update();
+    expect(cams.controls.target.x).toBeCloseTo(0, 5);
+    expect(cams.controls.target.z).toBeCloseTo(0, 5);
+    expect(cams.getMode()).toBe("top");
+  });
+
+  it("scales the distance from the orbit centre for the zoom factor and back", () => {
+    const cams = new Cameras(fakeCanvas());
+    cams.setMode("front");
+    cams.setFollow(0, 0, 1.5);
+    expect(cams.camera.position.y).toBeCloseTo(1.6, 5);
+    expect(cams.camera.position.z).toBeCloseTo(7.5, 5);
+    cams.setMode("side");
+    expect(cams.camera.position.x).toBeCloseTo(7.5, 5);
+    cams.setFollow(0, 0, 1);
+    expect(cams.camera.position.x).toBeCloseTo(5, 5);
+    expect(cams.camera.position.y).toBeCloseTo(1.4, 5);
+  });
+});

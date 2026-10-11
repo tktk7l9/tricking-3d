@@ -18,6 +18,9 @@ export class Cameras {
   private mode: CameraMode = "free";
   private interacting = false;
   private onUserOrbit: (() => void) | null = null;
+  /** Horizontal offset currently applied to the view (camera follow), and the distance factor. */
+  private follow = new THREE.Vector3();
+  private zoom = 1;
 
   constructor(canvas: HTMLCanvasElement) {
     this.camera = new THREE.PerspectiveCamera(45, 1, 0.1, 200);
@@ -59,11 +62,34 @@ export class Cameras {
     this.controls.update();
     this.controls.enableDamping = damping;
     this.mode = mode;
-    const pos = PRESETS[mode];
-    this.camera.position.copy(pos);
-    this.controls.target.copy(TARGET);
-    this.camera.lookAt(TARGET);
+    const target = TARGET.clone().add(this.follow);
+    this.camera.position.copy(PRESETS[mode]).sub(TARGET).multiplyScalar(this.zoom).add(target);
+    this.controls.target.copy(target);
+    this.camera.lookAt(target);
     this.controls.update();
+  }
+
+  /**
+   * Move the view with a travelling trick: the camera and its orbit centre shift
+   * together by the change in the horizontal offset, so preset and free views
+   * keep their angle and distance (SHIG 7: the user's orbit is never taken
+   * over). `zoom` scales the distance from the orbit centre.
+   */
+  setFollow(x: number, z: number, zoom = 1) {
+    const dx = x - this.follow.x;
+    const dz = z - this.follow.z;
+    if (dx !== 0 || dz !== 0) {
+      this.camera.position.x += dx;
+      this.camera.position.z += dz;
+      this.controls.target.x += dx;
+      this.controls.target.z += dz;
+      this.follow.set(x, 0, z);
+    }
+    if (zoom !== this.zoom) {
+      const offset = this.camera.position.clone().sub(this.controls.target).multiplyScalar(zoom / this.zoom);
+      this.camera.position.copy(this.controls.target).add(offset);
+      this.zoom = zoom;
+    }
   }
 
   getMode() {
