@@ -270,6 +270,7 @@ describe.each([
   ["cheat-900", 450, 760, false, "right"],
   ["pop-tornado", 250, 400, false, "right"],
   ["pop-540", 350, 500, false, "right"],
+  ["pop-720", 500, 650, false, "left"],
   ["swing-900", 450, 760, false, "right"],
 ] as const)("%s", (id, minAirTurn, minTurn, backside, kickLeg) => {
   it(`turns more than ${minAirTurn}° counter-clockwise in the air (${minTurn}° overall) and kicks the ${kickLeg} foot above hip height`, () => {
@@ -301,6 +302,14 @@ describe.each(
     "aerial-twist",
     "gumbi",
     "sailor-moon",
+    "pop-720",
+    "tornado-sidekick",
+    "x-out",
+    "gainer-arabian",
+    "front-half",
+    "one-handed-cartwheel",
+    "roundoff",
+    "doubleleg-twist",
   ].map(
     (id) => [id, byId(id)] as const,
   ),
@@ -390,5 +399,102 @@ describe("aerial twist", () => {
     expect(byId("aerial").landing).toBe("right");
     expect(byId("aerial-twist").landing).toBe("left");
     expect(samples[samples.length - 1].fwdZ, "ends facing the way it started").toBeGreaterThan(0.9);
+  });
+});
+
+/* Contracts for the fourth batch (2026-10). */
+
+describe("tornado sidekick", () => {
+  it("drives the straight right leg out at hip height toward the target, side on", () => {
+    const samples = sampleClip(byId("tornado-sidekick"));
+    const [a, b] = longestFlight(samples)!;
+    const air = samples.slice(a, b + 1);
+    const kick = air.reduce((best, s) => (s.right > best.right ? s : best));
+    expect(kick.right, "foot at hip height").toBeGreaterThan(kick.hips.y - 0.1);
+    expect(kick.ballR.distanceTo(kick.hips), "leg straight").toBeGreaterThan(0.85);
+    expect(kick.ballR.z - kick.hips.z, "toward the target").toBeGreaterThan(0.6);
+    expect(Math.abs(kick.fwdZ), "body side on to the target").toBeLessThan(0.5);
+  });
+});
+
+describe("x-out", () => {
+  it("splits the legs wide at the top of the back flip and closes them to land", () => {
+    const samples = sampleClip(byId("x-out"));
+    expect(samples.some(inverted)).toBe(true);
+    const [a, b] = longestFlight(samples)!;
+    const spread = Math.max(...samples.slice(a, b + 1).map((s) => s.ballL.distanceTo(s.ballR)));
+    expect(spread, "feet far apart in the air").toBeGreaterThan(1.2);
+    expect(samples[samples.length - 1].hips.z, "travels backward").toBeLessThan(samples[0].hips.z - 0.2);
+  });
+});
+
+describe.each([
+  ["gainer-arabian", 1],
+  ["front-half", 1],
+] as const)("%s", (id, direction) => {
+  it("flips over with a half twist, landing facing back while travelling forward", () => {
+    const samples = sampleClip(byId(id));
+    expect(samples.some(inverted)).toBe(true);
+    expect(samples[0].fwdZ, "starts facing forward").toBeGreaterThan(0.9);
+    expect(samples[samples.length - 1].fwdZ, "lands facing back").toBeLessThan(-0.9);
+    expect(direction * (samples[samples.length - 1].hips.z - samples[0].hips.z), "travels forward").toBeGreaterThan(0.3);
+  });
+});
+
+describe("gainer arabian", () => {
+  it("takes off from the left foot with the right leg swung up", () => {
+    const samples = sampleClip(byId("gainer-arabian"));
+    const [a] = longestFlight(samples)!;
+    const takeoff = samples.slice(0, a).filter((s) => s.left < 0.03 && s.right > s.hips.y - 0.3);
+    expect(takeoff.length, "right leg swings up while the left foot is still down").toBeGreaterThan(0);
+  });
+});
+
+describe("roundoff", () => {
+  it("places the left hand, then the right, and lands on both feet at once facing back the way it came", () => {
+    const samples = sampleClip(byId("roundoff"));
+    expect(samples.some(inverted)).toBe(true);
+    const handL = contacts(samples, (s) => s.handL)[0];
+    const handR = contacts(samples, (s) => s.handR)[0];
+    expect(handL, "left hand plants").toBeDefined();
+    expect(handR, "right hand plants").toBeDefined();
+    expect(handL[0]).toBeLessThan(handR[0]);
+    const [, end] = longestFlight(samples)!;
+    const left = contacts(samples, (s) => s.left).find(([i]) => i > end)!;
+    const right = contacts(samples, (s) => s.right).find(([i]) => i > end)!;
+    expect(Math.abs(left[0] - right[0]), "both feet touch down together").toBeLessThanOrEqual(1);
+    const last = samples[samples.length - 1];
+    expect(Math.abs(last.yaw + 90), "faces back along the cartwheel line (-X)").toBeLessThan(15);
+    expect(last.hips.x - samples[0].hips.x, "travels to the left").toBeGreaterThan(1);
+  });
+});
+
+describe("one-handed cartwheel", () => {
+  it("passes over the left hand only and stays supported from the left foot to the right foot", () => {
+    const samples = sampleClip(byId("one-handed-cartwheel"));
+    expect(samples.some(inverted)).toBe(true);
+    expect(contacts(samples, (s) => s.handL), "one left-hand contact").toHaveLength(1);
+    expect(Math.min(...samples.map((s) => s.handR)), "right hand stays off the floor").toBeGreaterThan(0.1);
+    const step = contacts(samples, (s) => s.left)[0];
+    const footR = contacts(samples, (s) => s.right).find(([i]) => i > step[1])!;
+    for (let i = step[1]; i <= footR[0]; i++) {
+      const s = samples[i];
+      expect(Math.min(s.left, s.right, s.handL), `t=${s.t.toFixed(2)}`).toBeLessThan(0.03);
+    }
+  });
+});
+
+describe("doubleleg twist", () => {
+  it("adds a full twist to the doubleleg and lands complete (left foot)", () => {
+    const twist = sampleClip(byId("doubleleg-twist"));
+    const base = sampleClip(byId("double-leg"));
+    const airTurn = (samples: Sample[]) => {
+      const [a, b] = longestFlight(samples)!;
+      return yawTravel(samples, samples[a].t, samples[b].t);
+    };
+    expect(airTurn(twist) - airTurn(base), "an extra turn in the air").toBeGreaterThan(270);
+    expect(byId("double-leg").landing).toBe("both");
+    expect(byId("doubleleg-twist").landing).toBe("left");
+    expect(twist.some(inverted), "the hips never rise over the chest").toBe(false);
   });
 });

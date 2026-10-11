@@ -455,6 +455,185 @@ export function buildArabian(): THREE.AnimationClip {
   return r.build("arabian");
 }
 
+/** X-Out: a back tuck whose legs open into a split kick at the top of the
+ * flip and close again for a two-footed landing. */
+export function buildXOut(): THREE.AnimationClip {
+  const D = 1.6;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.32);
+  r.at(0.18, { ...legL(45, 8, 70), ...legR(45, -8, 70), ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.32, {
+    pitch: -15,
+    ...legL(0, 5, 5, 0, 35),
+    ...legR(0, -5, 5, 0, 35),
+    ...armsUp,
+    ...torso(-10, 0, 0),
+    ...head(-25, 0),
+  });
+  r.flight(0.32, 0.8, { travel: [0, -0.35] });
+  r.at(0.42, {
+    pitch: -85,
+    ...legL(35, 5, 50),
+    ...legR(55, -5, 50),
+    ...armL(130, 100, 10),
+    ...armR(130, -100, 10),
+    ...torso(-10, 0, 0),
+    ...head(-35, 0),
+  });
+  // The split kick: right leg up toward the chest, left leg back, both straight.
+  r.at(0.52, { pitch: -170, ...legL(-55, 5, 5), ...legR(100, -5, 5), ...armsWide, ...torso(-5, 0, 0), ...head(-30, 0) });
+  r.at(0.62, { pitch: -250, ...legL(-45, 5, 10), ...legR(85, -5, 10), ...armsWide, ...torso(0, 0, 0), ...head(-20, 0) });
+  r.at(0.72, {
+    pitch: -320,
+    ...legL(20, 8, 40),
+    ...legR(40, -8, 40),
+    ...armL(70, 90, 20),
+    ...armR(70, -90, 20),
+    ...torso(10, 0, 0),
+    ...head(-5, 0),
+  });
+  r.at(0.8, { pitch: -360, ...legL(25, 8, 40), ...legR(25, -8, 40), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("x-out");
+}
+
+/** Gainer Arabian: the Gainer Flash's swing takeoff (left foot, right leg
+ * swinging up) into the Arabian's half twist and forward finish. It keeps
+ * the gainer's forward travel and lands on both feet facing back. */
+export function buildGainerArabian(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(20, 5), ...legR(-15, -5), ...torso(8, 0, 0) });
+  r.pin("L", 0, 0.36);
+  r.at(0.2, { ...legL(25, 5, 35), ...legR(30, -5, 40), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.36, {
+    pitch: -20,
+    twist: 0,
+    ...legL(0, 5, 5, 0, 35),
+    ...legR(100, -5, 5),
+    ...armsUp,
+    ...torso(-15, 0, 0),
+    ...head(-30, 0),
+  });
+  r.flight(0.36, 0.8, { travel: [0, 0.45] });
+  r.at(0.45, {
+    pitch: -80,
+    twist: 100,
+    ...legL(25, 5, 40),
+    ...legR(60, -5, 50),
+    ...armsTight,
+    ...torso(-5, 0, 0),
+    ...head(-15, 0),
+  });
+  r.at(0.54, {
+    pitch: -155,
+    twist: 180,
+    ...legL(90, 5, 110),
+    ...legR(90, -5, 110),
+    ...armsTight,
+    ...torso(30, 0, 0),
+    ...head(25, 0),
+  });
+  r.at(0.63, {
+    pitch: -240,
+    twist: 180,
+    ...legL(120, 5, 130),
+    ...legR(120, -5, 130),
+    ...armsTight,
+    ...torso(40, 0, 0),
+    ...head(35, 0),
+  });
+  r.at(0.72, {
+    pitch: -320,
+    twist: 180,
+    ...legL(50, 8, 50),
+    ...legR(50, -8, 50),
+    ...armsWide,
+    ...torso(15, 0, 0),
+    ...head(10, 0),
+  });
+  r.at(0.8, {
+    pitch: -360,
+    twist: 180,
+    ...legL(25, 8, 40),
+    ...legR(25, -8, 40),
+    ...armsWide,
+    ...torso(15, 0, 0),
+    ...head(5, 0),
+  });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, twist: 180, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("gainer-arabian");
+}
+
+/** Front Half (Barahni): a front tuck with a half twist, finishing on both
+ * feet facing back the way it came. */
+export function buildFrontHalf(): THREE.AnimationClip {
+  const D = 1.6;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.3);
+  r.at(0.16, {
+    ...legL(45, 8, 70),
+    ...legR(45, -8, 70),
+    ...armL(60, 20, 20),
+    ...armR(60, -20, 20),
+    ...torso(20, 0, 0),
+    ...head(5, 0),
+  });
+  r.at(0.3, {
+    pitch: 15,
+    twist: 0,
+    ...legL(0, 5, 5, 0, 35),
+    ...legR(0, -5, 5, 0, 35),
+    ...armsUp,
+    ...torso(15, 0, 0),
+    ...head(20, 0),
+  });
+  r.flight(0.3, 0.8, { travel: [0, 0.6] });
+  r.at(0.42, {
+    pitch: 120,
+    twist: 0,
+    ...legL(120, 5, 130),
+    ...legR(120, -5, 130),
+    ...armsTight,
+    ...torso(45, 0, 0),
+    ...head(40, 0),
+  });
+  r.at(0.54, {
+    pitch: 215,
+    twist: 25,
+    ...legL(110, 5, 120),
+    ...legR(110, -5, 120),
+    ...armsTight,
+    ...torso(40, 0, 0),
+    ...head(30, 0),
+  });
+  r.at(0.66, {
+    pitch: 295,
+    twist: 120,
+    ...legL(45, 8, 45),
+    ...legR(45, -8, 45),
+    ...armsTight,
+    ...torso(15, 0, 0),
+    ...head(10, 0),
+  });
+  r.at(0.8, {
+    pitch: 360,
+    twist: 180,
+    ...legL(25, 8, 40),
+    ...legR(25, -8, 40),
+    ...armsWide,
+    ...torso(10, 0, 0),
+    ...head(0, 0),
+  });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: 360, twist: 180, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("front-half");
+}
+
 /** Janitor flip: two-foot punch into a chest-down dive that flat-spins 180°,
  * landing on both feet facing back the way it came. */
 export function buildJanitor(): THREE.AnimationClip {
