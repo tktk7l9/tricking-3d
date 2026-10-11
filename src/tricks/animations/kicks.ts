@@ -370,6 +370,42 @@ export function buildBackside900(): THREE.AnimationClip {
   return r.build("backside-900");
 }
 
+/** Backside 900 Hyper (TKT: Pop 540 Katana): the Backside 900's pop and
+ * round kick, then it keeps turning and lands on the kicking (right) foot in
+ * hyper, as the 540 does after a Tornado. */
+export function buildBackside900Hyper(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  backsidePop(r, 0.38);
+  r.flight(0.38, 0.84, { travel: [0.05, 0.1], apex: 0.5 });
+  r.at(0.48, { heading: 350, ...legL(60, 30, 110), ...legR(55, -40, 120, 50), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.58, { heading: 500, ...legL(70, 35, 115), ...legR(60, -50, 125, 60), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.66, {
+    heading: 620,
+    ...legL(75, 35, 115),
+    ...legR(70, -60, 120, 70),
+    ...armL(80, 90, 50),
+    ...armR(80, -60, 60),
+    ...torso(5, 10, 5),
+    ...head(0, 30),
+  });
+  r.at(0.72, {
+    heading: 715,
+    ...legL(70, 30, 110),
+    ...legR(112, 5, 5, 70),
+    ...armL(40, 130, 30),
+    ...armR(60, -20, 70),
+    ...torso(0, 15, -10),
+    ...head(0, 0),
+  });
+  r.at(0.78, { heading: 775, ...legL(60, 60, 110), ...legR(55, -10, 60, 20), ...armsTight, ...torso(5, 5, 0), ...head(0, 30) });
+  r.at(0.84, { heading: 820, ...legL(45, 70, 100), ...legR(20, 0, 30), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.92, { heading: 838, ...legR(20, 0, 40), ...legL(-5, 20, 40) });
+  r.at(1, { heading: 845, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("backside-900-hyper");
+}
+
 /** Pop 360: two-foot takeoff from frontside, 180° in the air, left-leg outside
  * crescent at the target, land on both feet (turbo). */
 export function buildPop360(): THREE.AnimationClip {

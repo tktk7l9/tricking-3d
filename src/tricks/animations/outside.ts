@@ -383,6 +383,84 @@ export function buildTouchdownRaiz(): THREE.AnimationClip {
   return r.build("touchdown-raiz");
 }
 
+/** Sailor Moon Round: the Sailor Moon's right-hand plant and off-axis spin,
+ * with a right-leg round kick as the body comes upright, then the left foot
+ * lands with the kicking leg coming down after it. */
+export function buildSailorMoonRound(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D, { hands: true });
+  outsideStep(r);
+  r.at(0.28, { tilt: 55, spin: 0 });
+  r.at(0.36, {
+    heading: 180,
+    tilt: 55,
+    spin: 40,
+    ...legL(-35, 10, 40),
+    ...legR(15, 0, 35),
+    ...armL(60, 170, 10),
+    ...armR(37, -114, 0),
+    ...torso(-5, 0, 0),
+    ...head(-20, 10),
+  });
+  r.at(0.4, { heading: 190, spin: 70, ...legL(-50, 15, 70), ...legR(25, 0, 50, 0, 20), ...armR(67, -118, 0) });
+  r.pin("handR", 0.4, 0.47);
+  r.at(0.44, {
+    heading: 205,
+    spin: 100,
+    ...legL(-50, 20, 75),
+    ...legR(5, -10, 10, 0, 35),
+    ...armR(98, -121, 0),
+    ...torso(-20, 0, 0),
+    ...head(-25, 10),
+  });
+  r.at(0.47, { heading: 215, spin: 120, ...legL(-45, 20, 30), ...legR(-10, -15, 10), ...armR(120, -110, 10) });
+  r.flight(0.47, 0.84, { travel: [0.3, 0.3] });
+  r.at(0.56, { heading: 245, spin: 175, ...legL(-40, 20, 15), ...legR(-15, -20, 10), ...armL(90, 160, 10), ...armR(170, -30, 10), ...torso(-25, 0, 0), ...head(-25, 0) });
+  r.at(0.64, { heading: 280, spin: 225, ...legL(-20, 30, 10), ...legR(-30, -30, 10), ...armL(120, 120, 10), ...armR(140, -60, 10), ...torso(-20, 0, 0), ...head(-20, 0) });
+  // Chamber, then the round kick at the target as the spin finishes.
+  r.at(0.71, { heading: 315, spin: 300, ...legL(30, 15, 20), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-10, 0) });
+  r.at(0.77, { heading: 345, spin: 340, ...legL(35, 15, 30), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.84, { heading: 365, spin: 360, ...legL(25, 8, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  // Finish the turn with the kicking leg still up, then set it straight down in the final stance.
+  r.at(0.89, { heading: 372, ...legL(22, 5, 36), ...legR(35, -10, 85), ...torso(6, 0, 0) });
+  r.at(0.95, { heading: 372, ...legsAbsorb, ...torso(5, 0, 0) });
+  r.at(1, { heading: 372, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("sailor-moon-round");
+}
+
+/** Spyder Twist: the Spyder's step and flat, chest-down spin, with an extra
+ * twist about the body's long axis (arms pulled in, as in the Butterfly Twist)
+ * before the left foot lands. */
+export function buildSpyderTwist(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  outsideStep(r);
+  r.at(0.4, {
+    heading: 230,
+    pitch: 75,
+    twist: 0,
+    ...legR(80, -10, 10, 0, 35),
+    ...legL(-25, 30, 10),
+    ...armsWide,
+    ...torso(5, 0, -10),
+    ...head(-30, -20),
+  });
+  r.flight(0.4, 0.82, { travel: [-0.35, -0.3], apex: 0.55 });
+  r.at(0.5, { heading: 320, pitch: 80, twist: 0, ...legL(-30, 40, 10), ...legR(-10, -40, 10), ...armsWide, ...torso(-10, 0, 0), ...head(-30, 0) });
+  // The extra twist: legs together, arms pulled in.
+  r.at(0.58, { heading: 375, pitch: 80, twist: 140, ...legL(-10, 8, 5), ...legR(-10, -8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-15, 0) });
+  r.at(0.66, { heading: 420, pitch: 75, twist: 290, ...legL(-5, 8, 5), ...legR(-5, -8, 5), ...armsTight, ...torso(0, 0, 0), ...head(-10, 0) });
+  r.at(0.74, { heading: 465, pitch: 55, twist: 360, ...legL(55, 10, 20), ...legR(0, -30, 10), ...armL(60, 90, 20), ...armR(60, -90, 20), ...torso(0, 0, 0), ...head(-10, 0) });
+  r.at(0.82, { heading: 505, pitch: 25, twist: 360, ...legL(50, 0, 30), ...legR(-10, -30, 10), ...armL(60, 90, 20), ...armR(60, -90, 20), ...torso(20, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.82, 1);
+  // Finish the turn with the right foot still up, then set it straight down in the final stance.
+  r.at(0.87, { heading: 520, pitch: 5, twist: 360, ...legL(25, 0, 38), ...legR(15, -15, 70), ...torso(10, 0, 0) });
+  r.at(0.93, { heading: 520, pitch: 0, twist: 360, ...legsAbsorb, ...torso(5, 0, 0) });
+  r.at(1, { heading: 520, pitch: 0, twist: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  return r.build("spyder-twist");
+}
+
 /** Sideswipe: raiz takeoff with the left leg swung up straight, the body
  * inverts further than a raiz, then the right leg swipes over the top (round
  * kick) and the character lands on it (hyper). */

@@ -87,6 +87,34 @@ export function buildButterflyKick(): THREE.AnimationClip {
   return r.build("butterfly");
 }
 
+/** Butterfly Kick Switch: the butterfly kick's takeoff and flat swing, but the
+ * legs switch in the air so the left leg comes down first and lands in
+ * complete while the right leg stays up behind. */
+export function buildButterflyKickSwitch(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.flight(0.42, 0.8, { travel: [0.4, 0.15] });
+  r.at(0.52, { heading: 170, pitch: 80, ...legR(-30, -40, 10), ...legL(-10, 40, 10), ...armsWide, ...torso(-10, 0, 0), ...head(-30, 0) });
+  r.at(0.62, { heading: 250, pitch: 75, ...legR(10, -25, 10), ...legL(-30, 35, 10), ...torso(-10, 0, 0) });
+  // The switch: the right leg swings back up while the left leg comes through.
+  r.at(0.71, { heading: 305, pitch: 55, ...legR(-25, -25, 15), ...legL(35, 20, 20), ...torso(0, 0, 0), ...head(-10, 0) });
+  r.at(0.8, {
+    heading: 345,
+    pitch: 25,
+    ...legL(45, 0, 30),
+    ...legR(-25, -30, 35),
+    ...armL(60, 90, 20),
+    ...armR(60, -90, 20),
+    ...torso(20, 0, 0),
+    ...head(0, 0),
+  });
+  r.pin("L", 0.8, 1);
+  r.at(0.9, { heading: 355, pitch: 5, ...legL(25, 0, 35), ...legR(-25, -25, 40), ...torso(10, 0, 0) });
+  r.at(1, { heading: 360, pitch: 0, ...legL(20, 0, 35), ...legR(-25, -20, 45), ...armsDown, ...torso(5, 0, 0) });
+  return r.build("butterfly-kick-switch");
+}
+
 /** Butterfly twist: butterfly takeoff, 360° twist about the body's long axis
  * while horizontal, landing complete on the left (takeoff) foot. */
 export function buildButterflyTwist(): THREE.AnimationClip {
@@ -361,3 +389,31 @@ export function buildMasterscoot(): THREE.AnimationClip {
   return r.build("master-swing");
 }
 
+/** When the scoot hyper's right foot pushes off and lands again (normalized time). */
+const SCOOT_HYPER = { push: 0.456, land: 0.533 };
+
+/** Scoot Hyper: the scoot's drop onto the left hand and push off the right
+ * foot, but the right leg swings round and lands first (hyper) while the left
+ * leg stays tucked up in front. */
+export function buildScootHyper(): THREE.AnimationClip {
+  const D = 1.6;
+  const r = new Rig(D, { hands: true });
+  r.start({ ...armsDown, ...legL(10, 10), ...legR(-10, -10) });
+  r.pin("R", 0, SCOOT_HYPER.push);
+  r.at(0.07, { ...legL(45, 12, 60), ...legR(15, -10, 20) });
+  r.at(0.16, { heading: 15, pitch: 25, ...legL(65, 15, 85), ...legR(45, -10, 60), ...torso(25, 0, 0), ...armL(80, 20, 10), ...armR(50, -100, 20) });
+  r.at(0.3, { heading: 40, pitch: 45, ...legL(110, 20, 130), ...legR(55, -10, 80), ...torso(45, 0, 10), ...armL(150, 30, 5), ...armR(70, -100, 20), ...head(-20, 20) });
+  r.at(0.42, { heading: 85, pitch: 70, ...legL(125, 25, 140), ...legR(70, -20, 95, 0, 30), ...torso(60, 0, 20), ...armL(175, 40, 0), ...armR(60, -110, 25), ...head(-25, 30) });
+  r.at(0.45, { heading: 92, pitch: 72, ...legR(45, -25, 65, 0, 40), ...legL(90, 28, 145) });
+  r.pin("handL", SCOOT_HYPER.push, SCOOT_HYPER.land);
+  // Over the hand the left leg reaches back and up out of the way while the
+  // right leg, after its push, swings in under the body and lands first.
+  r.at(0.5, { heading: 130, pitch: 75, ...legL(0, 30, 90), ...legR(-10, -30, 20), ...torso(55, 0, 15), ...armL(175, 45, 0), ...armR(70, -110, 25), ...head(-30, 20) });
+  r.at(0.56, { heading: 165, pitch: 62, ...legL(-30, 25, 45), ...legR(30, -15, 40), ...torso(45, 0, 10), ...armL(172, 50, 0), ...armR(75, -105, 25), ...head(-25, 15) });
+  r.at(0.6, { heading: 185, pitch: 42, ...legL(-15, 20, 60), ...legR(32, -8, 38), ...torso(30, 0, 5), ...armL(150, 55, 5), ...armR(85, -95, 20), ...head(-20, 10) });
+  r.at(0.66, { heading: 196, pitch: 25, ...legL(40, 15, 80), ...legR(28, -5, 35), ...torso(18, 0, 0), ...armL(110, 60, 20), ...armR(100, -60, 20), ...head(-15, 0) });
+  r.pin("R", SCOOT_HYPER.land, 1);
+  r.at(0.76, { heading: 204, pitch: 15, ...legL(55, 10, 70), ...legR(20, -5, 35), ...torso(12, 0, 0), ...armsWide });
+  r.at(1, { heading: 210, pitch: 0, ...legL(40, 10, 60), ...legR(15, -5, 30), ...torso(5, 0, 0), ...armsDown, ...head(0, 0) });
+  return r.build("scoot-hyper");
+}
