@@ -555,6 +555,105 @@ export function buildPop540(): THREE.AnimationClip {
   return r.build("pop-540");
 }
 
+/** Pop 720 (TKT: Pop 540 Hook): the frontside pop of the Pop Tornado, about
+ * 540° in the air with the body tight, then the left leg hooks at the target
+ * and the right foot lands (the kicking leg comes down last). */
+export function buildPop720(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  frontsidePop(r, 0.36);
+  r.flight(0.36, 0.82, { travel: [0.05, 0.12], apex: 0.5 });
+  r.at(0.46, {
+    heading: 260,
+    ...legL(60, 30, 110),
+    ...legR(35, -10, 90),
+    ...armsTight,
+    ...torso(5, 0, 10),
+    ...head(0, 40),
+  });
+  r.at(0.58, {
+    heading: 445,
+    ...legL(70, 60, 70),
+    ...legR(25, -10, 75),
+    ...armL(70, 20, 90),
+    ...armR(70, -40, 90),
+    ...torso(0, 10, 10),
+    ...head(0, 40),
+  });
+  r.at(0.7, {
+    heading: 625,
+    ...legL(118, 95, 10, 0, 20),
+    ...legR(20, -10, 60),
+    ...armL(35, 150, 20),
+    ...armR(80, -30, 60),
+    ...torso(0, 25, 0),
+    ...head(0, 20),
+  });
+  r.at(0.82, {
+    heading: 695,
+    ...legL(50, 70, 80),
+    ...legR(20, 0, 30),
+    ...armL(60, 90, 30),
+    ...armR(60, -90, 30),
+    ...torso(8, 10, 0),
+    ...head(0, 0),
+  });
+  r.pin("R", 0.82, 1);
+  r.at(0.92, { heading: 712, ...legR(20, 0, 40), ...legL(0, 30, 40) });
+  r.at(1, { heading: 720, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0) });
+  return r.build("pop-720");
+}
+
+/** Tornado Sidekick (TKT: Cheat 360 Sidekick): the Tornado's cheat takeoff,
+ * but the right knee chambers to the chest and the leg drives out heel first
+ * as a side kick, the right side of the body toward the target; land on the
+ * left foot. */
+export function buildTornadoSidekick(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.8, { travel: [0.05, 0.25], apex: 0.5 });
+  r.at(0.5, {
+    heading: 320,
+    ...legL(95, 30, 110),
+    ...legR(85, -40, 130),
+    ...armsTight,
+    ...torso(5, 0, 10),
+    ...head(0, 40),
+  });
+  r.at(0.6, {
+    heading: 410,
+    ...legL(80, 30, 115),
+    ...legR(90, -80, 125),
+    ...armL(60, 60, 60),
+    ...armR(60, -40, 80),
+    ...torso(0, 10, 0),
+    ...head(0, -50),
+  });
+  r.at(0.68, {
+    heading: 450,
+    ...legL(60, 20, 100),
+    ...legR(95, -90, 0, 0, 30),
+    ...armL(40, 120, 30),
+    ...armR(50, -110, 40),
+    ...torso(0, 30, 0),
+    ...head(0, -80),
+  });
+  r.at(0.76, {
+    heading: 465,
+    ...legL(30, 10, 50),
+    ...legR(60, -70, 100),
+    ...armsWide,
+    ...torso(5, 10, 0),
+    ...head(0, -40),
+  });
+  r.at(0.8, { heading: 470, ...legL(20, 5, 30), ...legR(45, -40, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, -20) });
+  r.pin("L", 0.8, 1);
+  r.at(0.9, { heading: 476, ...legL(15, 5, 35), ...legR(15, -20, 40, 0, 0) });
+  r.at(1, { heading: 480, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("tornado-sidekick");
+}
+
 /** Swing 900: the right leg swings through and the left foot takes off in
  * backside, ~540° in the air (the Cheat 900's rotation), the swing leg comes
  * round again for a round kick and the left foot lands (complete). */

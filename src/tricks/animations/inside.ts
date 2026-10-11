@@ -161,6 +161,77 @@ export function buildCartwheel(): THREE.AnimationClip {
   return r.build("cartwheel");
 }
 
+/** One-Handed Cartwheel: a cartwheel on the hand nearer the floor only (the
+ * left, cartwheeling to the left). The legs straddle wide so the right foot
+ * reaches the floor soon after the handstand, while the left hand still holds
+ * the body up, and the right arm reaches forward, out of the cartwheel's
+ * plane, so it never touches the floor. */
+export function buildOneHandedCartwheel(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D, { hands: true });
+  const left = armL(165, 90, 5);
+  const free = armR(90, 0, 10);
+  r.start({ ...left, ...armR(165, -90, 5), ...legL(0, 15), ...legR(0, -10), ...head(0, 0, 10) });
+  r.pin("L", 0, 0.3);
+  r.at(0.14, { roll: -25, ...legL(45, 80, 50), ...legR(0, -10, 5), ...torso(0, 15, 0), ...left, ...armR(150, -95, 10) });
+  r.at(0.26, { roll: -65, ...legL(60, 85, 60, 0, 20), ...legR(40, -90, 5), ...torso(0, 20, 0), ...left, ...armR(100, -40, 20) });
+  r.at(0.3, { roll: -90 });
+  r.at(0.34, { roll: -103 });
+  r.pin("handL", 0.3, 0.55);
+  r.at(0.36, { roll: -115, ...legL(30, 85, 10), ...legR(30, -90, 0), ...torso(0, 10, 0), ...armL(170, 90, 0), ...free });
+  r.at(0.45, { roll: -175, ...legL(55, 85, 0), ...legR(75, -85, 0), ...torso(0, 0, 0), ...armL(170, 90, 0), ...free });
+  r.at(0.52, { roll: -205, ...legL(35, 85, 0), ...legR(105, -85, 5), ...torso(0, -15, 0), ...left, ...free });
+  r.pin("R", 0.55, 1);
+  r.at(0.66, { roll: -290, ...legL(25, 80, 10), ...legR(50, -70, 25), ...torso(0, -15, 0), ...armL(150, 90, 10), ...armR(95, -40, 20) });
+  r.at(0.8, { roll: -345, ...legL(20, 50, 20), ...legR(16, -40, 20), ...torso(0, -8, 0), ...armL(140, 90, 10), ...armR(120, -90, 10) });
+  // The left foot comes down in the final stance, so nothing slides once both feet are down.
+  r.at(0.9, { roll: -360, ...legL(10, 35, 15), ...legR(10, -30, 15), ...torso(0, 0, 0) });
+  r.at(1, { roll: -360, ...legL(10, 35, 15), ...legR(10, -30, 15), ...torso(0, 0, 0), ...armsWide, ...head(0, 0, 0) });
+  return r.build("one-handed-cartwheel");
+}
+
+/** Roundoff: the cartwheel's entry (left foot, left hand, right hand), but
+ * the legs meet over the top while the body turns a quarter on the hands,
+ * then it pushes off and both feet land together, facing back the way it
+ * came (-X, the cartwheel travels to +X). */
+export function buildRoundoff(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D, { hands: true });
+  const up = { ...armL(165, 90, 5), ...armR(165, -90, 5) };
+  r.start({ ...up, ...legL(0, 15), ...legR(0, -10), ...head(0, 0, 10) });
+  r.pin("L", 0, 0.3);
+  r.at(0.14, { roll: -25, ...legL(45, 80, 50), ...legR(0, -10, 5), ...torso(0, 15, 0), ...up });
+  r.at(0.24, { roll: -65, ...legL(60, 85, 60, 0, 20), ...legR(40, -90, 5), ...torso(0, 20, 0), ...up });
+  r.pin("handL", 0.3, 0.45);
+  r.at(0.36, { roll: -115, twist: 0, ...legL(15, 85, 10), ...legR(10, -90, 0), ...torso(0, 10, 0), ...up });
+  r.pin("handR", 0.45, 0.53);
+  // Legs meet over the top while the body turns a quarter on the hands.
+  r.at(0.46, { roll: -175, twist: -25, ...legL(0, 30, 0), ...legR(0, -30, 0), ...torso(0, 0, 0), ...armL(150, 90, 5), ...armR(165, -90, 5) });
+  r.at(0.53, { roll: -212, twist: -90, ...legL(5, 8, 0), ...legR(5, -8, 0), ...torso(0, 0, 0), ...armL(155, 90, 5), ...armR(165, -90, 5) });
+  // Snap down: off the hands the legs whip down while the hips drop, and both
+  // feet land together just in front of the hips with the chest up. The thigh
+  // direction in the cartwheel plane is roll minus hip flexion; holding it
+  // over the last frames lets the feet come straight down instead of skidding.
+  r.flight(0.53, 0.65, { travel: [0.04, 0] });
+  r.at(0.58, { roll: -268, twist: -90, ...legL(50, 0, 30), ...legR(50, 0, 30), ...torso(10, 0, 0), ...up, ...head(10, 0, 0) });
+  r.at(0.62, { roll: -322, twist: -90, ...legL(40, 0, 28), ...legR(40, 0, 28), ...torso(8, 0, 0), ...up, ...head(5, 0, 0) });
+  r.at(0.65, {
+    roll: -342,
+    twist: -90,
+    ...legL(20, 0, 28),
+    ...legR(20, 0, 28),
+    ...torso(5, 0, 0),
+    ...armL(160, 90, 5),
+    ...armR(160, -90, 5),
+    ...head(5, 0, 0),
+  });
+  r.pin("L", 0.65, 1);
+  r.at(0.73, { roll: -357, twist: -90, ...legL(26, 0, 45), ...legR(26, 0, 45), ...torso(5, 0, 0), ...armL(150, 80, 5), ...armR(150, -80, 5) });
+  r.at(0.86, { roll: -360, twist: -90, ...legL(32, 0, 55), ...legR(32, 0, 55), ...torso(10, 0, 0), ...armL(120, 70, 10), ...armR(120, -70, 10), ...head(0, 0, 0) });
+  r.at(1, { roll: -360, twist: -90, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  return r.build("roundoff");
+}
+
 /** Aerial: no-handed left cartwheel. Takeoff from the left foot, right leg
  * kicks over first and lands first (hyper). */
 export function buildAerial(): THREE.AnimationClip {

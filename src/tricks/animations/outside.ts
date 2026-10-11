@@ -1,6 +1,6 @@
 import type * as THREE from "three";
 import { Rig } from "../rig";
-import { armL, armR, armsDown, armsWide, head, legL, legR, legsAbsorb, torso } from "./poses";
+import { armL, armR, armsDown, armsTight, armsWide, head, legL, legR, legsAbsorb, torso } from "./poses";
 
 /* Outside tricks (raiz, doubleleg, spyder) for a left-twisting tricker. */
 
@@ -515,6 +515,92 @@ export function buildDoubleleg(): THREE.AnimationClip {
   r.pin("L", 0.78, 1);
   r.at(1, { heading: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("double-leg");
+}
+
+/** Doubleleg Twist: the Doubleleg's takeoff and V, then the legs come down,
+ * the arms wrap in for an extra twist, and it lands in complete (left foot). */
+export function buildDoublelegTwist(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -15) });
+  r.pin("L", 0, 0.34);
+  r.at(0.18, {
+    heading: 20,
+    ...legL(35, 15, 50),
+    ...legR(35, -15, 50),
+    ...armL(45, 10, 20),
+    ...armR(60, -140, 20),
+    ...torso(15, 0, -35),
+    ...head(5, -20),
+  });
+  r.at(0.34, {
+    heading: 100,
+    tilt: 25,
+    spin: 0,
+    twist: 0,
+    ...legL(0, 5, 5, 0, 35),
+    ...legR(0, -5, 5, 0, 35),
+    ...armL(150, 90, 10),
+    ...armR(130, -30, 20),
+    ...torso(-10, 0, 35),
+    ...head(-10, 40),
+  });
+  r.flight(0.34, 0.82, { travel: [0.1, 0.1], apex: 0.55 });
+  r.at(0.44, {
+    heading: 170,
+    spin: 110,
+    ...legL(75, 5, 10),
+    ...legR(75, -5, 10),
+    ...armL(110, 60, 10),
+    ...armR(110, -60, 10),
+    ...torso(10, 0, 20),
+    ...head(-10, 20),
+  });
+  r.at(0.53, {
+    heading: 230,
+    spin: 200,
+    twist: 0,
+    ...legL(100, 5, 5),
+    ...legR(100, -5, 5),
+    ...armL(100, 20, 10),
+    ...armR(100, -20, 10),
+    ...torso(20, 0, 10),
+    ...head(0, 10),
+  });
+  r.at(0.62, {
+    heading: 290,
+    spin: 290,
+    twist: 150,
+    ...legL(40, 5, 10),
+    ...legR(40, -5, 10),
+    ...armsTight,
+    ...torso(5, 0, 0),
+    ...head(0, 30),
+  });
+  r.at(0.72, {
+    heading: 340,
+    spin: 340,
+    twist: 300,
+    ...legL(20, 5, 15),
+    ...legR(25, -5, 15),
+    ...armsTight,
+    ...torso(5, 0, 0),
+    ...head(0, 20),
+  });
+  r.at(0.82, {
+    heading: 360,
+    spin: 360,
+    twist: 360,
+    ...legL(30, 10, 40),
+    ...legR(55, -10, 50),
+    ...armsWide,
+    ...torso(15, 0, 0),
+    ...head(5, 0),
+  });
+  r.pin("L", 0.82, 1);
+  r.at(0.91, { heading: 360, ...legL(25, 8, 40), ...legR(25, -10, 45) });
+  r.at(1, { heading: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("doubleleg-twist");
 }
 
 /** Spyder: raiz-style step, then a chest-down flat spin like a butterfly kick
