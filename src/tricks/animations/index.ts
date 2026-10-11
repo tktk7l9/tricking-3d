@@ -337,6 +337,13 @@ function buildWebster(): THREE.AnimationClip {
   stand(b, 0);
   hipsAtStand(b, 0);
   leanForward(b, 0, 10);
+  // Key the legs at t=0 too, or they hold their first later key (the swing
+  // leg would start raised behind). Weight on the right foot, the left foot
+  // just behind on its toes, ready to swing back and up.
+  b.key("rightUpLeg", 0, { eulerDeg: { x: 0 } });
+  b.key("rightLeg", 0, { eulerDeg: { x: 0 } });
+  b.key("leftUpLeg", 0, { eulerDeg: { x: 15 } });
+  b.key("leftLeg", 0, { eulerDeg: { x: 20 } });
 
   // single foot load (right)
   b.key("rightUpLeg", 0.2 * D, { eulerDeg: { x: -35 } });
@@ -352,6 +359,15 @@ function buildWebster(): THREE.AnimationClip {
   armsForward(b, 0.3 * D);
   spineBend(b, 0.3 * D, 25);
   headDown(b, 0.3 * D, 30);
+
+  // The body's pitch carries the swing leg over the top; relative to the pelvis
+  // it then folds forward under the body into the tuck. Without these keys the
+  // 190° jump from the back swing (70) to the tuck (-120) slerps the short way
+  // round, folding the leg up over the back.
+  b.key("leftUpLeg", 0.38 * D, { eulerDeg: { x: 60 } });
+  b.key("leftLeg", 0.38 * D, { eulerDeg: { x: 25 } });
+  b.key("leftUpLeg", 0.46 * D, { eulerDeg: { x: -30 } });
+  b.key("leftLeg", 0.46 * D, { eulerDeg: { x: 90 } });
 
   // apex tuck
   legsTuck(b, 0.55 * D);

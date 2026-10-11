@@ -13,15 +13,20 @@ import { InfoPanel } from "./ui/InfoPanel";
 import { CameraSwitcher, OverlaySwitcher } from "./ui/CameraSwitcher";
 import { DEFAULT_TRICK_ID, TRICKS, getTrick } from "./tricks/catalog";
 import { hashForTrick, trickIdFromHash } from "./lib/hash";
+import { STILL, buildFollowPath, followOffsetAt, type FollowPath } from "./lib/follow";
 import { PanelTabs } from "./ui/PanelTabs";
+
+/** URL of the optional skinned character, set at build time only when public/models/character.glb exists. */
+const CHARACTER_GLB = typeof __CHARACTER_GLB__ === "string" ? __CHARACTER_GLB__ : "";
 
 export async function startApp() {
   const canvas = document.getElementById("canvas") as HTMLCanvasElement;
   const stage = new Stage(canvas);
   const cameras = new Cameras(canvas);
 
-  // Optional GLB at /models/character.glb — falls back to procedural humanoid.
-  const character = await Character.load("/models/character.glb");
+  // The procedural humanoid unless a GLB was bundled; a deploy without one
+  // doesn't request it (no 404 in the console).
+  const character = await Character.load(CHARACTER_GLB || undefined);
   stage.scene.add(character.root);
 
   const player = new AnimationPlayer(character);
@@ -65,6 +70,16 @@ export async function startApp() {
   new OverlaySwitcher(document.getElementById("hud-overlays")!, state);
   new PanelTabs(document.getElementById("panel-tabs")!, document.getElementById("app")!);
 
+  // Camera follow for tricks that travel (SHIG 59: the body stays in view).
+  // With reduced motion the camera does not move during playback; it frames
+  // the whole travelled area instead.
+  let follow: FollowPath = STILL;
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+  let reduceMotion = reducedMotion?.matches ?? false;
+  reducedMotion?.addEventListener?.("change", (e) => {
+    reduceMotion = e.matches;
+  });
+
   // Handlers wiring state -> systems
   const applyTrick = (id: string) => {
     player.loadTrick(id);
@@ -74,7 +89,9 @@ export async function startApp() {
     axisOverlay.setTrick(meta);
     annotations.setTrick(meta);
     comTracer.bake();
+    follow = buildFollowPath(comTracer.samples, player.getDuration());
     titleBlock.innerHTML = `<span class="jp">${meta.nameJp}</span><span class="en">${meta.nameEn}</span>`;
+    updateLabelKeepOut();
   };
 
   state.subscribe("trickId", applyTrick, true);
@@ -116,12 +133,26 @@ export async function startApp() {
     annotations.tryClick(ndc);
   });
 
+  // Labels in the 3D view stay clear of the controls drawn over it (SHIG 85).
+  function updateLabelKeepOut() {
+    const base = canvas.getBoundingClientRect();
+    const controls = [titleBlock, document.getElementById("hud-camera"), document.getElementById("hud-overlays")];
+    annotations.setBlockedAreas(
+      controls
+        .map((el) => el?.getBoundingClientRect())
+        .filter((r): r is DOMRect => !!r && r.width > 0 && r.height > 0)
+        .map((r) => ({ x: r.left - base.left, y: r.top - base.top, w: r.width, h: r.height })),
+    );
+  }
+
   // Resize
   const resize = () => {
     const w = canvas.clientWidth || window.innerWidth;
     const h = canvas.clientHeight || window.innerHeight;
     stage.resize(w, h);
     cameras.resize(w, h);
+    annotations.setViewport(w, h);
+    updateLabelKeepOut();
   };
   window.addEventListener("resize", resize);
   // initial resize once layout settles
@@ -136,9 +167,17 @@ export async function startApp() {
     timer.update();
     const dt = timer.getDelta();
     player.update(dt);
+    if (!follow.active) cameras.setFollow(0, 0, 1);
+    else if (reduceMotion) cameras.setFollow(follow.center.x, follow.center.z, follow.zoom);
+    else {
+      const offset = followOffsetAt(follow, player.getTime());
+      cameras.setFollow(offset.x, offset.z, 1);
+    }
     cameras.update();
+    cameras.camera.updateMatrixWorld();
     axisOverlay.follow();
     annotations.highlightAt(player.getTime());
+    annotations.updateLayout(dt, reduceMotion);
 
     // Sync state.time from player when playing
     if (state.get("playing")) {
