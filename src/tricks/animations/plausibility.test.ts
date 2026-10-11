@@ -166,6 +166,74 @@ describe.each(TRICKS.map((t) => [t.id, t] as const))("%s hip range", (_id, trick
   });
 });
 
+/* Keypoints that name a hand plant, a touchdown or a takeoff sit on the frame
+ * where that contact happens in the clip, so the labels and the timeline say
+ * what the figure is doing at that moment. */
+
+type ContactEvent = "handL" | "handR" | "L" | "R" | "both" | "takeoff";
+
+/** Which contact a keypoint label names, if any. */
+function contactEvent(label: string): ContactEvent | null {
+  if (/左手をつく/.test(label)) return "handL";
+  if (/右手をつく/.test(label)) return "handR";
+  if (/両足[^・]*接地/.test(label)) return "both";
+  if (/右足[^・]*接地/.test(label)) return "R";
+  if (/左足[^・]*接地|左足を下ろす/.test(label)) return "L";
+  if (/踏切|ポップ/.test(label)) return "takeoff";
+  return null;
+}
+
+/** Sample index where the named contact happens: a hand's first plant; a foot's
+ * first touchdown after the main flight (or, without one, after it first left
+ * the floor); the last foot leaving the floor before the main flight. */
+function contactEventIndex(samples: Sample[], event: ContactEvent): number | undefined {
+  const flight = longestFlight(samples);
+  const touchdown = (height: (s: Sample) => number) =>
+    contacts(samples, height).find(([a]) => (flight ? a > flight[1] : a > 0))?.[0];
+  switch (event) {
+    case "handL":
+      return contacts(samples, (s) => s.handL)[0]?.[0];
+    case "handR":
+      return contacts(samples, (s) => s.handR)[0]?.[0];
+    case "L":
+      return touchdown((s) => s.left);
+    case "R":
+      return touchdown((s) => s.right);
+    case "both": {
+      const l = touchdown((s) => s.left);
+      const r = touchdown((s) => s.right);
+      return l === undefined || r === undefined ? undefined : Math.max(l, r);
+    }
+    case "takeoff": {
+      if (!flight) return undefined;
+      let i = flight[0] - 1;
+      while (i > 0 && Math.min(samples[i].left, samples[i].right) >= 0.03) i--;
+      return i + 1;
+    }
+  }
+}
+
+/** How far (normalized clip time) a contact keypoint may sit from its contact. */
+const CONTACT_TOLERANCE = 0.02;
+
+const contactKeyed = TRICKS.filter((t) => t.keypoints.some((k) => k.t < 1 && contactEvent(k.label)));
+
+describe.each(contactKeyed.map((t) => [t.id, t] as const))("%s contact keypoints", (_id, trick) => {
+  it("sit on the frames where the hand or foot lands or leaves", () => {
+    const samples = sampleClip(trick, 300);
+    for (const kp of trick.keypoints) {
+      const event = kp.t < 1 ? contactEvent(kp.label) : null;
+      if (!event) continue;
+      const i = contactEventIndex(samples, event);
+      expect(i, `${kp.label}: no ${event} contact in the clip`).toBeDefined();
+      const u = samples[i!].t / trick.duration;
+      expect(Math.abs(kp.t - u), `${kp.label} is keyed at ${kp.t}, the ${event} contact is at ${u.toFixed(3)}`).toBeLessThanOrEqual(
+        CONTACT_TOLERANCE,
+      );
+    }
+  });
+});
+
 /* Contracts specific to the tricks that fill the progression tree (2026-10). */
 
 const byId = (id: string): TrickMeta => TRICKS.find((t) => t.id === id)!;

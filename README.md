@@ -62,7 +62,7 @@ npm run preview
 - 技ごとのアニメーションはコードで合成（`THREE.AnimationClip`）。
   - 縦回転の基本技（バク宙・前宙・サイドフリップ・ゲイナー・フル・コーク・ウェブスター）は `src/tricks/animations/index.ts` の `Builder` DSL（`src/tricks/authoring.ts`）による手付けキー。
   - それ以外は `src/tricks/rig.ts` のセマンティックリグ（腰の heading/pitch/roll/twist、脚の方位・挙上・膝、腕など）で `kicks.ts` / `inside.ts` / `outside.ts` / `flips.ts` に記述。リグは単調3次補間で密にサンプリングし、ピン止めした足（手）を軸に腰を解き、空中は放物線、接地中は最下点が床に着くように腰の高さを決める。
-  - `src/tricks/animations/plausibility.test.ts` が全技について「足が床を貫かない」「踏切足・着地足がカタログと一致する」ことを実機のリグで検証する。
+  - `src/tricks/animations/plausibility.test.ts` が全技について「足が床を貫かない」「踏切足・着地足がカタログと一致する」ことを実機のリグで検証する。手をつく・接地・踏切を表すキーポイントが、クリップの中で実際にその接触が起きるフレーム（正規化時間で ±0.02 以内）に置かれていることも検証する。
 - 技のメタデータ（名前・カテゴリ・回転軸・踏切足・着地足・キーポイント）は `src/tricks/catalog.ts`。
 - 解析オーバーレイは `src/analysis/`（軸矢印、重心ライン、ラベルスプライト）。ラベルの重なり回避は `src/lib/labelLayout.ts`（画面座標で、アンカーまわりの格子から空いているセルを選ぶ。混み具合の判定 `isCrowded`、残すラベルの選択 `focusKeypoint`、人体を避ける `avoid` もここ）。
 - カメラ追従は `src/lib/follow.ts`。重心ラインと同じ腰の軌跡をガウス平滑化して、再生時刻だけで決まるオフセットにする（シークやコマ送りでも同じ構図）。腰が開始位置から 0.6 m 以内に収まる技は追従しない。
