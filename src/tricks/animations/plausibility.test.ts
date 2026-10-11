@@ -155,10 +155,10 @@ describe.each(TRICKS.map((t) => [t.id, t] as const))("%s", (_id, trick) => {
   });
 });
 
-/* Hip range of the rig-authored clips. The legacy Builder clips are left out:
- * their slerped keys can take a leg the long way round (the webster's swing leg
- * folds up over the back mid-flip) until they are re-authored on the rig. */
-describe.each(TRICKS.filter((t) => !LEGACY.has(t.id)).map((t) => [t.id, t] as const))("%s hip range", (_id, trick) => {
+/* Hip range of every clip, including the hand-keyed Builder ones: a thigh may
+ * swing behind the body as far as a split, never up over the back (a Builder
+ * key more than 180° away from the next one slerps the short way round). */
+describe.each(TRICKS.map((t) => [t.id, t] as const))("%s hip range", (_id, trick) => {
   it("never swings a thigh up behind the body past a split", () => {
     for (const s of sampleClip(trick)) {
       expect(Math.max(s.extL, s.extR), `t=${s.t.toFixed(2)}`).toBeLessThan(100);
