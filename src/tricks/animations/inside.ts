@@ -145,18 +145,21 @@ export function buildCartwheel(): THREE.AnimationClip {
   const r = new Rig(D, { hands: true });
   const up = { ...armL(165, 90, 5), ...armR(165, -90, 5) };
   r.start({ ...up, ...legL(0, 15), ...legR(0, -10), ...head(0, 0, 10) });
-  r.pin("L", 0, 0.24);
+  r.pin("L", 0, 0.3);
   r.at(0.14, { roll: -25, ...legL(45, 80, 50), ...legR(0, -10, 5), ...torso(0, 15, 0), ...up });
   r.at(0.24, { roll: -65, ...legL(60, 85, 60, 0, 20), ...legR(40, -90, 5), ...torso(0, 20, 0), ...up });
-  r.pin("handL", 0.24, 0.42);
+  r.pin("handL", 0.3, 0.48);
   r.at(0.34, { roll: -110, ...legL(15, 85, 10), ...legR(10, -90, 0), ...torso(0, 10, 0), ...up });
-  r.pin("handR", 0.42, 0.58);
+  r.pin("handR", 0.48, 0.615);
   r.at(0.5, { roll: -190, ...legL(0, 85, 0), ...legR(0, -85, 0), ...torso(0, 0, 0), ...up });
   r.at(0.58, { roll: -250, ...legL(10, 85, 0), ...legR(15, -85, 5), ...torso(0, -10, 0), ...up });
-  r.pin("R", 0.58, 0.78);
+  r.pin("R", 0.615, 0.93);
   r.at(0.68, { roll: -300, ...legL(20, 80, 10), ...legR(40, -70, 30), ...torso(0, -15, 0), ...up });
   r.at(0.78, { roll: -340, ...legL(30, 60, 30), ...legR(30, -50, 30), ...torso(0, -10, 0), ...up });
-  r.pin("L", 0.78, 1);
+  // The left foot comes down in the final stance, so neither foot slides once both are down.
+  r.at(0.88, { roll: -356, ...legL(10, 25, 15), ...legR(8, -20, 12), ...torso(0, -4, 0) });
+  r.at(0.93, { roll: -360, ...legL(0, 15), ...legR(0, -15), ...torso(0, 0, 0) });
+  r.pin("L", 0.93, 1);
   r.at(1, { roll: -360, ...legL(0, 15), ...legR(0, -15), ...torso(0, 0, 0), ...armsWide, ...head(0, 0, 0) });
   return r.build("cartwheel");
 }
@@ -202,9 +205,9 @@ export function buildRoundoff(): THREE.AnimationClip {
   r.pin("L", 0, 0.3);
   r.at(0.14, { roll: -25, ...legL(45, 80, 50), ...legR(0, -10, 5), ...torso(0, 15, 0), ...up });
   r.at(0.24, { roll: -65, ...legL(60, 85, 60, 0, 20), ...legR(40, -90, 5), ...torso(0, 20, 0), ...up });
-  r.pin("handL", 0.3, 0.45);
+  r.pin("handL", 0.3, 0.46);
   r.at(0.36, { roll: -115, twist: 0, ...legL(15, 85, 10), ...legR(10, -90, 0), ...torso(0, 10, 0), ...up });
-  r.pin("handR", 0.45, 0.53);
+  r.pin("handR", 0.46, 0.53);
   // Legs meet over the top while the body turns a quarter on the hands.
   r.at(0.46, { roll: -175, twist: -25, ...legL(0, 30, 0), ...legR(0, -30, 0), ...torso(0, 0, 0), ...armL(150, 90, 5), ...armR(165, -90, 5) });
   r.at(0.53, { roll: -212, twist: -90, ...legL(5, 8, 0), ...legR(5, -8, 0), ...torso(0, 0, 0), ...armL(155, 90, 5), ...armR(165, -90, 5) });
@@ -255,9 +258,12 @@ export function buildAerial(): THREE.AnimationClip {
   r.at(0.52, { roll: -200, ...legL(0, 85, 0), ...legR(0, -85, 0), ...torso(0, 0, 0), ...up });
   r.at(0.62, { roll: -265, ...legL(10, 85, 5), ...legR(20, -85, 5), ...torso(0, -10, 0), ...armL(120, 90, 10), ...armR(120, -90, 10) });
   r.at(0.72, { roll: -310, ...legL(20, 80, 10), ...legR(45, -70, 35), ...torso(0, -15, 0), ...armsWide });
-  r.pin("R", 0.72, 0.86);
+  r.pin("R", 0.72, 0.96);
   r.at(0.86, { roll: -345, ...legL(35, 55, 35), ...legR(30, -45, 35), ...torso(0, -10, 0) });
-  r.pin("L", 0.86, 1);
+  // The left foot comes down in the final stance, so neither foot slides once both are down.
+  r.at(0.92, { roll: -356, ...legL(16, 22, 24), ...legR(12, -17, 22), ...torso(0, -4, 0) });
+  r.at(0.96, { roll: -360, ...legL(10, 15, 20), ...legR(10, -15, 20), ...torso(0, 0, 0) });
+  r.pin("L", 0.96, 1);
   r.at(1, { roll: -360, ...legL(10, 15, 20), ...legR(10, -15, 20), ...torso(0, 0, 0), ...armsDown, ...head(0, 0, 0) });
   return r.build("aerial");
 }
@@ -297,71 +303,61 @@ export function buildAerialTwist(): THREE.AnimationClip {
   return r.build("aerial-twist");
 }
 
-/** Scoot family: drop over the left hand, swing the right leg around, jump off
- * the right foot turning 180°, land on the left foot with the right leg behind.
- * The masterscoot uses both hands and goes more inverted. */
-function buildScootLike(name: string, master: boolean): THREE.AnimationClip {
-  const D = master ? 1.8 : 1.6;
+/** When the scoot's right foot leaves the floor and its left foot lands (normalized time). */
+const SCOOT = { push: 0.456, land: 0.515 };
+
+/** Scoot: crouch on the right leg, drop onto the left hand, push off the
+ * right foot and swing the right leg around while turning 180° over the hand,
+ * then land on the left foot with the right leg behind. Each pin starts when
+ * that hand or foot actually reaches the floor, so nothing slides. */
+export function buildScoot(): THREE.AnimationClip {
+  const D = 1.6;
   const r = new Rig(D, { hands: true });
-  const inv = master ? 110 : 70; // peak forward pitch
-  if (master) {
-    // hyper landing stance: on the right foot, left leg in the air in front
-    r.start({ ...armsDown, ...legR(5, -5, 10), ...legL(40, 10, 60), ...torso(5, 0, 0) });
-    r.pin("R", 0, 0.42);
-    r.at(0.16, { heading: 10, pitch: 10, ...legL(-30, 20, 30), ...legR(30, -5, 40), ...torso(20, 0, 0), ...armL(60, 60, 20), ...armR(60, -120, 20) });
-  } else {
-    r.start({ ...armsDown, ...legL(10, 10), ...legR(-10, -10) });
-    r.pin("L", 0, 0.2);
-    r.at(0.16, { heading: 15, pitch: 25, ...legL(70, 15, 90), ...legR(45, -10, 60), ...torso(25, 0, 0), ...armL(80, 20, 10), ...armR(50, -100, 20) });
-    r.pin("R", 0.2, 0.42);
-  }
-  r.at(0.3, {
-    heading: 40,
-    pitch: 45,
-    ...legL(master ? 20 : 95, 20, master ? 20 : 120),
-    ...legR(60, -10, master ? 50 : 80),
-    ...torso(master ? 20 : 45, 0, 10),
-    ...armL(140, 20, 10),
-    ...armR(master ? 130 : 80, -40, 10),
-    ...head(-20, 20),
-  });
-  r.pin("handL", 0.42, 0.6);
-  r.at(0.42, {
-    heading: 90,
-    pitch: inv - 20,
-    ...legL(master ? -10 : 100, 25, master ? 10 : 130),
-    ...legR(master ? 0 : 90, -20, master ? 10 : 110, 0, 30),
-    ...torso(master ? 10 : 70, 0, 20),
-    ...armL(165, 40, 5),
-    ...armR(master ? 165 : 100, -60, 5),
-    ...head(-25, 30),
-  });
-  if (master) r.pin("handR", 0.5, 0.62);
-  r.at(0.54, {
-    heading: 150,
-    pitch: inv,
-    ...legL(master ? -20 : 80, 30, master ? 10 : 90),
-    ...legR(-30, -35, 10),
-    ...torso(master ? 0 : 55, 0, 10),
-    ...armL(165, 40, 5),
-    ...armR(165, -50, 5),
-    ...head(-30, 20),
-  });
-  r.at(0.66, {
-    heading: 195,
-    pitch: inv - 50,
-    ...legL(50, 15, 30),
-    ...legR(-35, -30, 20),
-    ...torso(10, 0, 0),
-    ...armL(100, 60, 20),
-    ...armR(100, -60, 20),
-    ...head(-15, 0),
-  });
-  r.pin("L", 0.7, 1);
-  r.at(0.76, { heading: 205, pitch: 25, ...legL(40, 10, 40), ...legR(-30, -20, 30), ...torso(15, 0, 0), ...armsWide });
+  r.start({ ...armsDown, ...legL(10, 10), ...legR(-10, -10) });
+  r.pin("R", 0, SCOOT.push);
+  r.at(0.07, { ...legL(45, 12, 60), ...legR(15, -10, 20) });
+  r.at(0.16, { heading: 15, pitch: 25, ...legL(65, 15, 85), ...legR(45, -10, 60), ...torso(25, 0, 0), ...armL(80, 20, 10), ...armR(50, -100, 20) });
+  r.at(0.3, { heading: 40, pitch: 45, ...legL(110, 20, 130), ...legR(55, -10, 80), ...torso(45, 0, 10), ...armL(150, 30, 5), ...armR(70, -100, 20), ...head(-20, 20) });
+  r.at(0.42, { heading: 85, pitch: 70, ...legL(125, 25, 140), ...legR(70, -20, 95, 0, 30), ...torso(60, 0, 20), ...armL(175, 40, 0), ...armR(60, -110, 25), ...head(-25, 30) });
+  // The turn speeds up only once the hand has taken the weight from the pushing foot.
+  r.at(0.45, { heading: 92, pitch: 72, ...legR(45, -25, 65, 0, 40) });
+  r.pin("handL", SCOOT.push, SCOOT.land);
+  r.at(0.5, { heading: 130, pitch: 75, ...legL(125, 30, 140), ...legR(15, -30, 40, 0, 30), ...torso(55, 0, 15), ...armL(175, 45, 0), ...armR(70, -110, 25), ...head(-30, 20) });
+  r.at(0.58, { heading: 175, pitch: 50, ...legL(75, 25, 60), ...legR(-30, -35, 10), ...torso(30, 0, 10), ...armL(160, 55, 5), ...armR(85, -90, 20), ...head(-20, 10) });
+  r.at(0.64, { heading: 198, pitch: 25, ...legL(45, 15, 35), ...legR(-35, -30, 20), ...torso(15, 0, 0), ...armL(100, 60, 20), ...armR(100, -60, 20), ...head(-15, 0) });
+  r.pin("L", SCOOT.land, 1);
+  r.at(0.76, { heading: 205, pitch: 20, ...legL(40, 10, 40), ...legR(-30, -20, 30), ...torso(15, 0, 0), ...armsWide });
   r.at(1, { heading: 210, pitch: 0, ...legL(15, 5, 30), ...legR(-25, -10, 25), ...torso(5, 0, 0), ...armsDown, ...head(0, 0) });
-  return r.build(name);
+  return r.build("scoot");
 }
 
-export const buildScoot = (): THREE.AnimationClip => buildScootLike("scoot", false);
-export const buildMasterscoot = (): THREE.AnimationClip => buildScootLike("master-swing", true);
+
+/** When the masterscoot's hands go down, its right foot leaves and its left foot lands (normalized time). */
+const MASTER = { push: 0.375, second: 0.485, land: 0.58 };
+
+/** Masterscoot: from the hyper landing (right foot down, left leg in front)
+ * the left leg swings back, the left hand and then the right hand go down and
+ * the body passes more inverted than in the scoot, like a cartwheel, before the
+ * left foot lands with the right leg behind. */
+export function buildMasterscoot(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D, { hands: true });
+  r.start({ ...armsDown, ...legR(5, -5, 10), ...legL(40, 10, 60), ...torso(5, 0, 0) });
+  r.pin("R", 0, MASTER.push);
+  r.at(0.08, { ...legL(10, 15, 75) });
+  r.at(0.16, { heading: 10, pitch: 10, ...legL(-30, 20, 40), ...legR(30, -5, 40), ...torso(20, 0, 0), ...armL(60, 60, 20), ...armR(60, -120, 20) });
+  r.at(0.3, { heading: 35, pitch: 45, ...legL(-30, 20, 20), ...legR(50, -10, 65), ...torso(20, 0, 0), ...armL(150, 0, 5), ...armR(80, -90, 20), ...head(-20, 20) });
+  r.at(0.4, { heading: 75, pitch: 80, ...legL(-40, 25, 15), ...legR(70, -15, 95, 0, 30), ...torso(15, 0, 0), ...armL(85, 0, 0), ...armR(40, -90, 20), ...head(-25, 30) });
+  r.pin("handL", MASTER.push, MASTER.second);
+  r.at(0.46, { heading: 105, pitch: 95, ...legL(-30, 28, 10), ...legR(30, -25, 40, 0, 30), ...torso(5, 0, 0), ...armL(100, 0, 0), ...armR(125, -10, 5), ...head(-30, 20) });
+  r.pin("handR", MASTER.second, MASTER.land);
+  r.at(0.52, { heading: 135, pitch: 110, ...legL(-20, 30, 10), ...legR(-25, -35, 10), ...torso(0, 0, 10), ...armL(115, 0, 0), ...armR(118, -10, 0), ...head(-30, 20) });
+  r.at(0.57, { heading: 160, pitch: 92, ...legL(40, 25, 30), ...legR(-30, -35, 10), ...torso(0, 0, 10), ...armL(95, 0, 0), ...armR(98, -10, 0), ...head(-25, 10) });
+  r.at(0.62, { heading: 185, pitch: 62, ...legL(58, 15, 30), ...legR(-35, -30, 20), ...torso(10, 0, 0), ...armL(115, 30, 10), ...armR(125, -30, 10), ...head(-15, 0) });
+  r.at(0.68, { heading: 198, pitch: 38, ...legL(45, 12, 35), ...legR(-35, -28, 22), ...torso(12, 0, 0), ...armL(100, 60, 20), ...armR(105, -60, 20), ...head(-10, 0) });
+  r.pin("L", MASTER.land, 1);
+  r.at(0.76, { heading: 205, pitch: 25, ...legL(40, 10, 40), ...legR(-30, -20, 30), ...torso(15, 0, 0), ...armsWide });
+  r.at(1, { heading: 210, pitch: 0, ...legL(15, 5, 30), ...legR(-25, -10, 25), ...torso(5, 0, 0), ...armsDown, ...head(0, 0) });
+  return r.build("master-swing");
+}
+
