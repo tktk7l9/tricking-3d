@@ -99,6 +99,8 @@ export function buildGumbi(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D, { hands: true });
   outsideStep(r);
+  // The tilted spin starts only once the step has turned the back.
+  r.at(0.28, { tilt: 55, spin: 0 });
   // Lean over the right foot and reach down; the left heel drives up behind.
   r.at(0.36, {
     heading: 180,
@@ -194,6 +196,8 @@ export function buildSailorMoon(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D, { hands: true });
   outsideStep(r);
+  // The tilted spin starts only once the step has turned the back.
+  r.at(0.28, { tilt: 55, spin: 0 });
   // Lean over the right foot and reach down; the left heel drives up behind.
   r.at(0.36, {
     heading: 180,

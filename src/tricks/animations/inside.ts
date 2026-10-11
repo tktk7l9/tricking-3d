@@ -203,6 +203,7 @@ export function buildAerialTwist(): THREE.AnimationClip {
   r.at(0.14, { roll: -15, ...legL(40, 70, 50), ...legR(-10, -10, 10), ...torso(10, 10, 0), ...armL(60, 60, 20), ...armR(50, -150, 20) });
   r.at(0.3, {
     roll: -55,
+    twist: 0,
     ...legL(55, 80, 25, 0, 35),
     ...legR(35, -90, 10),
     ...torso(0, 15, 0),

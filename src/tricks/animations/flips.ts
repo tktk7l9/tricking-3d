@@ -222,6 +222,7 @@ function corkEntry(r: Rig) {
   r.pin("L", 0, 0.36);
   r.at(0.2, {
     heading: 15,
+    twist: 0,
     ...legL(25, 5, 35),
     ...legR(30, -5, 40),
     ...armL(45, 10, 20),
@@ -394,6 +395,7 @@ export function buildArabian(): THREE.AnimationClip {
   r.at(0.18, { ...legL(45, 8, 70), ...legR(45, -8, 70), ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
   r.at(0.32, {
     pitch: -15,
+    twist: 0,
     ...legL(0, 5, 5, 0, 35),
     ...legR(0, -5, 5, 0, 35),
     ...armsUp,
