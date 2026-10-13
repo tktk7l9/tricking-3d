@@ -137,7 +137,7 @@ describe("InfoPanel progression", () => {
     const host = mountHost("aside");
     new InfoPanel(host, makeState({ trickId: "540-gyro" }));
     expect(group(host, "先に覚える技").hrefs).toEqual(["#540-kick"]);
-    expect(group(host, "次に挑戦できる技").hrefs).toEqual(["#cheat-900-gyro"]);
+    expect(group(host, "次に挑戦できる技").hrefs).toEqual(["#cheat-900-gyro", "#backside-900-gyro"]);
     // Screen readers hear both names, as separate words.
     expect(getByRole(host, "link", { name: "540キック 540 Kick" })).toBeTruthy();
   });
