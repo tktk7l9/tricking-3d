@@ -856,6 +856,8 @@ describe.each([
   ["butterfly-twist-hyperhook", "butterfly-twist"],
   ["double-full-hyperhook", "double-full"],
   ["gainer-scissor-swipe", "gainer-scissor"],
+  ["double-full-swipe", "double-full"],
+  ["triple-full-hyper", "triple-full"],
 ] as const)("%s", (id, base) => {
   it(`lands on the right foot and keeps the left leg up for a moment, where the ${base} does not land on the right`, () => {
     expect(byId(base).landing).not.toBe("right");
@@ -1187,6 +1189,10 @@ describe.each([
 describe.each([
   ["double-full", 4, "full", 2],
   ["triple-full", 6, "double-full", 4],
+  ["triple-full-hyper", 6, "full-hyper", 2],
+  ["double-full-swipe", 4, "full-swipe", 2],
+  ["double-full-doubleleg", 4, "full-doubleleg", 2],
+  ["kick-full", 2, "flash-kick", 0],
 ] as const)("%s", (id, count, base, baseCount) => {
   it(`turns side on ${count} times in the air (${count / 2} twists), where the ${base} does it ${baseCount} times`, () => {
     const sideOn = (s: Sample) => Math.abs(Math.sin((s.yaw * Math.PI) / 180)) > 0.8 && Math.abs(s.fwdY) < 0.6;
@@ -1231,5 +1237,71 @@ describe("butterfly twist shuriken", () => {
     const down = after.findIndex((s) => Math.min(s.left, s.right) < 0.03);
     expect(after[down].left, "left foot down first").toBeLessThan(0.03);
     for (const s of after.slice(down, down + 8)) expect(s.right, `t=${s.t.toFixed(2)}: right leg still up`).toBeGreaterThan(0.1);
+  });
+});
+
+/* Contracts for the seventeenth batch (2026-10). */
+
+describe("backside 1080", () => {
+  it("turns about 720° in the air before the hook lands it, as Loopkicks puts it", () => {
+    const samples = sampleClip(byId("backside-1080"));
+    const [a, b] = longestFlight(samples)!;
+    const air = yawTravel(samples, samples[a].t, samples[b].t);
+    expect(air).toBeGreaterThan(690);
+    expect(air).toBeLessThan(760);
+  });
+});
+
+describe.each([
+  ["wrap-double-full", "wrap"],
+  ["tak-double-full", "tak"],
+] as const)("%s", (id, base) => {
+  it(`turns side on more often in the air than the ${base} (a second twist) and lands on the left foot`, () => {
+    const sideOn = (s: Sample) => Math.abs(Math.sin((s.yaw * Math.PI) / 180)) > 0.8 && Math.abs(s.fwdY) < 0.6;
+    const twists = (trickId: string) => {
+      const samples = sampleClip(byId(trickId), 300);
+      const [a, b] = longestFlight(samples)!;
+      return stretches(samples.slice(a, b + 1), sideOn);
+    };
+    expect(twists(id)).toBeGreaterThan(twists(base));
+    const samples = sampleClip(byId(id));
+    const [, end] = longestFlight(samples)!;
+    expect(samples[end + 1].left, "left foot down first").toBeLessThan(samples[end + 1].right);
+  });
+});
+
+describe("double arabian", () => {
+  it("goes upside down twice in the air (two front flips), where the arabian does it once", () => {
+    const flips = (id: string) => {
+      const samples = sampleClip(byId(id), 300);
+      const [a, b] = longestFlight(samples)!;
+      return stretches(samples.slice(a, b + 1), inverted);
+    };
+    expect(flips("double-arabian")).toBe(2);
+    expect(flips("arabian")).toBe(1);
+  });
+});
+
+describe("double aerial twist", () => {
+  it("turns chest down twice while flat in the air (two twists), where the aerial twist does it once", () => {
+    const twists = (id: string) => {
+      const samples = sampleClip(byId(id), 300);
+      const [a, b] = longestFlight(samples)!;
+      return stretches(samples.slice(a, b + 1), chestDownFlat);
+    };
+    expect(twists("double-aerial-twist")).toBe(2);
+    expect(twists("aerial-twist")).toBe(1);
+  });
+});
+
+describe("double full doubleleg", () => {
+  it("swings both legs up together with the body upright in the air, which the double full never does", () => {
+    const doubleleg = (id: string) => {
+      const samples = sampleClip(byId(id));
+      const [a, b] = longestFlight(samples)!;
+      return samples.slice(a, b + 1).some((s) => legsUp(s) && s.head > s.hips.y + 0.3);
+    };
+    expect(doubleleg("double-full-doubleleg")).toBe(true);
+    expect(doubleleg("double-full")).toBe(false);
   });
 });
