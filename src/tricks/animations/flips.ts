@@ -2114,11 +2114,12 @@ export function buildTakDoubleFullRound(): THREE.AnimationClip {
 export function buildCorkscrewShuriken(): THREE.AnimationClip {
   const r = new Rig(1.9);
   corkEntry(r);
-  // The crescent: the straight left leg sweeps from the right across to the left.
-  r.at(0.66, { heading: 92, pitch: -280, twist: 300, roll: -10, ...legL(95, -40, 10), ...legR(40, -10, 80), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(0, 10) });
-  r.at(0.73, { heading: 102, pitch: -330, twist: 345, roll: 0, ...legL(115, 60, 10), ...legR(35, -10, 70), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
+  r.at(0.66, { heading: 92, pitch: -300, twist: 320, roll: -6, ...legL(70, -30, 40), ...legR(40, -10, 70), ...armL(70, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 5), ...head(-5, 10) });
+  // Upright again, the crescent: the straight left leg sweeps from the right across to the left.
+  r.at(0.71, { heading: 100, pitch: -340, twist: 350, roll: 0, ...legL(95, -40, 10), ...legR(40, -10, 80), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(0, 10) });
+  r.at(0.76, { heading: 106, pitch: -355, twist: 360, roll: 0, ...legL(115, 60, 10), ...legR(35, -10, 70), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
   // The kicking leg comes straight down to land while the right stays tucked up.
-  r.at(0.78, { heading: 107, pitch: -350, twist: 355, roll: 0, ...legL(55, 30, 20), ...legR(45, -15, 85), ...armsTight, ...torso(5, 5, 0), ...head(0, 5) });
+  r.at(0.79, { heading: 108, pitch: -358, twist: 360, roll: 0, ...legL(55, 30, 20), ...legR(45, -15, 85), ...armsTight, ...torso(5, 5, 0), ...head(0, 5) });
   r.at(0.82, { heading: 110, pitch: -360, twist: 360, roll: 0, ...legL(20, 8, 30), ...legR(45, -20, 85), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0), ...head(0, 0) });
   r.pin("L", 0.82, 1);
   settle(r, "R", 0.88, 0.94, { heading: 110, pitch: -360, twist: 360, roll: 0 });
