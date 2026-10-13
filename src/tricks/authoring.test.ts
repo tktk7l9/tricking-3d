@@ -96,6 +96,42 @@ describe("Builder", () => {
     expect(end.z).toBeCloseTo(0, 6);
   });
 
+  it("merges keys of different kinds at the same time without inventing the other kind", () => {
+    const b = new Builder(1);
+    b.key("hips", 0.5, { pos: { y: 1 } });
+    b.key("hips", 0.5, { eulerDeg: { x: 30 } });
+    b.key("head", 0.25, { pos: { x: 1 } });
+    b.key("head", 0.25, { pos: { z: 2 } });
+    b.key("neck", 0.25, { eulerDeg: { y: 10 } });
+    b.key("neck", 0.25, { eulerDeg: { z: 20 } });
+    const clip = b.build("kinds-merged", name);
+    expect(clip.tracks.map((t) => t.name).sort()).toEqual([
+      "bone_head.position",
+      "bone_hips.position",
+      "bone_hips.quaternion",
+      "bone_neck.quaternion",
+    ]);
+    expect(Array.from(trackOf(clip, "bone_head.position").values)).toEqual([1, 0, 2]);
+    expect(THREE.MathUtils.radToDeg(eulerAt(trackOf(clip, "bone_hips.quaternion"), 0).x)).toBeCloseTo(30, 4);
+    const neck = eulerAt(trackOf(clip, "bone_neck.quaternion"), 0);
+    expect(THREE.MathUtils.radToDeg(neck.y)).toBeCloseTo(10, 4);
+    expect(THREE.MathUtils.radToDeg(neck.z)).toBeCloseTo(20, 4);
+  });
+
+  it("interpolates an axis inside its later segments", () => {
+    // x is keyed at 0, 0.5 and 1; y only at 0.75, which falls in x's second segment.
+    const b = new Builder(1);
+    b.key("spine", 0, { eulerDeg: { x: 0 } });
+    b.key("spine", 0.5, { eulerDeg: { x: 40 } });
+    b.key("spine", 1, { eulerDeg: { x: 80 } });
+    b.key("spine", 0.75, { eulerDeg: { y: 10 } });
+    const rot = trackOf(b.build("segments", name), ".quaternion");
+    expect(Array.from(rot.times)).toEqual([0, 0.5, 0.75, 1]);
+    const e = eulerAt(rot, 2);
+    expect(THREE.MathUtils.radToDeg(e.x)).toBeCloseTo(60, 4);
+    expect(THREE.MathUtils.radToDeg(e.y)).toBeCloseTo(10, 4);
+  });
+
   it("position axes hold their first/last sample outside their range and default to 0 when never keyed", () => {
     const b = new Builder(1);
     b.key("hips", 0, { pos: { y: 1 } });

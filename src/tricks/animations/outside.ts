@@ -1,33 +1,56 @@
 import type * as THREE from "three";
-import { Rig } from "../rig";
-import { armL, armR, armsDown, armsTight, armsWide, head, legL, legR, legsAbsorb, torso } from "./poses";
+import { Rig, type Pose } from "../rig";
+import { cheatStep, turnOnLeftFoot } from "./kicks";
+import { armL, armR, armsDown, armsTight, armsWide, head, legL, legR, settle, torso } from "./poses";
 
 /* Outside tricks (raiz, doubleleg, spyder) for a left-twisting tricker. */
 
 /** Cheat-style step shared by raiz and spyder: pivot on the left foot while
  * the right foot steps around to backside (heading 180) and plants. */
 function outsideStep(r: Rig) {
-  r.start({ ...armsDown, ...legL(15, 5), ...legR(-10, -5) });
-  r.pin("L", 0, 0.16);
-  r.at(0.16, {
-    heading: 70,
-    ...legR(40, -15, 20),
-    ...legL(-5, 5, 10),
-    ...armL(40, 40, 20),
-    ...armR(35, -150, 20),
-    ...torso(8, 0, 20),
-    ...head(0, 40),
-  });
-  r.pin("R", 0.16, 0.4);
+  cheatStep(r, 0.4);
   r.at(0.28, {
+    pitch: 0,
+    tilt: 0,
+    spin: 0,
+    roll: 0,
+    twist: 0,
     heading: 160,
     ...legR(35, 0, 55),
-    ...legL(5, 10, 50),
+    ...legL(0, 10, 80, 0, -40),
     ...armL(50, 120, 30),
     ...armR(55, -40, 30),
     ...torso(15, 0, 25),
     ...head(5, 40),
   });
+}
+
+/** The right-hand plant of the gumbi and the sailor moons. From `u0` to `u1`
+ * only the body's roll changes (with a little heading so the roll stays level),
+ * which tips it over the line from the right foot to the right hand: the hand
+ * comes straight down onto the floor and takes the weight, then the same tip
+ * lifts the right foot straight off. `plant` holds everything else still.
+ * The body rolls level again by `uLevel`, once the foot is well clear. */
+function rollOntoRightHand(r: Rig, u0: number, u1: number, plant: Pose, roll: number, uLevel: number) {
+  r.at(u0, { ...plant, roll: 0 });
+  r.at(u1, { ...plant, roll, heading: (plant.heading ?? 0) - 0.3 * roll });
+  r.at(uLevel, { roll: 0 });
+}
+
+/** The doublelegs' setup: turn on the left foot while the right foot swings
+ * round, stops right over the spot under its hip and comes straight down beside
+ * the left; then both legs squat and push off as a mirrored pair with the feet
+ * kept under the hips and the heading held, so neither foot slides. */
+function doublelegSetup(r: Rig, uDown: number, uSquat: number, uOff: number) {
+  turnOnLeftFoot(r, 0, 90, 15);
+  const raised = legR(40, -15, 80, 0, -40);
+  const stand = { heading: 90, ...legL(0, 15), ...legR(0, -15) };
+  r.at(0.14, raised);
+  r.at(0.145, { heading: 90, ...legL(0, 15), ...raised });
+  r.at(uDown, stand);
+  r.at(uDown + 0.02, stand);
+  r.at(uSquat, { heading: 90, ...legL(25, 15, 50, 0, -25), ...legR(25, -15, 50, 0, -25) });
+  r.at(uOff, { heading: 90, ...legL(2.5, 15, 5, 0, 32.5), ...legR(2.5, -15, 5, 0, 32.5) });
 }
 
 /** Raiz: right-foot takeoff, left heel drives up behind, body lays back and
@@ -87,8 +110,8 @@ export function buildRaiz(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("L", 0.82, 1);
-  r.at(0.92, { heading: 355, ...legR(0, -10, 30), ...legL(25, 5, 35) });
-  r.at(1, { heading: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  settle(r, "R", 0.89, 0.95, { heading: 360, spin: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("raiz");
 }
 
@@ -113,16 +136,11 @@ export function buildGumbi(): THREE.AnimationClip {
     ...torso(-5, 0, 0),
     ...head(-20, 10),
   });
-  r.at(0.4, {
-    heading: 190,
-    spin: 70,
-    ...legL(-50, 15, 70),
-    ...legR(20, 0, 30, 0, 20),
-    ...armR(67, -118, 0),
-  });
+  r.at(0.4, { ...legL(-50, 15, 70) });
   // The right hand takes the weight as the right foot leaves.
+  rollOntoRightHand(r, 0.4, 0.43, { heading: 190, tilt: 60, spin: 70, ...legR(25, 0, 50, 0, 20), ...armR(62, -118, 0), ...torso(-5, 0, 0) }, 6, 0.56);
   r.pin("handR", 0.4, 0.52);
-  r.at(0.44, {
+  r.at(0.45, {
     heading: 205,
     spin: 100,
     ...legL(-50, 20, 50),
@@ -181,11 +199,9 @@ export function buildGumbi(): THREE.AnimationClip {
     ...torso(0, 0, 0),
     ...head(-10, 0),
   });
-  // The body finishes turning before the right foot comes down, so the second
-  // foot lands where it stays instead of sliding.
-  r.at(0.82, { heading: 358, spin: 360, ...legL(25, 3, 38), ...legR(30, 0, 80), ...torso(5, 0, 0), ...head(0, 0) });
-  r.at(0.88, { heading: 360, spin: 360, ...legsAbsorb });
-  r.at(1, { heading: 360, spin: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  settle(r, "R", 0.82, 0.89, { heading: 360, spin: 360 });
+  r.at(0.82, { ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("gumbi");
 }
 
@@ -210,17 +226,12 @@ export function buildSailorMoon(): THREE.AnimationClip {
     ...torso(-5, 0, 0),
     ...head(-20, 10),
   });
-  r.at(0.4, {
-    heading: 190,
-    spin: 70,
-    ...legL(-50, 15, 70),
-    ...legR(25, 0, 50, 0, 20),
-    ...armR(67, -118, 0),
-  });
+  r.at(0.4, { ...legL(-50, 15, 70) });
   // The right hand lands just before the right foot pushes off and carries the
   // body briefly; then it lets go and the raiz spin finishes in the air.
+  rollOntoRightHand(r, 0.4, 0.43, { heading: 190, tilt: 55, spin: 70, ...legR(25, 0, 50, 0, 20), ...armR(67, -118, 0), ...torso(-5, 0, 0) }, 6, 0.56);
   r.pin("handR", 0.4, 0.47);
-  r.at(0.44, {
+  r.at(0.45, {
     heading: 205,
     spin: 100,
     ...legL(-50, 20, 75),
@@ -260,6 +271,8 @@ export function buildSailorMoon(): THREE.AnimationClip {
     ...torso(-10, 0, 0),
     ...head(-10, 0),
   });
+  // The spin is finished just before touchdown so the left foot comes straight down.
+  r.at(0.795, { spin: 358, heading: 342 });
   r.at(0.82, {
     heading: 345,
     spin: 360,
@@ -270,10 +283,9 @@ export function buildSailorMoon(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("L", 0.82, 1);
-  // Finish the turn first, then bring the right foot straight down onto its spot.
-  r.at(0.9, { heading: 360, ...legL(25, 3, 38), ...legR(30, 0, 80), ...torso(5, 0, 0) });
-  r.at(0.96, { heading: 360, ...legsAbsorb });
-  r.at(1, { heading: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  settle(r, "R", 0.89, 0.95, { heading: 360, spin: 360 });
+  r.at(0.89, { ...torso(5, 0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("sailor-moon");
 }
 
@@ -402,9 +414,10 @@ export function buildSailorMoonRound(): THREE.AnimationClip {
     ...torso(-5, 0, 0),
     ...head(-20, 10),
   });
-  r.at(0.4, { heading: 190, spin: 70, ...legL(-50, 15, 70), ...legR(25, 0, 50, 0, 20), ...armR(67, -118, 0) });
+  r.at(0.4, { ...legL(-50, 15, 70) });
+  rollOntoRightHand(r, 0.4, 0.43, { heading: 190, tilt: 55, spin: 70, ...legR(25, 0, 50, 0, 20), ...armR(67, -118, 0), ...torso(-5, 0, 0) }, 6, 0.56);
   r.pin("handR", 0.4, 0.47);
-  r.at(0.44, {
+  r.at(0.45, {
     heading: 205,
     spin: 100,
     ...legL(-50, 20, 75),
@@ -422,10 +435,9 @@ export function buildSailorMoonRound(): THREE.AnimationClip {
   r.at(0.77, { heading: 345, spin: 340, ...legL(35, 15, 30), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
   r.at(0.84, { heading: 365, spin: 360, ...legL(25, 8, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
   r.pin("L", 0.84, 1);
-  // Finish the turn with the kicking leg still up, then set it straight down in the final stance.
-  r.at(0.89, { heading: 372, ...legL(22, 5, 36), ...legR(35, -10, 85), ...torso(6, 0, 0) });
-  r.at(0.95, { heading: 372, ...legsAbsorb, ...torso(5, 0, 0) });
-  r.at(1, { heading: 372, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  settle(r, "R", 0.9, 0.96, { heading: 372, spin: 360 });
+  r.at(0.9, { ...torso(6, 0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("sailor-moon-round");
 }
 
@@ -454,10 +466,10 @@ export function buildSpyderTwist(): THREE.AnimationClip {
   r.at(0.74, { heading: 465, pitch: 55, twist: 360, ...legL(55, 10, 20), ...legR(0, -30, 10), ...armL(60, 90, 20), ...armR(60, -90, 20), ...torso(0, 0, 0), ...head(-10, 0) });
   r.at(0.82, { heading: 505, pitch: 25, twist: 360, ...legL(50, 0, 30), ...legR(-10, -30, 10), ...armL(60, 90, 20), ...armR(60, -90, 20), ...torso(20, 0, 0), ...head(0, 0) });
   r.pin("L", 0.82, 1);
-  // Finish the turn with the right foot still up, then set it straight down in the final stance.
-  r.at(0.87, { heading: 520, pitch: 5, twist: 360, ...legL(25, 0, 38), ...legR(15, -15, 70), ...torso(10, 0, 0) });
-  r.at(0.93, { heading: 520, pitch: 0, twist: 360, ...legsAbsorb, ...torso(5, 0, 0) });
-  r.at(1, { heading: 520, pitch: 0, twist: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  r.at(0.85, { ...legR(10, -15, 90, 0, -40) });
+  settle(r, "R", 0.88, 0.94, { heading: 520, pitch: 0, twist: 360 });
+  r.at(0.88, { ...torso(10, 0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("spyder-twist");
 }
 
@@ -520,8 +532,10 @@ export function buildSideswipe(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("R", 0.82, 1);
-  r.at(0.92, { heading: 360, ...legR(20, 0, 40), ...legL(0, 15, 50) });
-  r.at(1, { heading: 365, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0) });
+  // Finish the turn with the left foot still up, then set it down behind and hold.
+  r.at(0.88, { heading: 365, spin: 360, ...legR(22, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  r.at(0.95, { heading: 365, ...legR(22, 0, 30), ...legL(-15, 10, 20) });
+  r.at(1, { heading: 365, ...legR(22, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0) });
   return r.build("sideswipe");
 }
 
@@ -532,21 +546,16 @@ export function buildDoubleleg(): THREE.AnimationClip {
   const r = new Rig(D);
   r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -15) });
   r.pin("L", 0, 0.36);
+  doublelegSetup(r, 0.18, 0.27, 0.36);
   r.at(0.2, {
-    heading: 20,
-    ...legL(35, 15, 50),
-    ...legR(35, -15, 50),
     ...armL(45, 10, 20),
     ...armR(60, -140, 20),
     ...torso(15, 0, -35),
     ...head(5, -20),
   });
   r.at(0.36, {
-    heading: 100,
     tilt: 25,
     spin: 0,
-    ...legL(0, 5, 5, 0, 35),
-    ...legR(0, -5, 5, 0, 35),
     ...armL(150, 90, 10),
     ...armR(130, -30, 20),
     ...torso(-10, 0, 35),
@@ -591,7 +600,8 @@ export function buildDoubleleg(): THREE.AnimationClip {
     ...head(5, 0),
   });
   r.pin("L", 0.78, 1);
-  r.at(1, { heading: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  // Both feet are down: keep their spacing and only soften the knees.
+  r.at(1, { heading: 360, spin: 360, ...legL(30, 10, 45), ...legR(30, -10, 45), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("double-leg");
 }
 
@@ -602,22 +612,17 @@ export function buildDoublelegTwist(): THREE.AnimationClip {
   const r = new Rig(D);
   r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -15) });
   r.pin("L", 0, 0.34);
+  doublelegSetup(r, 0.17, 0.26, 0.34);
   r.at(0.18, {
-    heading: 20,
-    ...legL(35, 15, 50),
-    ...legR(35, -15, 50),
     ...armL(45, 10, 20),
     ...armR(60, -140, 20),
     ...torso(15, 0, -35),
     ...head(5, -20),
   });
   r.at(0.34, {
-    heading: 100,
     tilt: 25,
     spin: 0,
     twist: 0,
-    ...legL(0, 5, 5, 0, 35),
-    ...legR(0, -5, 5, 0, 35),
     ...armL(150, 90, 10),
     ...armR(130, -30, 20),
     ...torso(-10, 0, 35),
@@ -676,8 +681,8 @@ export function buildDoublelegTwist(): THREE.AnimationClip {
     ...head(5, 0),
   });
   r.pin("L", 0.82, 1);
-  r.at(0.91, { heading: 360, ...legL(25, 8, 40), ...legR(25, -10, 45) });
-  r.at(1, { heading: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  settle(r, "R", 0.87, 0.93, { heading: 360, spin: 360, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("doubleleg-twist");
 }
 
@@ -732,7 +737,31 @@ export function buildSpyder(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("L", 0.8, 1);
-  r.at(0.9, { heading: 515, pitch: 5, ...legR(10, -20, 30), ...legL(25, 0, 35), ...torso(10, 0, 0) });
-  r.at(1, { heading: 520, pitch: 0, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  r.at(0.835, { ...legR(10, -15, 90, 0, -40) });
+  settle(r, "R", 0.87, 0.93, { heading: 520, pitch: 0 });
+  r.at(0.87, { ...torso(10, 0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("spider");
+}
+
+/** Side flip: two-footed takeoff with the arms thrown up and across, a tucked
+ * flip to the left side (about the forward axis), landing on both feet. */
+export function buildSideFlip(): THREE.AnimationClip {
+  const D = 1.6;
+  const r = new Rig(D);
+  const squat = { ...legL(22, 8, 45, 0, -23), ...legR(22, -8, 45, 0, -23) };
+  const land = { ...legL(25, 8, 40), ...legR(25, -8, 40) };
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.31);
+  r.at(0.16, { ...squat, ...armL(40, 130, 20), ...armR(70, -30, 30), ...torso(15, -10, 0), ...head(0, 0, 10) });
+  r.at(0.31, { roll: -10, ...legL(0, 8, 5, 0, 35), ...legR(0, -8, 5, 0, 35), ...armL(160, 60, 10), ...armR(170, -60, 10), ...torso(-5, 10, 0), ...head(-10, 0, -15) });
+  r.flight(0.31, 0.8, { travel: [0.4, 0] });
+  r.at(0.42, { roll: -100, ...legL(90, 5, 110), ...legR(90, -5, 110), ...armsTight, ...torso(20, 15, 0), ...head(10, 0, -25) });
+  r.at(0.5, { roll: -180, ...legL(120, 5, 130), ...legR(120, -5, 130), ...armsTight, ...torso(30, 20, 0), ...head(20, 0, -35) });
+  r.at(0.62, { roll: -265, ...legL(110, 5, 120), ...legR(110, -5, 120), ...armsTight, ...torso(25, 10, 0), ...head(10, 0, -20) });
+  r.at(0.72, { roll: -325, ...legL(45, 8, 45), ...legR(45, -8, 45), ...armsWide, ...torso(10, 5, 0), ...head(0, 0, -5) });
+  r.at(0.8, { roll: -360, ...land, ...armsWide, ...torso(10, 0, 0), ...head(0, 0, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { roll: -360, ...land, ...armsDown, ...torso(5, 0, 0), ...head(0, 0, 0) });
+  return r.build("side-flip");
 }

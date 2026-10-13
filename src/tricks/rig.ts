@@ -12,7 +12,10 @@ import { mixamoBoneName } from "./authoring";
  *
  * The rig also solves hip translation from contact constraints:
  *   - `pin(effector, t0, t1)` keeps a foot (or hand) planted on the floor,
- *     so the character pivots around it instead of skating;
+ *     so the character pivots around it instead of skating. A pin only takes
+ *     hold once its effector is actually on the floor: until then the foot or
+ *     hand that was planted stays planted, and outside every pin the lowest
+ *     contact is kept in place;
  *   - `flight(t0, t1, {travel})` makes the hips follow a ballistic parabola
  *     between the grounded takeoff and landing heights;
  *   - outside flights the lowest contact point (feet, optionally hands) is
@@ -145,6 +148,11 @@ const CONTACTS: Record<Effector, { bone: BoneKey; points: [number, number, numbe
 
 const G = 9.81;
 const DEG = Math.PI / 180;
+/** A foot or hand must come this close to the floor (metres) to be planted,
+ * and stays planted until it rises above HOLD (a little hysteresis, so a
+ * contact is not dropped for a frame while the weight shifts). */
+const TOUCH = 0.01;
+const HOLD = 0.03;
 
 type Key = { t: number; v: number };
 
@@ -201,7 +209,7 @@ export class Rig {
 
   constructor(duration: number, opts: { fps?: number; hands?: boolean } = {}) {
     this.duration = duration;
-    this.fps = opts.fps ?? 60;
+    this.fps = opts.fps ?? 120;
     this.handsTouch = opts.hands ?? false;
   }
 
@@ -315,10 +323,11 @@ export class Rig {
     const landingY = this.flights.map((f) => this.groundedY(skel, f.t1));
 
     let xz = new THREE.Vector2(0, 0);
-    let lastPin: Pin | null = null;
+    let planted: Effector | null = null;
     let anchor = new THREE.Vector2();
     let prevRel: Record<Effector, Contact> | null = null;
-    let flightStart: { xz: THREE.Vector2; y: number } | null = null;
+    // Where the flight starts, and where and when the takeoff foot let go of the floor.
+    let flightStart: { xz: THREE.Vector2; y: number; releaseU: number; releaseXZ: THREE.Vector2 | null } | null = null;
     let lastY = 0;
 
     for (const t of times) {
@@ -330,15 +339,29 @@ export class Rig {
       let y: number;
       if (fi >= 0) {
         const f = this.flights[fi];
-        if (!flightStart) flightStart = { xz: xz.clone(), y: lastY };
+        if (!flightStart) flightStart = { xz: xz.clone(), y: lastY, releaseU: 0, releaseXZ: null };
         const T = f.t1 - f.t0;
         const u = (t - f.t0) / T;
         const apex = f.apex ?? (G * T * T) / 8;
         const y0 = flightStart.y;
         const y1 = landingY[fi];
         y = y0 + (y1 - y0) * u + 4 * apex * u * (1 - u);
-        xz = new THREE.Vector2(flightStart.xz.x + f.travel[0] * u, flightStart.xz.y + f.travel[1] * u);
-        lastPin = null;
+        const end = new THREE.Vector2(flightStart.xz.x + f.travel[0], flightStart.xz.y + f.travel[1]);
+        if (planted && !flightStart.releaseXZ && rel[planted].y + y <= HOLD) {
+          // The takeoff foot rolls off the floor rather than sliding: it stays
+          // put until it has risen clear, then the flight carries on to its end.
+          xz = anchor.clone().sub(rel[planted].xz);
+          flightStart.releaseU = u;
+        } else {
+          if (!flightStart.releaseXZ) {
+            flightStart.releaseXZ =
+              flightStart.releaseU > 0 ? xz.clone() : flightStart.xz.clone();
+          }
+          const from = flightStart.releaseXZ;
+          const k = (u - flightStart.releaseU) / (1 - flightStart.releaseU);
+          xz = from.clone().add(end.clone().sub(from).multiplyScalar(k));
+          planted = null;
+        }
       } else {
         // Touchdown sample: finish the flight's travel exactly before planting.
         const ended = this.flights.find((f) => Math.abs(t - f.t1) < 1e-9);
@@ -346,17 +369,21 @@ export class Rig {
           xz = new THREE.Vector2(flightStart.xz.x + ended.travel[0], flightStart.xz.y + ended.travel[1]);
         }
         flightStart = null;
-        y = -this.lowestContact(rel);
-        const pin = this.pins.find((p) => t >= p.t0 - 1e-9 && t <= p.t1 + 1e-9) ?? null;
-        if (pin) {
-          const r = rel[pin.effector];
-          if (pin !== lastPin) {
-            const prev = prevRel ? prevRel[pin.effector].xz : r.xz;
-            anchor = xz.clone().add(prev);
-          }
-          xz = anchor.clone().sub(r.xz);
-        }
-        lastPin = pin;
+        const lowest = this.lowestContact(rel);
+        y = -lowest;
+        // Keep one planted foot or hand fixed: the pinned one once it touches,
+        // otherwise the one already planted while it stays down, otherwise the lowest.
+        const height = (e: Effector) => (this.canTouch(e) ? rel[e].y - lowest : Infinity);
+        const pinned = this.pins.find((p) => t >= p.t0 - 1e-9 && t <= p.t1 + 1e-9)?.effector ?? null;
+        const effector: Effector =
+          pinned && height(pinned) <= (pinned === planted ? HOLD : TOUCH)
+            ? pinned
+            : planted && height(planted) <= HOLD
+              ? planted
+              : this.lowestEffector(rel);
+        if (effector !== planted) anchor = xz.clone().add(prevRel ? prevRel[effector].xz : rel[effector].xz);
+        xz = anchor.clone().sub(rel[effector].xz);
+        planted = effector;
       }
       lastY = y;
       prevRel = rel;
@@ -400,9 +427,17 @@ export class Rig {
   }
 
   private lowestContact(rel: Record<Effector, Contact>): number {
-    let min = Math.min(rel.L.y, rel.R.y);
-    if (this.handsTouch) min = Math.min(min, rel.handL.y, rel.handR.y);
-    return min;
+    return rel[this.lowestEffector(rel)].y;
+  }
+
+  private canTouch(e: Effector): boolean {
+    return this.handsTouch || e === "L" || e === "R";
+  }
+
+  private lowestEffector(rel: Record<Effector, Contact>): Effector {
+    let best: Effector = "L";
+    for (const e of Object.keys(CONTACTS) as Effector[]) if (this.canTouch(e) && rel[e].y < rel[best].y) best = e;
+    return best;
   }
 }
 

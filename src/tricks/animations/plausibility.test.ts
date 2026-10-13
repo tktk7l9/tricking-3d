@@ -24,10 +24,11 @@ type Sample = {
   yaw: number;
   fwdZ: number;
   fwdY: number;
-  /** world position of each foot's ball (the point a planted foot pivots on) and of the left palm */
+  /** world position of each foot's ball (the point a planted foot pivots on) and of each palm */
   ballL: THREE.Vector3;
   ballR: THREE.Vector3;
   palmL: THREE.Vector3;
+  palmR: THREE.Vector3;
   /** how far each thigh has swung up behind the body (see thighExtension) */
   extL: number;
   extR: number;
@@ -91,6 +92,7 @@ function sampleClip(trick: TrickMeta, steps = 150): Sample[] {
       ballL: b.leftFoot.localToWorld(new THREE.Vector3(0, 0, 0.1)),
       ballR: b.rightFoot.localToWorld(new THREE.Vector3(0, 0, 0.1)),
       palmL: b.leftHand.localToWorld(new THREE.Vector3(0.04, 0, 0)),
+      palmR: b.rightHand.localToWorld(new THREE.Vector3(-0.04, 0, 0)),
       extL: thighExtension(b.leftUpLeg, b.leftLeg, pelvisInverse),
       extR: thighExtension(b.rightUpLeg, b.rightLeg, pelvisInverse),
     });
@@ -124,13 +126,11 @@ function expectLeg(s: Sample, leg: TrickMeta["takeoff"], what: string) {
   else expect(diff, `${what}: right foot lower`).toBeGreaterThan(0.04);
 }
 
-// Hand-keyed Builder clips predate the contact solver and sink a few cm in a crouch.
-const LEGACY = new Set(["back-flip", "front-flip", "side-flip", "gainer", "full", "corkscrew", "webster"]);
 
 describe.each(TRICKS.map((t) => [t.id, t] as const))("%s", (_id, trick) => {
   it("never pushes a foot through the floor and starts and ends standing on it", () => {
     const samples = sampleClip(trick);
-    const floor = LEGACY.has(trick.id) ? -0.1 : -0.012;
+    const floor = -0.012;
     for (const s of samples) {
       expect(Math.min(s.left, s.right), `t=${s.t.toFixed(2)}`).toBeGreaterThan(floor);
     }
@@ -357,54 +357,30 @@ describe.each([
   });
 });
 
-describe.each(
-  [
-    "cheat-900",
-    "backside-720",
-    "backside-900",
-    "gainer-switch",
-    "cork-swipe",
-    "loser",
-    "touchdown-raiz",
-    "sideswipe",
-    "pop-tornado",
-    "pop-540",
-    "swing-900",
-    "arabian",
-    "corkscrew-hyper",
-    "aerial-twist",
-    "gumbi",
-    "sailor-moon",
-    "pop-720",
-    "tornado-sidekick",
-    "x-out",
-    "gainer-arabian",
-    "front-half",
-    "one-handed-cartwheel",
-    "roundoff",
-    "doubleleg-twist",
-    "backside-900-hyper",
-    "back-pike",
-    "front-x-out",
-    "webster-half",
-    "butterfly-kick-switch",
-    "sailor-moon-round",
-    "spyder-twist",
-  ].map(
-    (id) => [id, byId(id)] as const,
-  ),
-)("%s landing", (_id, trick) => {
-  it("keeps the landing foot planted instead of sliding it", () => {
-    const samples = sampleClip(trick);
-    const [, end] = longestFlight(samples)!;
-    const after = samples.slice(end + 1);
-    const legs = trick.landing === "both" ? (["left", "right"] as const) : ([trick.landing] as const);
-    for (const leg of legs) {
-      const [first] = contacts(after, (s) => (leg === "left" ? s.left : s.right));
-      expect(first, `${leg} foot lands`).toBeDefined();
-      const ball = (s: Sample) => (leg === "left" ? s.ballL : s.ballR);
-      for (let i = first[0]; i <= first[1]; i++) {
-        expect(planarDistance(ball(after[i]), ball(after[first[0]])), `${leg} t=${after[i].t.toFixed(2)}`).toBeLessThan(0.05);
+/* Every contact in every clip: a foot's ball or a hand's palm stays where it
+ * came within 3 cm of the floor until it lifts again, so no foot or hand skates
+ * while it carries weight, whether stepping, planting a hand or landing. */
+
+type ContactPoint = { name: string; height: (s: Sample) => number; point: (s: Sample) => THREE.Vector3 };
+
+const CONTACT_POINTS: ContactPoint[] = [
+  { name: "left foot", height: (s) => s.left, point: (s) => s.ballL },
+  { name: "right foot", height: (s) => s.right, point: (s) => s.ballR },
+  { name: "left hand", height: (s) => s.handL, point: (s) => s.palmL },
+  { name: "right hand", height: (s) => s.handR, point: (s) => s.palmR },
+];
+
+/** How far (metres) a planted foot or hand may move across the floor. */
+const MAX_CONTACT_DRIFT = 0.05;
+
+describe.each(TRICKS.map((t) => [t.id, t] as const))("%s contacts", (_id, trick) => {
+  it("keep every planted foot and hand in place until it lifts", () => {
+    const samples = sampleClip(trick, 300);
+    const at = (i: number) => (samples[i].t / trick.duration).toFixed(2);
+    for (const { name, height, point } of CONTACT_POINTS) {
+      for (const [a, b] of contacts(samples, height)) {
+        const drift = Math.max(...samples.slice(a, b + 1).map((s) => planarDistance(point(s), point(samples[a]))));
+        expect(drift, `${name} on the floor from ${at(a)} to ${at(b)}`).toBeLessThan(MAX_CONTACT_DRIFT);
       }
     }
   });

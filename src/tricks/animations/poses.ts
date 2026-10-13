@@ -1,4 +1,4 @@
-import type { Pose } from "../rig";
+import type { Pose, Rig } from "../rig";
 
 /* Pose fragments for the semantic rig (see rig.ts for channel meanings).
  * Every trick in this folder is modelled for a left-twisting tricker: spins
@@ -49,3 +49,20 @@ export const legsStraight: Pose = { ...legL(0), ...legR(0) };
 export const legsAbsorb: Pose = { ...legL(25, 0, 40), ...legR(25, 0, 40) };
 /** Tight tuck. */
 export const legsTuck: Pose = { ...legL(120, 5, 130), ...legR(120, -5, 130) };
+
+/**
+ * Second-foot touchdown shared by the one-footed landings. The planted foot
+ * holds while the body finishes turning with the free foot raised over the
+ * spot it lands on (by `uAbove`); the free foot is then lowered straight onto
+ * it and both legs settle into the same stance by `uDown`, after which the
+ * legs and the body's orientation (`final`) no longer change, so neither foot
+ * slides once both are down. `stanceAz` keeps the feet that far apart.
+ */
+export function settle(r: Rig, free: "L" | "R", uAbove: number, uDown: number, final: Pose, stanceAz = 0) {
+  const raised = free === "L" ? legL(45, stanceAz, 80, 0, -35) : legR(45, -stanceAz, 80, 0, -35);
+  const planted = free === "L" ? legR(25, -stanceAz, 40) : legL(25, stanceAz, 40);
+  const stance = { ...legL(25, stanceAz, 40), ...legR(25, -stanceAz, 40) };
+  r.at(uAbove, { ...final, ...planted, ...raised });
+  r.at(uDown, { ...final, ...stance });
+  r.at(1, { ...final, ...stance });
+}
