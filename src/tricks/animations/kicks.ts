@@ -737,7 +737,10 @@ export function buildTornadoSidekick(): THREE.AnimationClip {
 export function buildSwing900(): THREE.AnimationClip {
   const D = 1.9;
   const r = new Rig(D);
-  r.start({ ...armsDown, ...legL(0, 5), ...legR(-25, -10, 20), ...torso(5, 0, -10) });
+  // Standing on the left foot with the right foot just off the floor behind;
+  // its knee folds as it swings through under the body.
+  r.start({ ...armsDown, ...legL(0, 5), ...legR(-25, -10, 45, 0, -20), ...torso(5, 0, -10) });
+  r.at(0.09, { ...legR(5, 5, 85, 0, -40) });
   r.pin("L", 0, 0.4);
   r.at(0.18, {
     heading: 40,
@@ -818,7 +821,10 @@ export function buildSwing900(): THREE.AnimationClip {
 export function buildSwing360(): THREE.AnimationClip {
   const D = 1.6;
   const r = new Rig(D);
-  r.start({ ...armsDown, ...legL(0, 5), ...legR(-25, -10, 20), ...torso(5, 0, -10) });
+  // Standing on the left foot with the right foot just off the floor behind;
+  // its knee folds as it swings through under the body.
+  r.start({ ...armsDown, ...legL(0, 5), ...legR(-25, -10, 45, 0, -20), ...torso(5, 0, -10) });
+  r.at(0.09, { ...legR(5, 5, 85, 0, -40) });
   r.pin("L", 0, 0.38);
   r.at(0.18, {
     heading: 35,

@@ -1,6 +1,6 @@
 import type * as THREE from "three";
 import { Rig } from "../rig";
-import { armL, armR, armsDown, armsTight, armsWide, head, legL, legR, legsAbsorb, torso } from "./poses";
+import { armL, armR, armsDown, armsTight, armsWide, head, legL, legR, legsAbsorb, settle, torso } from "./poses";
 
 /* Inside tricks (butterfly, aerial, masterswing families) for a left-twisting
  * tricker. Butterfly tricks take off from the left foot with the right leg
@@ -11,20 +11,25 @@ import { armL, armR, armsDown, armsTight, armsWide, head, legL, legR, legsAbsorb
 function butterflySetup(r: Rig) {
   r.start({ ...armsDown, heading: -10, ...legL(0, 25), ...legR(0, -25) });
   r.pin("L", 0, 0.42);
+  // Wind up with the torso while both feet stay where they are, then lift the
+  // right foot straight up before the body turns on the left foot.
   r.at(0.18, {
-    heading: -30,
-    ...legL(35, 25, 45),
-    ...legR(35, -25, 45),
+    heading: -10,
+    ...legL(22, 25, 45, 0, -23),
+    ...legR(22, -25, 45, 0, -23),
     ...armL(60, 0, 20),
     ...armR(70, -130, 20),
     ...torso(25, 0, -35),
     ...head(10, -30),
   });
+  // Hold the crouch a moment so both legs move alike while both feet are down.
+  r.at(0.2, { heading: -10, ...legL(22, 25, 45, 0, -23), ...legR(22, -25, 45, 0, -23) });
+  r.at(0.24, { heading: -10, pitch: 0, twist: 0, ...legR(42, -25, 85, 0, -43) });
   r.at(0.3, {
     heading: 20,
     pitch: 30,
     ...legL(55, 30, 40),
-    ...legR(-15, -25, 15),
+    ...legR(-15, -25, 40, 0, -20),
     ...armL(40, 150, 20),
     ...armR(60, -20, 20),
     ...torso(35, 0, 20),
@@ -82,8 +87,11 @@ export function buildButterflyKick(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("R", 0.8, 1);
-  r.at(0.9, { heading: 355, pitch: 5, ...legL(10, 20, 30), ...legR(25, 0, 35), ...torso(10, 0, 0) });
-  r.at(1, { heading: 360, pitch: 0, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  // The trailing left leg folds as it swings in under the body.
+  r.at(0.84, { ...legL(10, 15, 90, 0, -40) });
+  settle(r, "L", 0.88, 0.94, { heading: 360, pitch: 0 });
+  r.at(0.88, { ...torso(10, 0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("butterfly");
 }
 
@@ -121,6 +129,7 @@ export function buildButterflyTwist(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D);
   butterflySetup(r);
+  r.at(0.42, { twist: 0 });
   r.flight(0.42, 0.8, { travel: [0.4, 0.15] });
   r.at(0.52, {
     heading: 150,
@@ -161,8 +170,10 @@ export function buildButterflyTwist(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("L", 0.8, 1);
-  r.at(0.9, { heading: 345, pitch: 5, ...legR(10, -10, 30), ...legL(25, 5, 35), ...torso(10, 0, 0) });
-  r.at(1, { heading: 360, pitch: 0, twist: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  r.at(0.84, { ...legR(10, -15, 90, 0, -40) });
+  settle(r, "R", 0.88, 0.94, { heading: 360, pitch: 0, twist: 360 });
+  r.at(0.88, { ...torso(10, 0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("butterfly-twist");
 }
 
