@@ -746,3 +746,28 @@ export function buildDoubleButterflyTwistRound(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("double-butterfly-twist-round");
 }
+
+/** Butterfly Twist Shuriken: the butterfly twist with an outside crescent
+ * (shuriken) as the body comes up: the straight left leg sweeps across from
+ * the right and comes down to land first (complete), the right set down after. */
+export function buildButterflyTwistShuriken(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.at(0.42, { twist: 0 });
+  r.flight(0.42, 0.84, { travel: [0.4, 0.15] });
+  r.at(0.5, { heading: 150, pitch: 85, twist: 100, ...legR(-12, -8, 5), ...legL(-12, 8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-20, 30) });
+  r.at(0.58, { heading: 205, pitch: 85, twist: 230, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  r.at(0.65, { heading: 235, pitch: 55, twist: 340, ...legL(40, -20, 30), ...legR(20, -10, 50), ...armL(80, 60, 40), ...armR(80, -60, 40), ...head(-15, 10) });
+  r.at(0.68, { twist: 360 });
+  // The crescent: the straight left leg sweeps from the right across to the left.
+  r.at(0.71, { heading: 255, pitch: 20, ...legL(95, -40, 10), ...legR(40, -10, 80), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(0, 20) });
+  r.at(0.76, { heading: 300, pitch: 5, ...legL(115, 60, 10), ...legR(35, -10, 70), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
+  // The kicking leg comes straight down to land while the right stays tucked up.
+  r.at(0.8, { heading: 330, pitch: 0, ...legL(55, 30, 20), ...legR(45, -15, 85), ...armsTight, ...torso(5, 5, 0), ...head(0, 5) });
+  r.at(0.84, { heading: 350, pitch: 0, ...legL(20, 8, 30), ...legR(45, -20, 85), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 360, pitch: 0, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("butterfly-twist-shuriken");
+}

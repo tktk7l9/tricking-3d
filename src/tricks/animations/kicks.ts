@@ -1163,6 +1163,77 @@ export function buildPop360GyroRound(): THREE.AnimationClip {
   return r.build("pop-360-gyro-round");
 }
 
+/** Backside 1080 (TKT: Pop 720 Hook): the backside 900's pop, about two turns
+ * in the air with the body tight, then the left leg hooks at the target and
+ * the right foot lands, the kicking leg set down last. */
+export function buildBackside1080(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  backsidePop(r, 0.38);
+  r.flight(0.38, 0.85, { travel: [0.05, 0.1], apex: 0.5 });
+  r.at(0.45, { heading: 350, ...legL(60, 30, 110), ...legR(35, -10, 90), ...armsTight, ...torso(5, 0, 10), ...head(0, 40) });
+  r.at(0.53, { heading: 540, ...legL(60, 30, 110), ...legR(35, -10, 90), ...armsTight, ...torso(5, 0, 10), ...head(0, 40) });
+  // Chamber the left leg out to the side, keep spinning, then the hook.
+  r.at(0.62, { heading: 740, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 40) });
+  r.at(0.67, { heading: 850, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armsTight, ...torso(0, 10, 10), ...head(0, 40) });
+  r.at(0.74, { heading: 985, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.85, { heading: 1055, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.85, 1);
+  r.at(0.9, { heading: 1080, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.93, 0.97, { heading: 1080 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("backside-1080");
+}
+
+/** Pop 1080 (TKT: Pop 900 Hook): the frontside pop, about two and a half
+ * turns in the air with the body tight, then the left leg hooks at the target
+ * and the right foot lands, the kicking leg set down last. */
+export function buildPop1080(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  frontsidePop(r, 0.36);
+  r.flight(0.36, 0.84, { travel: [0.05, 0.12], apex: 0.5 });
+  r.at(0.44, { heading: 260, ...legL(60, 30, 110), ...legR(35, -10, 90), ...armsTight, ...torso(5, 0, 10), ...head(0, 40) });
+  r.at(0.52, { heading: 470, ...legL(60, 30, 110), ...legR(35, -10, 90), ...armsTight, ...torso(5, 0, 10), ...head(0, 40) });
+  // Chamber the left leg out to the side, keep spinning, then the hook.
+  r.at(0.6, { heading: 690, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 40) });
+  r.at(0.66, { heading: 850, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armsTight, ...torso(0, 10, 10), ...head(0, 40) });
+  r.at(0.73, { heading: 985, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.84, { heading: 1055, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { heading: 1080, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 1080 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("pop-1080");
+}
+
+/** Swing 1260 (Swing 1080 Round): the swing 1080's swing entry and about two
+ * and a half turns in the air, finished with the right leg's inside (round)
+ * kick at the target instead of the hook; the left foot lands. */
+export function buildSwing1260(): THREE.AnimationClip {
+  const D = 2.0;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 5), ...legR(-25, -10, 45, 0, -20), ...torso(5, 0, -10) });
+  r.at(0.09, { ...legR(5, 5, 85, 0, -40) });
+  r.pin("L", 0, 0.4);
+  r.at(0.18, { heading: 40, ...legR(45, 15, 25), ...legL(10, 5, 30), ...armL(40, 150, 20), ...armR(50, -30, 30), ...torso(5, 0, 10), ...head(0, 20) });
+  r.at(0.3, { heading: 130, ...legR(85, 40, 30), ...legL(20, 5, 45), ...armL(90, 60, 30), ...armR(80, -110, 30), ...torso(8, 0, 25), ...head(0, 40) });
+  r.at(0.4, { heading: 230, ...legR(95, 45, 60), ...legL(0, 5, 5, 0, 35), ...armsUp, ...torso(-5, 0, 30), ...head(-5, 45) });
+  r.flight(0.4, 0.87, { travel: [0.05, 0.2], apex: 0.55 });
+  r.at(0.48, { heading: 380, ...legL(90, 30, 115), ...legR(60, -60, 125, 60), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.57, { heading: 600, ...legL(80, 35, 120), ...legR(55, -40, 120, 40), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.66, { heading: 830, ...legL(75, 45, 110), ...legR(35, -10, 90), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  // Chamber the right leg, then the round kick at the target.
+  r.at(0.73, { heading: 990, ...legL(75, 35, 115), ...legR(75, -60, 120, 70), ...armL(80, 90, 50), ...armR(80, -60, 60), ...torso(5, 10, 5), ...head(0, 30) });
+  r.at(0.78, { heading: 1095, ...legL(70, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.83, { heading: 1140, ...legL(45, 15, 60), ...legR(60, -20, 70, 30), ...armL(40, 110, 30), ...armR(45, -60, 40), ...torso(5, 0, 0) });
+  r.at(0.87, { heading: 1160, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0) });
+  r.pin("L", 0.87, 1);
+  settle(r, "R", 0.92, 0.97, { heading: 1170 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("swing-1260");
+}
+
 export function buildTornadoSidekick(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D);

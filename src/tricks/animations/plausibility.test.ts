@@ -388,6 +388,9 @@ describe.each([
   ["cheat-900-gyro", 800, 1100, false, "right"],
   ["pop-900", 600, 750, false, "right"],
   ["pop-360-gyro-round", 600, 750, false, "right"],
+  ["backside-1080", 700, 850, true, "left"],
+  ["pop-1080", 850, 1000, false, "left"],
+  ["swing-1260", 850, 1100, false, "right"],
 ] as const)("%s", (id, minAirTurn, minTurn, backside, kickLeg) => {
   it(`turns more than ${minAirTurn}° counter-clockwise in the air (${minTurn}° overall) and kicks the ${kickLeg} foot above hip height`, () => {
     const samples = sampleClip(byId(id));
@@ -729,6 +732,7 @@ describe.each([
   ["wrap-full-swipe", inverted],
   ["double-butterfly-twist-round", chestUpFlat],
   ["cheat-720-twist-round", chestDownFlat],
+  ["double-full-round", inverted],
 ] as const)("%s", (id, turnedOver) => {
   it("kicks the right foot alone above the hips, body upright, once it has turned over, before landing", () => {
     const samples = sampleClip(byId(id));
@@ -850,6 +854,8 @@ describe.each([
   ["double-butterfly-twist-hyper", "double-butterfly-twist"],
   ["full-hyperhook", "full"],
   ["butterfly-twist-hyperhook", "butterfly-twist"],
+  ["double-full-hyperhook", "double-full"],
+  ["gainer-scissor-swipe", "gainer-scissor"],
 ] as const)("%s", (id, base) => {
   it(`lands on the right foot and keeps the left leg up for a moment, where the ${base} does not land on the right`, () => {
     expect(byId(base).landing).not.toBe("right");
@@ -1098,6 +1104,7 @@ describe.each([
   ["janitor-scissor-twist", "janitor-twist", flatInAir],
   ["full-scissor", "full", (s: Sample) => s.left > 0.12 && s.right > 0.12],
   ["arabian-scissor-half", "arabian-half", inverted],
+  ["gainer-scissor-swipe", "gainer-arabian", inverted],
 ] as const)("%s", (id, base, during) => {
   it(`grabs the right leg with the right hand in the air, which the ${base} never does`, () => {
     const grabs = (trickId: string) => sampleClip(byId(trickId)).some((s) => scissorGrab(s) && during(s));
@@ -1166,6 +1173,7 @@ describe.each([
   ["raiz-hyperhook", "raiz"],
   ["full-hyperhook", "full"],
   ["butterfly-twist-hyperhook", "butterfly-twist-hyper"],
+  ["double-full-hyperhook", "double-full"],
 ] as const)("%s", (id, base) => {
   it(`hooks the straight left leg above the hips once upright, which the ${base} never does`, () => {
     const hook = (s: Sample) => s.head > s.hips.y + 0.3 && s.left > s.hips.y && s.ballL.distanceTo(s.hips) > 0.85;
@@ -1176,16 +1184,19 @@ describe.each([
 
 /* Contracts for the fourteenth batch (2026-10). */
 
-describe("double full", () => {
-  it("turns side on four times in the air (two twists), where the full does it twice", () => {
+describe.each([
+  ["double-full", 4, "full", 2],
+  ["triple-full", 6, "double-full", 4],
+] as const)("%s", (id, count, base, baseCount) => {
+  it(`turns side on ${count} times in the air (${count / 2} twists), where the ${base} does it ${baseCount} times`, () => {
     const sideOn = (s: Sample) => Math.abs(Math.sin((s.yaw * Math.PI) / 180)) > 0.8 && Math.abs(s.fwdY) < 0.6;
-    const twists = (id: string) => {
-      const samples = sampleClip(byId(id), 300);
+    const twists = (trickId: string) => {
+      const samples = sampleClip(byId(trickId), 300);
       const [a, b] = longestFlight(samples)!;
       return stretches(samples.slice(a, b + 1), sideOn);
     };
-    expect(twists("double-full")).toBe(4);
-    expect(twists("full")).toBe(2);
+    expect(twists(id)).toBe(count);
+    expect(twists(base)).toBe(baseCount);
   });
 });
 
@@ -1198,5 +1209,27 @@ describe("full doubleleg", () => {
     };
     expect(doubleleg("full-doubleleg")).toBe(true);
     expect(doubleleg("full")).toBe(false);
+  });
+});
+
+/* Contracts for the sixteenth batch (2026-10). */
+
+describe("butterfly twist shuriken", () => {
+  it("swings the straight left leg above the hips after the twist and lands on it first, which the butterfly twist never does", () => {
+    const crescent = (s: Sample) => s.left > s.hips.y && s.ballL.distanceTo(s.hips) > 0.85;
+    const afterTwist = (id: string) => {
+      const samples = sampleClip(byId(id));
+      const last = samples.reduce((acc, s, i) => (chestUpFlat(s) ? i : acc), -1);
+      expect(last, "twists flat in the air").toBeGreaterThan(0);
+      return samples.slice(last);
+    };
+    expect(afterTwist("butterfly-twist-shuriken").some(crescent)).toBe(true);
+    expect(afterTwist("butterfly-twist").some(crescent)).toBe(false);
+    const samples = sampleClip(byId("butterfly-twist-shuriken"));
+    const [, end] = longestFlight(samples)!;
+    const after = samples.slice(end + 1);
+    const down = after.findIndex((s) => Math.min(s.left, s.right) < 0.03);
+    expect(after[down].left, "left foot down first").toBeLessThan(0.03);
+    for (const s of after.slice(down, down + 8)) expect(s.right, `t=${s.t.toFixed(2)}: right leg still up`).toBeGreaterThan(0.1);
   });
 });

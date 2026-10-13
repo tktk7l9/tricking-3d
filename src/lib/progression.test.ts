@@ -18,6 +18,7 @@ describe("progression", () => {
       "janitor-twist",
       "butterfly-twist-round",
       "butterfly-twist-hyper",
+      "butterfly-twist-shuriken",
       "butterfly-twist-axe",
       "double-butterfly-twist-hyper",
       "butterfly-twist-doubleleg",
