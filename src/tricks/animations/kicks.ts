@@ -780,8 +780,10 @@ export function buildCheat900Hyper(): THREE.AnimationClip {
   r.at(0.84, { heading: 810, ...legL(45, 70, 100), ...legR(20, 0, 30), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0) });
   r.pin("R", 0.84, 1);
   r.at(0.89, { heading: 835, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  r.at(0.95, { heading: 835, ...legR(15, 0, 30), ...legL(-15, 10, 20) });
-  r.at(1, { heading: 835, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  // Over its spot, then straight down onto the toes beside the standing foot.
+  r.at(0.92, { heading: 835, ...legR(15, 0, 30), ...legL(2, 10, 37.6, 0, -20.7) });
+  r.at(0.96, { heading: 835, ...legR(15, 0, 30), ...legL(-16, 10, 0, 0, -1) });
+  r.at(1, { heading: 835, ...legR(15, 0, 30), ...legL(-16, 10, 0, 0, -1), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("cheat-900-hyper");
 }
 
@@ -808,8 +810,10 @@ export function buildSwing1080(): THREE.AnimationClip {
   r.at(0.86, { heading: 1050, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
   r.pin("R", 0.86, 1);
   r.at(0.91, { heading: 1075, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  r.at(0.96, { heading: 1075, ...legR(15, 0, 30), ...legL(-15, 10, 20) });
-  r.at(1, { heading: 1075, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0) });
+  // Over its spot, then straight down onto the toes beside the standing foot.
+  r.at(0.935, { heading: 1075, ...legR(15, 0, 30), ...legL(2, 10, 37.6, 0, -20.7) });
+  r.at(0.97, { heading: 1075, ...legR(15, 0, 30), ...legL(-16, 10, 0, 0, -1) });
+  r.at(1, { heading: 1075, ...legR(15, 0, 30), ...legL(-16, 10, 0, 0, -1), ...armsDown, ...torso(5, 0, 0) });
   return r.build("swing-1080");
 }
 
