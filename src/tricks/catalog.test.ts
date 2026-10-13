@@ -38,7 +38,7 @@ describe("trick catalog", () => {
     }
   });
 
-  it("forms a progression without loops, so every trick traces back to a family's base trick", () => {
+  it("forms a progression without loops, so every trick traces back to a basic trick", () => {
     const state = new Map<string, "visiting" | "done">();
     const visit = (id: string, path: string[]) => {
       expect(state.get(id), `loop: ${[...path, id].join(" -> ")}`).not.toBe("visiting");
@@ -48,7 +48,7 @@ describe("trick catalog", () => {
       state.set(id, "done");
     };
     for (const t of TRICKS) visit(t.id, []);
-    // The bases of the original families have nothing before them.
+    // The most basic tricks have nothing before them.
     for (const id of ["cheat-kick", "pop-kick", "back-flip", "front-flip", "cartwheel", "scoot", "side-flip"]) {
       expect(getTrick(id).prerequisites, id).toBeUndefined();
     }
