@@ -1626,11 +1626,12 @@ export function buildFullHyperhook(): THREE.AnimationClip {
   r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
   r.at(0.33, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
   r.flight(0.33, 0.84, { travel: [0, -0.4] });
-  r.at(0.44, { pitch: -110, twist: 100, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
-  r.at(0.54, { pitch: -195, twist: 190, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
+  r.at(0.44, { pitch: -120, twist: 100, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.53, { pitch: -215, twist: 185, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
   // Chamber the left leg out to the side, then the hook at the target.
-  r.at(0.62, { pitch: -265, twist: 225, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 20) });
-  r.at(0.71, { pitch: -325, twist: 265, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.61, { pitch: -300, twist: 220, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 20) });
+  r.at(0.68, { pitch: -345, twist: 245, ...legL(100, 80, 40), ...legR(20, -10, 60), ...armL(50, 90, 50), ...armR(75, -35, 75), ...torso(0, 18, 5), ...head(0, 20) });
+  r.at(0.73, { pitch: -355, twist: 265, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
   r.at(0.84, { pitch: -360, twist: 335, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
   r.pin("R", 0.84, 1);
   r.at(0.89, { twist: 355, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
