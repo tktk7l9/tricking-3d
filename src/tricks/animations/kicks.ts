@@ -1094,6 +1094,75 @@ export function buildPopFeilong(): THREE.AnimationClip {
   return r.build("pop-feilong");
 }
 
+/** Pop 900 Hyper (TKT: Pop 720 Katana): the pop 900's right-leg round kick,
+ * then it keeps turning and lands on the kicking (right) foot in hyper, the
+ * left leg set down after. */
+export function buildPop900Hyper(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  frontsidePop(r, 0.36);
+  r.flight(0.36, 0.84, { travel: [0.05, 0.12], apex: 0.5 });
+  r.at(0.45, { heading: 260, ...legL(90, 30, 115), ...legR(60, -60, 125, 60), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.54, { heading: 440, ...legL(80, 35, 120), ...legR(65, -60, 125, 70), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.63, { heading: 610, ...legL(75, 35, 115), ...legR(75, -60, 120, 70), ...armL(80, 90, 50), ...armR(80, -60, 60), ...torso(5, 10, 5), ...head(0, 30) });
+  r.at(0.71, { heading: 735, ...legL(70, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  // The kicking leg comes straight down to land while the left stays up.
+  r.at(0.78, { heading: 790, ...legL(60, 60, 110), ...legR(55, -10, 60, 20), ...armsTight, ...torso(5, 5, 0), ...head(0, 30) });
+  r.at(0.84, { heading: 830, ...legL(45, 70, 100), ...legR(20, 0, 30), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { heading: 855, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 855 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("pop-900-hyper");
+}
+
+/** Cheat 900 Double Hyper (TKT: Cheat 720 Typhoon Katana): the cheat 900
+ * double's two right-leg round kicks, then it lands on the kicking (right)
+ * foot in hyper and the left leg is set down after. */
+export function buildCheat900DoubleHyper(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.84, { travel: [0.05, 0.2], apex: 0.5 });
+  r.at(0.47, { heading: 330, ...legL(90, 30, 115), ...legR(60, -60, 125, 60), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.53, { heading: 440, ...legL(80, 30, 110), ...legR(60, -70, 125, 70), ...armL(90, 90, 40), ...armR(80, -60, 60), ...torso(5, 10, 10), ...head(0, 30) });
+  r.at(0.58, { heading: 535, ...legL(75, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 10) });
+  r.at(0.64, { heading: 600, ...legL(70, 30, 110), ...legR(70, -60, 120, 70), ...armsTight, ...torso(5, 10, 5), ...head(0, 30) });
+  r.at(0.73, { heading: 715, ...legL(65, 25, 100), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  // The kicking leg comes straight down to land while the left stays up.
+  r.at(0.79, { heading: 770, ...legL(60, 60, 110), ...legR(55, -10, 60, 20), ...armsTight, ...torso(5, 5, 0), ...head(0, 30) });
+  r.at(0.84, { heading: 810, ...legL(45, 70, 100), ...legR(20, 0, 30), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { heading: 835, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 835 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("cheat-900-double-hyper");
+}
+
+/** Pop 360 Gyro Round (TKT: Pop 180 Whirlwind): the pop 360's left-leg
+ * crescent and the gyro's extra spin with the body tight, then a right-leg
+ * round kick at the target, turning as far as a pop 900; the left foot lands. */
+export function buildPop360GyroRound(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  frontsidePop(r, 0.36);
+  r.flight(0.36, 0.82, { travel: [0.08, 0.05], apex: 0.55 });
+  r.at(0.43, { heading: 185, ...legL(30, -10, 40), ...legR(45, -10, 70), ...armL(80, 30, 80), ...armR(80, -30, 80), ...torso(5, 0, 20), ...head(0, 40) });
+  r.at(0.49, { heading: 250, ...legL(95, -40, 10), ...legR(40, -10, 80), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(0, 30) });
+  r.at(0.54, { heading: 300, ...legL(115, 60, 10), ...legR(35, -10, 70), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
+  // The gyro: legs together and arms in for one more spin.
+  r.at(0.59, { heading: 400, ...legL(40, 8, 60), ...legR(40, -8, 60), ...armsTight, ...torso(5, 0, 0), ...head(0, 20) });
+  r.at(0.65, { heading: 560, ...legL(40, 8, 60), ...legR(40, -8, 60), ...armsTight, ...torso(5, 0, 0), ...head(0, 20) });
+  // Then the right leg chambers and the round kick lands on the target.
+  r.at(0.7, { heading: 650, ...legL(70, 30, 110), ...legR(60, -70, 125, 70), ...armL(90, 90, 40), ...armR(80, -60, 60), ...torso(5, 10, 10), ...head(0, 40) });
+  r.at(0.75, { heading: 735, ...legL(70, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.82, { heading: 780, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0) });
+  r.pin("L", 0.82, 1);
+  settle(r, "R", 0.88, 0.94, { heading: 790 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("pop-360-gyro-round");
+}
+
 export function buildTornadoSidekick(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D);

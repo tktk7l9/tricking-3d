@@ -633,3 +633,46 @@ export function buildButterflyTwistHawkeye(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("butterfly-twist-hawkeye");
 }
+
+/** Double Butterfly Twist Hyper: the double butterfly twist landing in hyper,
+ * on the right foot, with the left leg held up and set down after. */
+export function buildDoubleButterflyTwistHyper(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.at(0.42, { twist: 0 });
+  r.flight(0.42, 0.84, { travel: [0.4, 0.15], apex: 0.6 });
+  r.at(0.5, { heading: 150, pitch: 85, twist: 140, ...legR(-12, -8, 5), ...legL(-12, 8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-20, 30) });
+  r.at(0.58, { heading: 205, pitch: 85, twist: 330, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  r.at(0.66, { heading: 250, pitch: 85, twist: 520, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  r.at(0.75, { heading: 290, pitch: 70, twist: 690, ...legR(20, -10, 10), ...legL(-15, 10, 5), ...armL(80, 60, 40), ...armR(80, -60, 40), ...head(-20, 10) });
+  r.at(0.84, { heading: 330, pitch: 30, twist: 720, ...legR(55, -10, 30), ...legL(-20, 20, 10), ...armsWide, ...torso(20, 0, 0), ...head(0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.87, { ...legL(10, 15, 90, 0, -40) });
+  settle(r, "L", 0.91, 0.96, { heading: 360, pitch: 0, twist: 720 });
+  r.at(0.91, { ...torso(10, 0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("double-butterfly-twist-hyper");
+}
+
+/** Triple Butterfly Twist: the butterfly twist with three full twists about
+ * the long axis while flat in the air, landing on the left foot (complete). */
+export function buildTripleButterflyTwist(): THREE.AnimationClip {
+  const D = 2.0;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.at(0.42, { twist: 0 });
+  r.flight(0.42, 0.86, { travel: [0.4, 0.15], apex: 0.62 });
+  r.at(0.49, { heading: 140, pitch: 85, twist: 150, ...legR(-12, -8, 5), ...legL(-12, 8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-20, 30) });
+  r.at(0.56, { heading: 185, pitch: 85, twist: 360, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  r.at(0.63, { heading: 225, pitch: 85, twist: 580, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  r.at(0.7, { heading: 260, pitch: 85, twist: 800, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  r.at(0.78, { heading: 300, pitch: 70, twist: 1050, ...legL(20, 10, 10), ...legR(-15, -10, 5), ...armL(80, 60, 40), ...armR(80, -60, 40), ...head(-20, 10) });
+  r.at(0.86, { heading: 335, pitch: 30, twist: 1080, ...legL(55, 10, 30), ...legR(-20, -20, 10), ...armsWide, ...torso(20, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.86, 1);
+  r.at(0.89, { ...legR(10, -15, 90, 0, -40) });
+  settle(r, "R", 0.92, 0.97, { heading: 360, pitch: 0, twist: 1080 });
+  r.at(0.92, { ...torso(10, 0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("triple-butterfly-twist");
+}

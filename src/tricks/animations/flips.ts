@@ -1569,3 +1569,48 @@ export function buildFullScissor(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("full-scissor");
 }
+
+/** Double Full: the full twist with a second full twist before landing: two
+ * twists about the long axis during the back flip, the body long and the arms
+ * pulled in, landing on both feet. */
+export function buildDoubleFull(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.33);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.33, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.33, 0.8, { travel: [0, -0.4] });
+  r.at(0.42, { pitch: -100, twist: 160, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.51, { pitch: -190, twist: 390, ...legL(15, 5, 15), ...legR(15, -5, 15), ...armsTight, ...torso(10, 0, 0), ...head(-5, 0) });
+  r.at(0.6, { pitch: -260, twist: 590, ...legL(15, 5, 15), ...legR(15, -5, 15), ...armsTight, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.69, { pitch: -320, twist: 700, ...legL(25, 5, 25), ...legR(25, -5, 25), ...armsTight, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.8, { pitch: -360, twist: 720, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, twist: 720, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("double-full");
+}
+
+/** Full Doubleleg: the full twist finished with a doubleleg: as the twist
+ * ends and the body comes upright, both legs fold up together and swing round
+ * straight as one before both feet land. */
+export function buildFullDoubleleg(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.33);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.33, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.33, 0.84, { travel: [0, -0.4] });
+  r.at(0.44, { pitch: -110, twist: 110, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.55, { pitch: -210, twist: 230, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
+  r.at(0.64, { pitch: -290, twist: 290, ...legL(20, 10, 10), ...legR(20, -10, 10), ...armL(80, 60, 40), ...armR(80, -60, 40), ...torso(5, 0, 0), ...head(0, 0) });
+  // The doubleleg: both legs fold up together, then swing round straight as one.
+  r.at(0.71, { pitch: -335, twist: 320, ...legL(70, 10, 60), ...legR(70, -10, 60), ...armL(110, 60, 10), ...armR(110, -60, 10), ...torso(10, 0, 10), ...head(-10, 10) });
+  r.at(0.77, { pitch: -355, twist: 345, ...legL(115, 5, 5), ...legR(115, -5, 5), ...armsWide, ...torso(0, 0, 0), ...head(0, 0) });
+  r.at(0.84, { pitch: -360, twist: 360, ...legL(30, 10, 40), ...legR(30, -10, 40), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.84, 1);
+  // Both feet are down: keep their spacing and only soften the knees.
+  r.at(1, { pitch: -360, twist: 360, ...legL(30, 10, 45), ...legR(30, -10, 45), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("full-doubleleg");
+}
