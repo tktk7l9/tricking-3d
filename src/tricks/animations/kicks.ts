@@ -685,6 +685,26 @@ export function buildPop720(): THREE.AnimationClip {
  * but the right knee chambers to the chest and the leg drives out heel first
  * as a side kick, the right side of the body toward the target; land on the
  * left foot. */
+/** Cheat 900 Sidekick: the cheat 900's two turns in the air, finished with a
+ * right-leg side kick (chambered to the side, then driven out sideways at the
+ * target) instead of the round kick, landing on the left foot. */
+export function buildCheat900Sidekick(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.84, { travel: [0.05, 0.2], apex: 0.5 });
+  r.at(0.5, { heading: 380, ...legL(90, 30, 115), ...legR(60, -60, 125, 60), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.6, { heading: 590, ...legL(80, 35, 120), ...legR(85, -40, 130), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.67, { heading: 760, ...legL(75, 30, 115), ...legR(90, -80, 125), ...armL(60, 60, 60), ...armR(60, -40, 80), ...torso(0, 10, 0), ...head(0, -50) });
+  r.at(0.74, { heading: 810, ...legL(60, 20, 100), ...legR(95, -90, 0, 0, 30), ...armL(40, 120, 30), ...armR(50, -110, 40), ...torso(0, 30, 0), ...head(0, -80) });
+  r.at(0.8, { heading: 825, ...legL(30, 10, 50), ...legR(60, -70, 100), ...armsWide, ...torso(5, 10, 0), ...head(0, -40) });
+  r.at(0.84, { heading: 830, ...legL(20, 5, 30), ...legR(45, -40, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, -20) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 840 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("cheat-900-sidekick");
+}
+
 export function buildTornadoSidekick(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D);

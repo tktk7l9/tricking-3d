@@ -765,3 +765,51 @@ export function buildSideFlip(): THREE.AnimationClip {
   r.at(1, { roll: -360, ...land, ...armsDown, ...torso(5, 0, 0), ...head(0, 0, 0) });
   return r.build("side-flip");
 }
+
+/** Sideflip Round: the side flip with a right-leg round kick as the body comes
+ * upright; the left foot lands first and the kicking leg is set down after it. */
+export function buildSideflipRound(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  const squat = { ...legL(22, 8, 45, 0, -23), ...legR(22, -8, 45, 0, -23) };
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.3);
+  r.at(0.15, { ...squat, ...armL(40, 130, 20), ...armR(70, -30, 30), ...torso(15, -10, 0), ...head(0, 0, 10) });
+  r.at(0.3, { roll: -10, ...legL(0, 8, 5, 0, 35), ...legR(0, -8, 5, 0, 35), ...armL(160, 60, 10), ...armR(170, -60, 10), ...torso(-5, 10, 0), ...head(-10, 0, -15) });
+  r.flight(0.3, 0.82, { travel: [0.4, 0] });
+  r.at(0.4, { roll: -100, ...legL(90, 5, 110), ...legR(90, -5, 110), ...armsTight, ...torso(20, 15, 0), ...head(10, 0, -25) });
+  r.at(0.48, { roll: -185, ...legL(120, 5, 130), ...legR(120, -5, 130), ...armsTight, ...torso(30, 20, 0), ...head(20, 0, -35) });
+  r.at(0.57, { roll: -265, ...legL(100, 5, 110), ...legR(100, -5, 110), ...armsTight, ...torso(25, 10, 0), ...head(10, 0, -20) });
+  // Chamber, then the round kick as the body comes upright.
+  r.at(0.66, { roll: -315, ...legL(40, 8, 40), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-10, 0, -5) });
+  r.at(0.74, { roll: -345, ...legL(35, 8, 30), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0, 0) });
+  r.at(0.82, { roll: -360, ...legL(25, 8, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0, 0) });
+  r.pin("L", 0.82, 1);
+  settle(r, "R", 0.88, 0.94, { roll: -360 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("sideflip-round");
+}
+
+/** Double Sideflip: two side flips in one jump, held in a tight tuck. */
+export function buildDoubleSideflip(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  const squat = { ...legL(22, 8, 45, 0, -23), ...legR(22, -8, 45, 0, -23) };
+  const land = { ...legL(25, 8, 40), ...legR(25, -8, 40) };
+  const tuck = { ...legL(120, 5, 130), ...legR(120, -5, 130) };
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.28);
+  r.at(0.14, { ...squat, ...armL(40, 130, 20), ...armR(70, -30, 30), ...torso(15, -10, 0), ...head(0, 0, 10) });
+  r.at(0.28, { roll: -10, ...legL(0, 8, 5, 0, 35), ...legR(0, -8, 5, 0, 35), ...armL(160, 60, 10), ...armR(170, -60, 10), ...torso(-5, 10, 0), ...head(-10, 0, -15) });
+  r.flight(0.28, 0.82, { travel: [0.45, 0], apex: 0.95 });
+  r.at(0.36, { roll: -110, ...legL(100, 5, 120), ...legR(100, -5, 120), ...armsTight, ...torso(25, 15, 0), ...head(15, 0, -25) });
+  r.at(0.44, { roll: -235, ...tuck, ...armsTight, ...torso(30, 20, 0), ...head(20, 0, -35) });
+  r.at(0.52, { roll: -365, ...tuck, ...armsTight, ...torso(30, 20, 0), ...head(20, 0, -35) });
+  r.at(0.6, { roll: -495, ...tuck, ...armsTight, ...torso(30, 20, 0), ...head(20, 0, -35) });
+  r.at(0.68, { roll: -615, ...legL(100, 5, 110), ...legR(100, -5, 110), ...armsTight, ...torso(25, 10, 0), ...head(10, 0, -20) });
+  r.at(0.75, { roll: -685, ...legL(45, 8, 45), ...legR(45, -8, 45), ...armsWide, ...torso(10, 5, 0), ...head(0, 0, -5) });
+  r.at(0.82, { roll: -720, ...land, ...armsWide, ...torso(10, 0, 0), ...head(0, 0, 0) });
+  r.pin("L", 0.82, 1);
+  r.at(1, { roll: -720, ...land, ...armsDown, ...torso(5, 0, 0), ...head(0, 0, 0) });
+  return r.build("double-sideflip");
+}
