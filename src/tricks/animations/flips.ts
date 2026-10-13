@@ -1425,3 +1425,46 @@ export function buildWrapFullSwipe(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("wrap-full-swipe");
 }
+
+/** Full Down: a back tuck whose full twist comes late, only on the way down,
+ * before both feet land. */
+export function buildFullDown(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.33);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.33, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.33, 0.8, { travel: [0, -0.4] });
+  r.at(0.44, { pitch: -110, twist: 0, ...legL(90, 5, 110), ...legR(90, -5, 110), ...armsTight, ...torso(30, 0, 0), ...head(-10, 0) });
+  r.at(0.52, { pitch: -185, twist: 0, ...legsTuck, ...armsTight, ...torso(40, 0, 0), ...head(0, 0) });
+  // The late twist: the tuck opens and the arms pull in as the body comes down.
+  r.at(0.6, { pitch: -250, twist: 70, ...legL(40, 5, 50), ...legR(40, -5, 50), ...armsTight, ...torso(15, 0, 0), ...head(0, 0) });
+  r.at(0.7, { pitch: -320, twist: 290, ...legL(25, 5, 25), ...legR(25, -5, 25), ...armsTight, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.8, { pitch: -360, twist: 360, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, twist: 360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("full-down");
+}
+
+/** Gainer Scissor: the gainer arabian with a scissor at the top: the right
+ * (inside kicking) leg folds up straight-ish into a semi-pike and the right
+ * hand grabs its shin, then the half twist lands both feet facing back. */
+export function buildGainerScissor(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  swingStance(r);
+  r.pin("L", 0, 0.36);
+  r.at(0.2, { ...legL(25, 5, 35), ...legR(45, -5, 50), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.36, { pitch: -20, twist: 0, ...legL(0, 5, 5, 0, 35), ...legR(100, -5, 5), ...armsUp, ...torso(-15, 0, 0), ...head(-30, 0) });
+  r.flight(0.36, 0.8, { travel: [0, 0.45] });
+  r.at(0.45, { pitch: -80, twist: 100, ...legL(25, 5, 40), ...legR(80, -5, 20), ...armsTight, ...torso(-5, 0, 0), ...head(-15, 0) });
+  // The scissor: semi-piked right leg, the right hand on its shin.
+  r.at(0.54, { pitch: -155, twist: 180, ...legL(70, 5, 100), ...legR(115, -5, 15), ...armL(60, 60, 20), ...armR(105, -10, 5), ...torso(35, 0, 0), ...head(20, 0) });
+  r.at(0.63, { pitch: -240, twist: 180, ...legL(100, 5, 120), ...legR(110, -5, 20), ...armL(60, 60, 20), ...armR(100, -10, 5), ...torso(35, 0, 0), ...head(25, 0) });
+  r.at(0.72, { pitch: -320, twist: 180, ...legL(50, 8, 50), ...legR(50, -8, 50), ...armsWide, ...torso(15, 0, 0), ...head(10, 0) });
+  r.at(0.8, { pitch: -360, twist: 180, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, twist: 180, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("gainer-scissor");
+}

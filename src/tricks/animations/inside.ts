@@ -543,3 +543,46 @@ export function buildButterflyTwistAxe(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("butterfly-twist-axe");
 }
+
+/** Double Butterfly Twist: the butterfly twist with a second full twist
+ * before the left foot lands. */
+export function buildDoubleButterflyTwist(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.at(0.42, { twist: 0 });
+  r.flight(0.42, 0.84, { travel: [0.4, 0.15], apex: 0.6 });
+  r.at(0.5, { heading: 150, pitch: 85, twist: 140, ...legR(-12, -8, 5), ...legL(-12, 8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-20, 30) });
+  r.at(0.58, { heading: 205, pitch: 85, twist: 330, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  r.at(0.66, { heading: 250, pitch: 85, twist: 520, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  r.at(0.75, { heading: 290, pitch: 70, twist: 690, ...legL(20, 10, 10), ...legR(-15, -10, 5), ...armL(80, 60, 40), ...armR(80, -60, 40), ...head(-20, 10) });
+  r.at(0.84, { heading: 330, pitch: 30, twist: 720, ...legL(55, 10, 30), ...legR(-20, -20, 10), ...armsWide, ...torso(20, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  r.at(0.87, { ...legR(10, -15, 90, 0, -40) });
+  settle(r, "R", 0.91, 0.96, { heading: 360, pitch: 0, twist: 720 });
+  r.at(0.91, { ...torso(10, 0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("double-butterfly-twist");
+}
+
+/** Butterfly Twist Doubleleg: the butterfly twist finished with a doubleleg:
+ * after the twist both legs swing up round together, straight, before both
+ * feet land. */
+export function buildButterflyTwistDoubleleg(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.at(0.42, { twist: 0 });
+  r.flight(0.42, 0.84, { travel: [0.4, 0.15] });
+  r.at(0.5, { heading: 150, pitch: 85, twist: 100, ...legR(-12, -8, 5), ...legL(-12, 8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-20, 30) });
+  r.at(0.58, { heading: 215, pitch: 85, twist: 230, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...head(-20, 30) });
+  r.at(0.65, { heading: 265, pitch: 70, twist: 340, ...legL(20, 10, 10), ...legR(20, -10, 10), ...armL(80, 60, 40), ...armR(80, -60, 40), ...head(-20, 10) });
+  // The doubleleg: both legs fold up together, then swing round straight as one.
+  r.at(0.71, { heading: 300, pitch: 35, twist: 360, ...legL(70, 10, 60), ...legR(70, -10, 60), ...armL(110, 60, 10), ...armR(110, -60, 10), ...torso(10, 0, 10), ...head(-10, 10) });
+  r.at(0.77, { heading: 330, pitch: 5, ...legL(115, 5, 5), ...legR(115, -5, 5), ...armsWide, ...torso(0, 0, 0), ...head(0, 0) });
+  r.at(0.84, { heading: 350, pitch: 0, twist: 360, ...legL(30, 10, 40), ...legR(30, -10, 40), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.84, 1);
+  // Both feet are down: keep their spacing and only soften the knees.
+  r.at(1, { heading: 350, pitch: 0, twist: 360, ...legL(30, 10, 45), ...legR(30, -10, 45), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("butterfly-twist-doubleleg");
+}
