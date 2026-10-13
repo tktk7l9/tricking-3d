@@ -983,3 +983,60 @@ export function buildCheat720Twist(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("cheat-720-twist");
 }
+
+/** The sailor moon up to the right hand letting go: step, lean over the right
+ * foot, plant the right hand and push off the right foot (as in the sailor moon). */
+function sailorMoonEntry(r: Rig) {
+  outsideStep(r);
+  r.at(0.28, { tilt: 55, spin: 0 });
+  r.at(0.36, { heading: 180, tilt: 55, spin: 40, ...legL(-35, 10, 40), ...legR(15, 0, 35), ...armL(60, 170, 10), ...armR(37, -114, 0), ...torso(-5, 0, 0), ...head(-20, 10) });
+  r.at(0.4, { ...legL(-50, 15, 70) });
+  rollOntoRightHand(r, 0.4, 0.43, { heading: 190, tilt: 55, spin: 70, ...legR(25, 0, 50, 0, 20), ...armR(67, -118, 0), ...torso(-5, 0, 0) }, 6, 0.56);
+  r.pin("handR", 0.4, 0.47);
+  r.at(0.45, { heading: 205, spin: 100, ...legL(-50, 20, 75), ...legR(5, -10, 10, 0, 35), ...armR(98, -121, 0), ...torso(-20, 0, 0), ...head(-25, 10) });
+  r.at(0.47, { heading: 215, spin: 120, twist: 0, ...legL(-45, 20, 30), ...legR(-10, -15, 10), ...armR(120, -110, 10) });
+}
+
+/** Sailor Moon Twist: the sailor moon with a full twist about the body's long
+ * axis while it lies flat on the tilted spin, legs together and arms pulled
+ * in, before the left foot lands (as in the cheat 720 twist). */
+export function buildSailorMoonTwist(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D, { hands: true });
+  sailorMoonEntry(r);
+  r.flight(0.47, 0.84, { travel: [0.3, 0.3] });
+  r.at(0.56, { heading: 245, spin: 175, twist: 0, ...legL(-40, 20, 15), ...legR(-15, -20, 10), ...armL(90, 160, 10), ...armR(170, -30, 10), ...torso(-25, 0, 0), ...head(-25, 0) });
+  // The twist: legs together and arms in while the body lies flat on the spin.
+  r.at(0.6, { heading: 258, spin: 205, twist: 60, ...legL(-10, 5, 5), ...legR(-10, -5, 5), ...armsTight, ...torso(-10, 0, 0), ...head(-20, 0) });
+  r.at(0.66, { heading: 280, spin: 255, twist: 200, ...legL(-10, 5, 5), ...legR(-10, -5, 5), ...armsTight, ...torso(-10, 0, 0), ...head(-20, 0) });
+  r.at(0.72, { heading: 305, spin: 305, twist: 330, ...legL(-5, 5, 5), ...legR(-5, -5, 5), ...armsTight, ...torso(-10, 0, 0), ...head(-15, 0) });
+  r.at(0.78, { heading: 330, spin: 345, twist: 360, ...legL(30, 15, 20), ...legR(-20, -20, 10), ...armsWide, ...torso(-10, 0, 0), ...head(-10, 0) });
+  r.at(0.815, { spin: 358, heading: 342 });
+  r.at(0.84, { heading: 345, spin: 360, twist: 360, ...legL(25, 10, 15), ...legR(-35, -10, 45), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 360, spin: 360, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("sailor-moon-twist");
+}
+
+/** Sailor Moon Hyperhook (Sailor 7): the sailor moon whose tilted spin ends a
+ * little early, then the left leg chambers out to the side and hooks at the
+ * target, and the right foot lands first (hyper) with the kicking leg down last. */
+export function buildSailorMoonHyperhook(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D, { hands: true });
+  sailorMoonEntry(r);
+  r.flight(0.47, 0.84, { travel: [0.3, 0.3] });
+  r.at(0.56, { heading: 245, spin: 175, ...legL(-40, 20, 15), ...legR(-15, -20, 10), ...armL(90, 160, 10), ...armR(170, -30, 10), ...torso(-25, 0, 0), ...head(-25, 0) });
+  r.at(0.62, { heading: 252, spin: 260, ...legL(-20, 30, 10), ...legR(-30, -30, 10), ...armL(120, 120, 10), ...armR(140, -60, 10), ...torso(-20, 0, 0), ...head(-20, 0) });
+  // Upright again: chamber the left leg out to the side, then the hook.
+  r.at(0.68, { heading: 258, spin: 350, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 40) });
+  r.at(0.7, { spin: 360 });
+  r.at(0.75, { heading: 268, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.84, { heading: 335, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { heading: 355, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 360, spin: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("sailor-moon-hyperhook");
+}

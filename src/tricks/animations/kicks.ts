@@ -1006,6 +1006,94 @@ export function buildPop360Shuriken(): THREE.AnimationClip {
   return r.build("pop-360-shuriken");
 }
 
+/** Backside 900 Gyro (TKT: Pop 540 Round Gyro): the backside 900's pop and
+ * right-leg round kick, then one more full spin with the arms in before the
+ * left foot lands, one turn further round than the backside 900. */
+export function buildBackside900Gyro(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  backsidePop(r, 0.38);
+  r.flight(0.38, 0.85, { travel: [0.05, 0.1], apex: 0.5 });
+  r.at(0.45, { heading: 350, ...legL(60, 30, 110), ...legR(55, -40, 120, 50), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.52, { heading: 500, ...legL(70, 35, 115), ...legR(60, -50, 125, 60), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.58, { heading: 620, ...legL(75, 35, 115), ...legR(70, -60, 120, 70), ...armL(80, 90, 50), ...armR(80, -60, 60), ...torso(5, 10, 5), ...head(0, 30) });
+  r.at(0.63, { heading: 715, ...legL(70, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  // The gyro: legs drawn in and arms tight for one more full spin.
+  r.at(0.68, { heading: 820, ...legL(70, 30, 100), ...legR(60, -20, 90), ...armsTight, ...torso(5, 5, 0), ...head(0, 30) });
+  r.at(0.75, { heading: 990, ...legL(65, 25, 100), ...legR(60, -20, 95), ...armsTight, ...torso(5, 5, 0), ...head(0, 30) });
+  r.at(0.8, { heading: 1100, ...legL(35, 10, 45), ...legR(50, -20, 80), ...armL(60, 70, 30), ...armR(60, -70, 30), ...torso(5, 0, 0), ...head(0, 10) });
+  r.at(0.85, { heading: 1150, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.85, 1);
+  settle(r, "R", 0.91, 0.96, { heading: 1160 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("backside-900-gyro");
+}
+
+/** Pop 720 Double (TKT: Pop 540 Cyclone): the pop 360's left-leg outside
+ * crescent, then the left leg chambers again and hooks at the target like the
+ * pop 720; the right foot lands and the kicking leg comes down last. */
+export function buildPop720Double(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  frontsidePop(r, 0.36);
+  r.flight(0.36, 0.82, { travel: [0.05, 0.12], apex: 0.5 });
+  r.at(0.44, { heading: 200, ...legL(30, -10, 40), ...legR(45, -10, 70), ...armL(80, 30, 80), ...armR(80, -30, 80), ...torso(5, 0, 20), ...head(0, 40) });
+  // First outside kick: the straight left leg crescents across in front.
+  r.at(0.5, { heading: 255, ...legL(95, -40, 10), ...legR(40, -10, 80), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(0, 30) });
+  r.at(0.55, { heading: 305, ...legL(115, 60, 10), ...legR(35, -10, 70), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
+  // Second: chamber to the side again, spin, then the hook at the target.
+  r.at(0.61, { heading: 430, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 40) });
+  r.at(0.66, { heading: 530, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armsTight, ...torso(0, 10, 10), ...head(0, 40) });
+  r.at(0.72, { heading: 630, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.82, { heading: 695, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.82, 1);
+  r.at(0.88, { heading: 720, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 720 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("pop-720-double");
+}
+
+/** Cheat 720 Shuriken (TKT: Cheat 540 Shuriken): the cheat 720's left-leg hook
+ * at the target, but the kicking leg comes straight down and lands first
+ * (mega) while the right leg is held up and set down after. */
+export function buildCheat720Shuriken(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "swing");
+  r.flight(0.4, 0.82, { travel: [0.05, 0.2] });
+  r.at(0.5, { heading: 320, ...legL(60, 30, 110), ...legR(35, -10, 90), ...armsTight, ...torso(5, 0, 10), ...head(0, 40) });
+  r.at(0.62, { heading: 480, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 40) });
+  r.at(0.72, { heading: 625, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  // The kicking leg comes straight down to land while the right stays tucked up.
+  r.at(0.77, { heading: 665, ...legL(55, 40, 20), ...legR(45, -15, 85), ...armsTight, ...torso(5, 5, 0), ...head(0, 5) });
+  r.at(0.82, { heading: 690, ...legL(20, 8, 30), ...legR(45, -20, 85), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.82, 1);
+  settle(r, "R", 0.89, 0.95, { heading: 700 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("cheat-720-shuriken");
+}
+
+/** Pop Feilong: starts like the pop 360, with the straight left leg's outside
+ * crescent, then finishes with the right leg's inside (round) kick at the
+ * target; the left foot lands, as in the Pop Tornado. */
+export function buildPopFeilong(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  frontsidePop(r, 0.38);
+  r.flight(0.38, 0.8, { travel: [0.05, 0.15], apex: 0.5 });
+  r.at(0.48, { heading: 185, ...legL(30, -10, 40), ...legR(45, -10, 70), ...armL(80, 30, 80), ...armR(80, -30, 80), ...torso(5, 0, 20), ...head(0, 40) });
+  r.at(0.55, { heading: 250, ...legL(95, -40, 10), ...legR(40, -10, 80), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(0, 30) });
+  r.at(0.61, { heading: 300, ...legL(115, 60, 10), ...legR(35, -10, 70), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
+  // The left leg folds away while the right chambers, then the round kick.
+  r.at(0.67, { heading: 340, ...legL(70, 30, 110), ...legR(60, -70, 125, 70), ...armL(90, 90, 40), ...armR(80, -60, 60), ...torso(5, 10, 10), ...head(0, 40) });
+  r.at(0.73, { heading: 380, ...legL(70, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.8, { heading: 420, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0) });
+  r.pin("L", 0.8, 1);
+  settle(r, "R", 0.86, 0.92, { heading: 430 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("pop-feilong");
+}
+
 export function buildTornadoSidekick(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D);

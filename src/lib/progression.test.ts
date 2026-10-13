@@ -12,7 +12,7 @@ describe("progression", () => {
   });
 
   it("lists the tricks a trick unlocks in catalogue order", () => {
-    expect(ids(unlocksOf("540-gyro"))).toEqual(["cheat-900-gyro"]);
+    expect(ids(unlocksOf("540-gyro"))).toEqual(["cheat-900-gyro", "backside-900-gyro"]);
     expect(ids(unlocksOf("back-flip"))).toEqual(["x-out", "back-pike", "flash-kick", "arabian", "gainer"]);
     expect(ids(unlocksOf("butterfly-twist"))).toEqual([
       "janitor-twist",

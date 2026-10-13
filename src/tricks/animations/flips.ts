@@ -1520,3 +1520,52 @@ export function buildJanitorScissorTwist(): THREE.AnimationClip {
   r.at(1, { heading: 180, pitch: 0, twist: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
   return r.build("janitor-scissor-twist");
 }
+
+/** Full Late Round (Full Mega Round): the full round's twist carried on half a
+ * turn further, the right leg's round kick coming late, and the left foot
+ * landing facing the way the body travelled (mega). */
+export function buildFullLateRound(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.33);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.33, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.33, 0.8, { travel: [0, -0.4] });
+  r.at(0.42, { pitch: -100, twist: 130, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.5, { pitch: -185, twist: 280, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
+  // Past the full twist: chamber, then the late round kick.
+  r.at(0.59, { pitch: -265, twist: 410, ...legL(30, 5, 35), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-5, 0) });
+  r.at(0.67, { pitch: -325, twist: 480, ...legL(30, 5, 30), ...legR(120, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.74, { pitch: -350, twist: 520, ...legL(30, 5, 30), ...legR(60, -20, 70, 30), ...armL(40, 110, 30), ...armR(45, -60, 40), ...torso(5, 0, 0) });
+  r.at(0.8, { pitch: -360, twist: 540, ...legL(25, 8, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.8, 1);
+  settle(r, "R", 0.87, 0.93, { pitch: -360, twist: 540 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("full-late-round");
+}
+
+/** Full Scissor: the full with half a turn more twist, finished with a
+ * scissor: the right leg folds up straight-ish into a semi-pike and the right
+ * hand grabs its shin, then the left foot lands facing the way the body
+ * travelled (mega) and the right comes down after. */
+export function buildFullScissor(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.33);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.33, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.33, 0.8, { travel: [0, -0.4] });
+  r.at(0.42, { pitch: -100, twist: 130, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.5, { pitch: -185, twist: 290, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
+  r.at(0.58, { pitch: -255, twist: 450, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(10, 0, 0), ...head(0, 0) });
+  // The scissor: semi-piked right leg, the right hand on its shin.
+  r.at(0.65, { pitch: -305, twist: 530, ...legL(35, 5, 40), ...legR(110, -5, 15), ...armL(60, 60, 20), ...armR(105, -10, 5), ...torso(30, 0, 0), ...head(15, 0) });
+  r.at(0.72, { pitch: -340, twist: 540, ...legL(30, 5, 35), ...legR(105, -5, 20), ...armL(60, 60, 20), ...armR(100, -10, 5), ...torso(30, 0, 0), ...head(10, 0) });
+  r.at(0.8, { pitch: -360, twist: 540, ...legL(25, 8, 25), ...legR(60, -10, 70), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.8, 1);
+  settle(r, "R", 0.87, 0.93, { pitch: -360, twist: 540 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("full-scissor");
+}
