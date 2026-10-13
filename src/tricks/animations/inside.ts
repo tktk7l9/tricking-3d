@@ -771,3 +771,30 @@ export function buildButterflyTwistShuriken(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("butterfly-twist-shuriken");
 }
+
+/** Double Aerial Twist: the aerial twist with a second twist about the long
+ * axis while upside down, arms and legs pulled in, landing complete on the
+ * left foot. */
+export function buildDoubleAerialTwist(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -10), ...head(0, 0, 10) });
+  cartwheelEntry(r);
+  // Both feet hold still while the weight moves onto the left foot, then the right foot lifts.
+  r.at(0.145, { roll: -12, ...legL(45, 80, 45), ...legR(0, -10, 0) });
+  r.at(0.17, { roll: -15, ...legL(45, 80, 50), ...legR(17, -10, 35, 0, -18), ...torso(10, 10, 0), ...armL(60, 60, 20), ...armR(50, -150, 20) });
+  r.at(0.3, { roll: -55, twist: 0, ...legL(55, 80, 25, 0, 35), ...legR(35, -90, 10), ...torso(0, 15, 0), ...armL(150, 110, 10), ...armR(120, -60, 20), ...head(-10, 0, 20) });
+  r.flight(0.3, 0.76, { travel: [0.9, 0] });
+  r.at(0.39, { roll: -120, twist: 60, ...legL(10, 50, 10), ...legR(10, -50, 0), ...torso(0, 5, 0), ...armsTight, ...head(-10, 20, 0) });
+  r.at(0.46, { roll: -170, twist: 250, ...legL(0, 8, 0), ...legR(0, -8, 0), ...torso(0, 0, 0), ...armsTight, ...head(-10, 20, 0) });
+  r.at(0.53, { roll: -215, twist: 450, ...legL(0, 8, 0), ...legR(0, -8, 0), ...armsTight, ...head(-10, 20, 0) });
+  r.at(0.6, { roll: -255, twist: 630, ...legL(0, 8, 0), ...legR(0, -8, 0), ...armsTight, ...head(-10, 20, 0) });
+  // The twists end early and the roll comes almost upright before touchdown.
+  r.at(0.67, { roll: -300, twist: 710, ...legL(15, 25, 10), ...legR(20, -40, 40), ...armL(90, 90, 20), ...armR(90, -90, 20), ...head(-5, 0, 0) });
+  r.at(0.76, { roll: -345, twist: 720, ...legL(15, 20, 15), ...legR(45, -45, 100), ...torso(0, -5, 0), ...armsWide, ...head(0, 0, 0) });
+  r.pin("L", 0.76, 1);
+  settle(r, "R", 0.85, 0.92, { roll: -360, twist: 720 }, 12);
+  r.at(0.85, { ...torso(0, 0, 0) });
+  r.at(1, { ...torso(0, 0, 0), ...armsDown, ...head(0, 0, 0) });
+  return r.build("double-aerial-twist");
+}
