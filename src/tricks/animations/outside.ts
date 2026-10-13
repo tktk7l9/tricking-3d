@@ -110,7 +110,7 @@ export function buildRaiz(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("L", 0.82, 1);
-  settle(r, "R", 0.89, 0.95, { heading: 360 });
+  settle(r, "R", 0.89, 0.95, { heading: 360, spin: 360 });
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("raiz");
 }
@@ -283,7 +283,7 @@ export function buildSailorMoon(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("L", 0.82, 1);
-  settle(r, "R", 0.89, 0.95, { heading: 360 });
+  settle(r, "R", 0.89, 0.95, { heading: 360, spin: 360 });
   r.at(0.89, { ...torso(5, 0, 0) });
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("sailor-moon");
@@ -435,7 +435,7 @@ export function buildSailorMoonRound(): THREE.AnimationClip {
   r.at(0.77, { heading: 345, spin: 340, ...legL(35, 15, 30), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
   r.at(0.84, { heading: 365, spin: 360, ...legL(25, 8, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
   r.pin("L", 0.84, 1);
-  settle(r, "R", 0.9, 0.96, { heading: 372 });
+  settle(r, "R", 0.9, 0.96, { heading: 372, spin: 360 });
   r.at(0.9, { ...torso(6, 0, 0) });
   r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("sailor-moon-round");
