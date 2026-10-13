@@ -884,3 +884,26 @@ export function buildDoublelegSidekick(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("doubleleg-sidekick");
 }
+
+/** Spyder Twist Round: the spyder twist with a right-leg round kick as the
+ * body comes up after the twist, before the left foot lands. */
+export function buildSpyderTwistRound(): THREE.AnimationClip {
+  const D = 2.0;
+  const r = new Rig(D);
+  outsideStep(r);
+  r.at(0.4, { heading: 230, pitch: 75, twist: 0, ...legR(80, -10, 10, 0, 35), ...legL(-25, 30, 10), ...armsWide, ...torso(5, 0, -10), ...head(-30, -20) });
+  r.flight(0.4, 0.86, { travel: [-0.35, -0.3], apex: 0.55 });
+  r.at(0.5, { heading: 320, pitch: 80, twist: 0, ...legL(-30, 40, 10), ...legR(-10, -40, 10), ...armsWide, ...torso(-10, 0, 0), ...head(-30, 0) });
+  // The extra twist: legs together, arms pulled in.
+  r.at(0.57, { heading: 370, pitch: 80, twist: 140, ...legL(-10, 8, 5), ...legR(-10, -8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-15, 0) });
+  r.at(0.64, { heading: 410, pitch: 75, twist: 290, ...legL(-5, 8, 5), ...legR(-5, -8, 5), ...armsTight, ...torso(0, 0, 0), ...head(-10, 0) });
+  r.at(0.7, { heading: 440, pitch: 55, twist: 360, ...legL(40, 10, 20), ...legR(0, -30, 10), ...armL(60, 90, 20), ...armR(60, -90, 20), ...torso(0, 0, 0), ...head(-10, 0) });
+  // Chamber, then the round kick as the body comes up.
+  r.at(0.75, { heading: 470, pitch: 35, ...legL(40, 10, 30), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-10, 0) });
+  r.at(0.8, { heading: 495, pitch: 12, ...legL(40, 10, 30), ...legR(118, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.86, { heading: 510, pitch: 0, ...legL(25, 8, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.86, 1);
+  settle(r, "R", 0.91, 0.96, { heading: 520, pitch: 0, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("spyder-twist-round");
+}

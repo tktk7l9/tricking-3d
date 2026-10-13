@@ -813,6 +813,27 @@ export function buildSwing1080(): THREE.AnimationClip {
   return r.build("swing-1080");
 }
 
+/** Cheat 900 Double: the cheat 900 with two right-leg round kicks, the first
+ * about where a 540 kicks and the second where the cheat 900 kicks; the leg
+ * re-chambers between them and the left foot lands. */
+export function buildCheat900Double(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.84, { travel: [0.05, 0.2], apex: 0.5 });
+  r.at(0.47, { heading: 330, ...legL(90, 30, 115), ...legR(60, -60, 125, 60), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.53, { heading: 440, ...legL(80, 30, 110), ...legR(60, -70, 125, 70), ...armL(90, 90, 40), ...armR(80, -60, 60), ...torso(5, 10, 10), ...head(0, 30) });
+  r.at(0.58, { heading: 535, ...legL(75, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 10) });
+  r.at(0.64, { heading: 600, ...legL(70, 30, 110), ...legR(70, -60, 120, 70), ...armsTight, ...torso(5, 10, 5), ...head(0, 30) });
+  r.at(0.73, { heading: 715, ...legL(65, 25, 100), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.8, { heading: 770, ...legL(45, 15, 60), ...legR(60, -20, 70, 30), ...armL(40, 110, 30), ...armR(45, -60, 40), ...torso(5, 0, 0) });
+  r.at(0.84, { heading: 790, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 800 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("cheat-900-double");
+}
+
 export function buildTornadoSidekick(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D);

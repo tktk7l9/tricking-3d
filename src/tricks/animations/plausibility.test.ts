@@ -711,6 +711,10 @@ describe.each([
   ["full-round", inverted],
   ["wrap-full-round", inverted],
   ["doubleleg-twist-round", legsUp],
+  ["tak-full-round", inverted],
+  ["spyder-twist-round", chestUpFlat],
+  ["full-swipe", inverted],
+  ["butterfly-twist-swipe", chestUpFlat],
 ] as const)("%s", (id, turnedOver) => {
   it("kicks the right foot alone above the hips, body upright, once it has turned over, before landing", () => {
     const samples = sampleClip(byId(id));
@@ -756,15 +760,18 @@ describe.each([
 const stretches = (samples: Sample[], up: (s: Sample) => boolean) =>
   samples.filter((s, i) => up(s) && (i === 0 || !up(samples[i - 1]))).length;
 
-describe("tornado double", () => {
-  it("kicks the right foot above the hips twice in the air, where the tornado kicks once", () => {
-    const kicks = (id: string) => {
-      const samples = sampleClip(byId(id));
+describe.each([
+  ["tornado-double", "cheat-kick"],
+  ["cheat-900-double", "cheat-900"],
+] as const)("%s", (id, base) => {
+  it(`kicks the right foot above the hips twice in the air, where the ${base} kicks once`, () => {
+    const kicks = (trickId: string) => {
+      const samples = sampleClip(byId(trickId));
       const [a, b] = longestFlight(samples)!;
       return stretches(samples.slice(a, b + 1), (s) => s.right > s.hips.y);
     };
-    expect(kicks("tornado-double")).toBe(2);
-    expect(kicks("cheat-kick")).toBe(1);
+    expect(kicks(id)).toBe(2);
+    expect(kicks(base)).toBe(1);
   });
 });
 
@@ -810,6 +817,9 @@ describe.each([
   ["cheat-900-hyper", "cheat-900"],
   ["full-hyper", "full"],
   ["butterfly-twist-hyper", "butterfly-twist"],
+  ["full-swipe", "full"],
+  ["butterfly-twist-swipe", "butterfly-twist"],
+  ["wrap-full-hyper", "wrap"],
 ] as const)("%s", (id, base) => {
   it(`lands on the right foot and keeps the left leg up for a moment, where the ${base} does not land on the right`, () => {
     expect(byId(base).landing).not.toBe("right");
@@ -835,5 +845,36 @@ describe.each([
     };
     expect(spread(id), "feet far apart").toBeGreaterThan(1.2);
     expect(spread(base), `the ${base} keeps its legs together`).toBeLessThan(1.2);
+  });
+});
+
+/* Contracts for the ninth batch (2026-10). */
+
+describe("arabian half", () => {
+  it("twists a full turn and lands facing the way it started, where the arabian lands facing back", () => {
+    const ends = (id: string) => {
+      const samples = sampleClip(byId(id));
+      expect(samples.some(inverted)).toBe(true);
+      return [samples[0].fwdZ, samples[samples.length - 1].fwdZ];
+    };
+    const [start, end] = ends("arabian-half");
+    expect(start, "starts facing the target").toBeGreaterThan(0.9);
+    expect(end, "lands facing the target").toBeGreaterThan(0.9);
+    expect(ends("arabian")[1], "the arabian lands facing back").toBeLessThan(-0.9);
+  });
+});
+
+describe("x-out full", () => {
+  it("splits the legs wide upside down, then turns side on in the air (the twist), which the x-out never does", () => {
+    const sideOn = (s: Sample) => Math.abs(Math.sin((s.yaw * Math.PI) / 180)) > 0.8 && Math.abs(s.fwdY) < 0.6;
+    const air = (id: string) => {
+      const samples = sampleClip(byId(id));
+      const [a, b] = longestFlight(samples)!;
+      return samples.slice(a, b + 1);
+    };
+    const flight = air("x-out-full");
+    expect(Math.max(...flight.filter(inverted).map((s) => s.ballL.distanceTo(s.ballR))), "feet far apart upside down").toBeGreaterThan(1.2);
+    expect(flight.some(sideOn), "turns side on").toBe(true);
+    expect(air("x-out").some(sideOn), "the x-out stays square").toBe(false);
   });
 });
