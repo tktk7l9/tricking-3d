@@ -764,6 +764,55 @@ export function buildCheatFeilong(): THREE.AnimationClip {
   return r.build("cheat-feilong");
 }
 
+/** Cheat 900 Hyper: the cheat 900 landing on the kicking (right) leg (hyper),
+ * the left leg held up and set down after. */
+export function buildCheat900Hyper(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.84, { travel: [0.05, 0.2], apex: 0.5 });
+  r.at(0.5, { heading: 340, ...legL(90, 30, 115), ...legR(60, -60, 125, 60), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.6, { heading: 490, ...legL(80, 35, 120), ...legR(65, -60, 125, 70), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.68, { heading: 610, ...legL(75, 35, 115), ...legR(75, -60, 120, 70), ...armL(80, 90, 50), ...armR(80, -60, 60), ...torso(5, 10, 5), ...head(0, 30) });
+  r.at(0.74, { heading: 715, ...legL(70, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  // The kicking leg comes straight down to land while the left stays up.
+  r.at(0.79, { heading: 770, ...legL(60, 60, 110), ...legR(55, -10, 60, 20), ...armsTight, ...torso(5, 5, 0), ...head(0, 30) });
+  r.at(0.84, { heading: 810, ...legL(45, 70, 100), ...legR(20, 0, 30), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { heading: 835, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  r.at(0.95, { heading: 835, ...legR(15, 0, 30), ...legL(-15, 10, 20) });
+  r.at(1, { heading: 835, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("cheat-900-hyper");
+}
+
+/** Swing 1080: the swing 900's swing entry, about two turns in the air, then a
+ * left-leg outside (hook) kick at the target; the right foot lands first. */
+export function buildSwing1080(): THREE.AnimationClip {
+  const D = 2.0;
+  const r = new Rig(D);
+  // Standing on the left foot with the right foot just off the floor behind;
+  // its knee folds as it swings through under the body.
+  r.start({ ...armsDown, ...legL(0, 5), ...legR(-25, -10, 45, 0, -20), ...torso(5, 0, -10) });
+  r.at(0.09, { ...legR(5, 5, 85, 0, -40) });
+  r.pin("L", 0, 0.4);
+  r.at(0.18, { heading: 40, ...legR(45, 15, 25), ...legL(10, 5, 30), ...armL(40, 150, 20), ...armR(50, -30, 30), ...torso(5, 0, 10), ...head(0, 20) });
+  r.at(0.3, { heading: 130, ...legR(85, 40, 30), ...legL(20, 5, 45), ...armL(90, 60, 30), ...armR(80, -110, 30), ...torso(8, 0, 25), ...head(0, 40) });
+  r.at(0.4, { heading: 230, ...legR(95, 45, 60), ...legL(0, 5, 5, 0, 35), ...armsUp, ...torso(-5, 0, 30), ...head(-5, 45) });
+  r.flight(0.4, 0.86, { travel: [0.05, 0.2], apex: 0.55 });
+  r.at(0.48, { heading: 360, ...legL(90, 30, 115), ...legR(60, -60, 125, 60), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.57, { heading: 560, ...legL(80, 35, 120), ...legR(55, -40, 120, 40), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.66, { heading: 760, ...legL(75, 45, 110), ...legR(35, -10, 90), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  // Chamber the left leg out to the side, then the hook.
+  r.at(0.72, { heading: 900, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 40) });
+  r.at(0.78, { heading: 985, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.86, { heading: 1050, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.86, 1);
+  r.at(0.91, { heading: 1075, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  r.at(0.96, { heading: 1075, ...legR(15, 0, 30), ...legL(-15, 10, 20) });
+  r.at(1, { heading: 1075, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0) });
+  return r.build("swing-1080");
+}
+
 export function buildTornadoSidekick(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D);

@@ -3,8 +3,8 @@ import { DEFAULT_TRICK_ID, TRICKS, getTrick } from "./catalog";
 import { TRICK_FACTORIES, buildClipFor } from "./animations/index";
 
 describe("trick catalog", () => {
-  it("lists 75 tricks with unique ids and non-empty names", () => {
-    expect(TRICKS).toHaveLength(75);
+  it("lists 83 tricks with unique ids and non-empty names", () => {
+    expect(TRICKS).toHaveLength(83);
     const ids = TRICKS.map((t) => t.id);
     expect(new Set(ids).size).toBe(ids.length);
     for (const t of TRICKS) {
