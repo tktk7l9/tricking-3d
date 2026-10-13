@@ -380,6 +380,7 @@ describe.each([
   ["pop-720", 500, 650, false, "left"],
   ["swing-900", 450, 760, false, "right"],
   ["backside-900-sidekick", 450, 580, true, "right"],
+  ["backside-900-gyro", 800, 900, true, "right"],
   ["cheat-900-hyper", 450, 760, false, "right"],
   ["swing-1080", 650, 1000, false, "left"],
   ["pop-360-gyro", 500, 650, false, "left"],
@@ -785,6 +786,7 @@ describe.each([
 describe.each([
   ["cheat-feilong", "cheat-kick"],
   ["cheat-900-feilong", "cheat-900"],
+  ["pop-feilong", "pop-tornado"],
 ] as const)("%s", (id, base) => {
   it("swings the straight left leg up above the hips before the right leg's round kick", () => {
     const crescent = (s: Sample) => s.left > s.hips.y && s.ballL.distanceTo(s.hips) > 0.85;
@@ -832,6 +834,7 @@ describe.each([
   ["wrap-full-hyper", "wrap"],
   ["tak-full-swipe", "tak"],
   ["wrap-full-swipe", "wrap"],
+  ["sailor-moon-hyperhook", "sailor-moon"],
 ] as const)("%s", (id, base) => {
   it(`lands on the right foot and keeps the left leg up for a moment, where the ${base} does not land on the right`, () => {
     expect(byId(base).landing).not.toBe("right");
@@ -963,15 +966,18 @@ describe.each([
   });
 });
 
-describe("cheat 720 double", () => {
-  it("straightens the left leg above the hips twice in the air, where the cheat 720 does it once", () => {
-    const kicks = (id: string) => {
-      const samples = sampleClip(byId(id));
+describe.each([
+  ["cheat-720-double", "cheat-720"],
+  ["pop-720-double", "pop-720"],
+] as const)("%s", (id, base) => {
+  it(`straightens the left leg above the hips twice in the air, where the ${base} does it once`, () => {
+    const kicks = (trickId: string) => {
+      const samples = sampleClip(byId(trickId));
       const [a, b] = longestFlight(samples)!;
       return stretches(samples.slice(a, b + 1), (s) => s.left > s.hips.y && s.ballL.distanceTo(s.hips) > 0.85);
     };
-    expect(kicks("cheat-720-double")).toBe(2);
-    expect(kicks("cheat-720")).toBe(1);
+    expect(kicks(id)).toBe(2);
+    expect(kicks(base)).toBe(1);
   });
 });
 
@@ -1039,10 +1045,13 @@ describe("sailor moon doubleleg twist", () => {
 
 /* Contracts for the twelfth batch (2026-10). */
 
-describe("pop 360 shuriken", () => {
-  it("lands on the left (kicking) foot and keeps the right leg up for a moment, where the pop 360 lands on both feet", () => {
-    expect(byId("pop-kick").landing).toBe("both");
-    const samples = sampleClip(byId("pop-360-shuriken"));
+describe.each([
+  ["pop-360-shuriken", "pop-kick"],
+  ["cheat-720-shuriken", "cheat-720"],
+] as const)("%s", (id, base) => {
+  it(`lands on the left (kicking) foot and keeps the right leg up for a moment, where the ${base} does not land on the left`, () => {
+    expect(byId(base).landing).not.toBe("left");
+    const samples = sampleClip(byId(id));
     const [start, end] = longestFlight(samples)!;
     expect(samples.slice(start, end + 1).some((s) => s.left > s.hips.y), "left foot kicks above the hips").toBe(true);
     const after = samples.slice(end + 1);
@@ -1062,6 +1071,7 @@ describe.each([
   ["arabian-scissor", "arabian", inverted],
   ["butterfly-kick-scissor", "butterfly", flatInAir],
   ["janitor-scissor-twist", "janitor-twist", flatInAir],
+  ["full-scissor", "full", (s: Sample) => s.left > 0.12 && s.right > 0.12],
 ] as const)("%s", (id, base, during) => {
   it(`grabs the right leg with the right hand in the air, which the ${base} never does`, () => {
     const grabs = (trickId: string) => sampleClip(byId(trickId)).some((s) => scissorGrab(s) && during(s));
@@ -1080,15 +1090,55 @@ describe("janitor scissor twist", () => {
   });
 });
 
-describe("cheat 720 twist", () => {
-  it("turns chest down while flat on the tilted spin (a full twist), which the raiz never does", () => {
+describe.each([
+  ["cheat-720-twist", "raiz"],
+  ["sailor-moon-twist", "sailor-moon"],
+] as const)("%s", (twistId, base) => {
+  it(`turns chest down while flat on the tilted spin (a full twist), which the ${base} never does`, () => {
     const chestDownFlat = (s: Sample) => s.fwdY < -0.6 && Math.abs(s.head - s.hips.y) < 0.35;
     const air = (id: string) => {
       const samples = sampleClip(byId(id));
       const [a, b] = longestFlight(samples)!;
       return samples.slice(a, b + 1);
     };
-    expect(air("cheat-720-twist").some(chestDownFlat)).toBe(true);
-    expect(air("raiz").some(chestDownFlat)).toBe(false);
+    expect(air(twistId).some(chestDownFlat)).toBe(true);
+    expect(air(base).some(chestDownFlat)).toBe(false);
+  });
+});
+
+/* Contracts for the thirteenth batch (2026-10). */
+
+describe.each([
+  ["full-late-round", "full-round"],
+  ["full-scissor", "full"],
+] as const)("%s", (id, base) => {
+  it(`lands on the left foot facing the way it travelled (mega), where the ${base} lands facing back`, () => {
+    const end = (trickId: string) => {
+      const samples = sampleClip(byId(trickId));
+      const [, b] = longestFlight(samples)!;
+      const last = samples[samples.length - 1];
+      return { first: samples[b + 1], last, travel: last.hips.z - samples[0].hips.z };
+    };
+    const mine = end(id);
+    expect(mine.travel, "travels backwards").toBeLessThan(-0.2);
+    expect(mine.first.left, "left foot down first").toBeLessThan(mine.first.right);
+    expect(mine.last.fwdZ, "faces the way it travelled").toBeLessThan(-0.9);
+    expect(end(base).last.fwdZ, `the ${base} faces back the way it came`).toBeGreaterThan(0.9);
+  });
+});
+
+describe("full late round", () => {
+  it("kicks the right foot above the hips with the body upright in the air", () => {
+    const samples = sampleClip(byId("full-late-round"));
+    const [a, b] = longestFlight(samples)!;
+    expect(samples.slice(a, b + 1).some((s) => s.right > s.hips.y && s.head > s.hips.y)).toBe(true);
+  });
+});
+
+describe("sailor moon hyperhook", () => {
+  it("hooks the straight left leg above the hips once upright, which the sailor moon never does", () => {
+    const hook = (s: Sample) => s.head > s.hips.y + 0.3 && s.left > s.hips.y && s.ballL.distanceTo(s.hips) > 0.85;
+    expect(sampleClip(byId("sailor-moon-hyperhook")).some(hook)).toBe(true);
+    expect(sampleClip(byId("sailor-moon")).some(hook)).toBe(false);
   });
 });
