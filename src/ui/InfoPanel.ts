@@ -2,6 +2,7 @@ import type { AppState } from "../state/AppState";
 import { getTrick, type TrickMeta } from "../tricks/catalog";
 import { clampSeekTime } from "../lib/seek";
 import { axisLabel, categoryLabel, takeoffLabel } from "../lib/labels";
+import { phraseHtml } from "../lib/phrases";
 
 export class InfoPanel {
   private host: HTMLElement;
@@ -21,7 +22,7 @@ export class InfoPanel {
 
   private render(t: TrickMeta) {
     this.host.innerHTML = `
-      <h2>${escapeHtml(t.nameJp)}</h2>
+      <h2>${phraseHtml(t.nameJp)}</h2>
       <div class="meta">${escapeHtml(t.nameEn)}</div>
       <dl class="meta-grid">
         <dt>カテゴリ</dt><dd>${categoryLabel(t.category)}</dd>

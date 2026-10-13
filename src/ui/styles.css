@@ -85,6 +85,14 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
 .title-block .jp { display: block; font-size: 22px; font-weight: 700; }
 .title-block .en { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
 
+/* Trick names wrap only between their words (lib/phrases.ts marks the break
+ * points with <wbr>), never mid-word, and their lines come out even (SHIG 11, 69, 95). */
+.title-block .jp, .trick-btn .jp, .info-panel h2 {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
 /* Sidebar */
 .sidebar h2 {
   margin: 0 0 8px;
@@ -378,4 +386,9 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
   .title-block .jp { font-size: 17px; }
   .title-block .en { font-size: 11px; }
   .hud-btn { padding: 6px 8px; }
+}
+/* The narrowest phones: a little smaller, so the longest word of a trick
+ * name (9 characters, e.g. （カートウィール）) still fits one line. */
+@media (max-width: 380px) {
+  .title-block .jp { font-size: 15px; }
 }

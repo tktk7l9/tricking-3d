@@ -32,6 +32,14 @@ describe("InfoPanel", () => {
     expect(host.classList.contains("info-panel")).toBe(true);
   });
 
+  it("lets a long name wrap only between its words", () => {
+    const host = mountHost("aside");
+    new InfoPanel(host, makeState({ trickId: "sailor-moon-round" }));
+    const h2 = getByRole(host, "heading", { level: 2 });
+    expect(h2.innerHTML).toBe("セーラームーン<wbr>ラウンド");
+    expect(h2.textContent).toBe(getTrick("sailor-moon-round").nameJp);
+  });
+
   it("lists every keypoint with its time, keeping the landing inside the clip", () => {
     const host = mountHost("aside");
     new InfoPanel(host, makeState({ trickId: "back-flip" }));
