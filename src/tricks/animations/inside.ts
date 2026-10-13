@@ -479,3 +479,23 @@ export function buildButterflyTwistRound(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("butterfly-twist-round");
 }
+
+/** Butterfly Twist Hyper: the butterfly twist landing in hyper, on the right
+ * foot, with the left leg held up and set down after. */
+export function buildButterflyTwistHyper(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.at(0.42, { twist: 0 });
+  r.flight(0.42, 0.8, { travel: [0.4, 0.15] });
+  r.at(0.52, { heading: 150, pitch: 85, twist: 90, ...legR(-12, -8, 5), ...legL(-12, 8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-20, 30) });
+  r.at(0.62, { heading: 215, pitch: 85, twist: 200, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...head(-20, 30) });
+  r.at(0.7, { heading: 265, pitch: 80, twist: 290, ...legR(20, -10, 10), ...legL(-15, 10, 5), ...armL(80, 60, 40), ...armR(80, -60, 40), ...head(-20, 10) });
+  r.at(0.8, { heading: 320, pitch: 30, twist: 360, ...legR(55, -10, 30), ...legL(-20, 20, 10), ...armsWide, ...torso(20, 0, 0), ...head(0, 0) });
+  r.pin("R", 0.8, 1);
+  r.at(0.84, { ...legL(10, 15, 90, 0, -40) });
+  settle(r, "L", 0.88, 0.94, { heading: 360, pitch: 0, twist: 360 });
+  r.at(0.88, { ...torso(10, 0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("butterfly-twist-hyper");
+}

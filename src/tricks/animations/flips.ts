@@ -1161,3 +1161,70 @@ export function buildJanitorTwist(): THREE.AnimationClip {
   r.at(1, { heading: 180, pitch: 0, twist: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
   return r.build("janitor-twist");
 }
+
+/** Full Hyper: the full twist landing in hyper, on the right foot, with the
+ * left leg held up and set down after. */
+export function buildFullHyper(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.33);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.33, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.33, 0.8, { travel: [0, -0.4] });
+  r.at(0.44, { pitch: -110, twist: 110, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.55, { pitch: -200, twist: 230, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
+  r.at(0.67, { pitch: -290, twist: 335, ...legL(45, 5, 70), ...legR(25, -5, 25), ...armsTight, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.8, { pitch: -360, twist: 360, ...legR(25, -8, 25), ...legL(55, 8, 85, 0, -35), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("R", 0.8, 1);
+  settle(r, "L", 0.86, 0.92, { pitch: -360, twist: 360 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("full-hyper");
+}
+
+/** Arabian X-Out: the arabian's half twist into a front flip, with an x-out
+ * (straddle) in the front flip before both feet land. */
+export function buildArabianXOut(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.32);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.32, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.32, 0.8, { travel: [0, -0.5] });
+  // The half twist starts straight away while the body leans back, arms in.
+  r.at(0.42, { pitch: -75, twist: 100, ...legL(15, 5, 25), ...legR(15, -5, 25), ...armsTight, ...torso(-5, 0, 0), ...head(-15, 0) });
+  r.at(0.5, { pitch: -140, twist: 180, ...legL(60, 5, 60), ...legR(60, -5, 60), ...armsTight, ...torso(20, 0, 0), ...head(20, 0) });
+  // The x-out: right leg forward to the chest, left leg back, both straight.
+  r.at(0.59, { pitch: -215, twist: 180, ...legL(-55, 5, 5), ...legR(105, -5, 5), ...armsWide, ...torso(20, 0, 0), ...head(25, 0) });
+  r.at(0.67, { pitch: -280, twist: 180, ...legL(-40, 5, 10), ...legR(85, -5, 10), ...armsWide, ...torso(15, 0, 0), ...head(15, 0) });
+  r.at(0.74, { pitch: -330, twist: 180, ...legL(25, 8, 35), ...legR(40, -8, 35), ...armL(80, 90, 20), ...armR(80, -90, 20), ...torso(12, 0, 0), ...head(5, 0) });
+  r.at(0.8, { pitch: -360, twist: 180, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, twist: 180, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("arabian-x-out");
+}
+
+/** Webster Axe: the webster's right-foot takeoff finished with an axe kick /
+ * step-out: the right leg opens straight up over the top and comes down
+ * first, the left steps down after. */
+export function buildWebsterAxe(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  // Standing on the right foot with the left foot just off the floor behind.
+  r.start({ ...armsDown, ...legR(0, -5), ...legL(-15, 5, 50, 0, 10), ...torso(10, 0, 0) });
+  r.pin("R", 0, 0.3);
+  r.at(0.18, { ...legR(35, -5, 60), ...legL(-20, 5, 60, 0, 20), ...armsBack, ...torso(15, 0, 0), ...head(8, 0) });
+  r.at(0.3, { pitch: 25, ...legR(0, -5, 5, 0, 35), ...legL(-60, 5, 20), ...armL(110, 20, 10), ...armR(110, -20, 10), ...torso(25, 0, 0), ...head(30, 0) });
+  r.flight(0.3, 0.8, { travel: [0, 0.8] });
+  r.at(0.38, { pitch: 85, ...legL(-45, 5, 30), ...legR(45, -5, 60), ...armsTight, ...torso(35, 0, 0), ...head(35, 0) });
+  r.at(0.46, { pitch: 150, ...legL(70, 5, 100), ...legR(100, -5, 120), ...armsTight, ...torso(45, 0, 0), ...head(40, 0) });
+  // The axe: the right leg opens straight up over the top while the left stays folded.
+  r.at(0.58, { pitch: 240, ...legL(110, 5, 120), ...legR(140, -5, 5), ...armL(80, 60, 20), ...armR(80, -60, 20), ...torso(30, 0, 0), ...head(20, 0) });
+  r.at(0.69, { pitch: 315, ...legL(90, 5, 110), ...legR(95, -5, 5), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.8, { pitch: 360, ...legR(20, -8, 25), ...legL(60, 8, 95, 0, -35), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("R", 0.8, 1);
+  settle(r, "L", 0.86, 0.92, { pitch: 360 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("webster-axe");
+}

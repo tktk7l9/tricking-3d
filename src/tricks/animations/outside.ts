@@ -838,3 +838,49 @@ export function buildDoublelegTwistRound(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("doubleleg-twist-round");
 }
+
+/** Doubleleg X-Out: the doubleleg with an x-out (split) at the top of the jump
+ * in place of the legs-together V; both feet land. */
+export function buildDoublelegXOut(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -15) });
+  r.pin("L", 0, 0.36);
+  doublelegSetup(r, 0.18, 0.27, 0.36);
+  r.at(0.2, { ...armL(45, 10, 20), ...armR(60, -140, 20), ...torso(15, 0, -35), ...head(5, -20) });
+  r.at(0.36, { tilt: 25, spin: 0, ...armL(150, 90, 10), ...armR(130, -30, 20), ...torso(-10, 0, 35), ...head(-10, 40) });
+  r.flight(0.36, 0.78, { travel: [0.1, 0.1] });
+  r.at(0.48, { heading: 170, spin: 110, ...legL(75, 5, 10), ...legR(75, -5, 10), ...armL(110, 60, 10), ...armR(110, -60, 10), ...torso(10, 0, 20), ...head(-10, 20) });
+  // The x-out: right leg up in front, left leg back, both straight.
+  r.at(0.58, { heading: 230, spin: 200, ...legL(-50, 5, 5), ...legR(105, -5, 5), ...armsWide, ...torso(15, 0, 10), ...head(0, 10) });
+  r.at(0.68, { heading: 290, spin: 290, ...legL(10, 5, 20), ...legR(70, -5, 10), ...armsWide, ...torso(10, 0, 0) });
+  r.at(0.78, { heading: 360, spin: 360, ...legL(30, 10, 40), ...legR(30, -10, 40), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.78, 1);
+  // Both feet are down: keep their spacing and only soften the knees.
+  r.at(1, { heading: 360, spin: 360, ...legL(30, 10, 45), ...legR(30, -10, 45), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("doubleleg-x-out");
+}
+
+/** Doubleleg Sidekick: the doubleleg, turning on into a right-leg side kick
+ * at the target (side on) before the left foot lands. */
+export function buildDoublelegSidekick(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -15) });
+  r.pin("L", 0, 0.36);
+  doublelegSetup(r, 0.18, 0.27, 0.36);
+  r.at(0.2, { ...armL(45, 10, 20), ...armR(60, -140, 20), ...torso(15, 0, -35), ...head(5, -20) });
+  r.at(0.36, { tilt: 25, spin: 0, ...armL(150, 90, 10), ...armR(130, -30, 20), ...torso(-10, 0, 35), ...head(-10, 40) });
+  r.flight(0.36, 0.82, { travel: [0.1, 0.15] });
+  r.at(0.47, { heading: 170, spin: 110, ...legL(75, 5, 10), ...legR(75, -5, 10), ...armL(110, 60, 10), ...armR(110, -60, 10), ...torso(10, 0, 20), ...head(-10, 20) });
+  r.at(0.56, { heading: 240, spin: 210, ...legL(100, 5, 5), ...legR(100, -5, 5), ...armL(100, 20, 10), ...armR(100, -20, 10), ...torso(20, 0, 10), ...head(0, 10) });
+  r.at(0.64, { heading: 330, spin: 300, ...legL(60, 5, 20), ...legR(60, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(0, 20) });
+  // Chamber to the side, then the side kick with the right side to the target.
+  r.at(0.7, { heading: 400, spin: 350, ...legL(40, 10, 40), ...legR(90, -80, 125), ...armL(60, 60, 60), ...armR(60, -40, 80), ...torso(0, 10, 0), ...head(0, -50) });
+  r.at(0.76, { heading: 450, spin: 360, ...legL(30, 10, 50), ...legR(110, -90, 0, 0, 30), ...armL(40, 120, 30), ...armR(50, -110, 40), ...torso(0, 30, 0), ...head(0, -80) });
+  r.at(0.82, { heading: 470, spin: 360, ...legL(20, 5, 30), ...legR(45, -40, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, -20) });
+  r.pin("L", 0.82, 1);
+  settle(r, "R", 0.88, 0.94, { heading: 480, spin: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("doubleleg-sidekick");
+}

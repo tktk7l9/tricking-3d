@@ -346,6 +346,8 @@ describe.each([
   ["pop-720", 500, 650, false, "left"],
   ["swing-900", 450, 760, false, "right"],
   ["backside-900-sidekick", 450, 580, true, "right"],
+  ["cheat-900-hyper", 450, 760, false, "right"],
+  ["swing-1080", 650, 1000, false, "left"],
 ] as const)("%s", (id, minAirTurn, minTurn, backside, kickLeg) => {
   it(`turns more than ${minAirTurn}° counter-clockwise in the air (${minTurn}° overall) and kicks the ${kickLeg} foot above hip height`, () => {
     const samples = sampleClip(byId(id));
@@ -696,17 +698,22 @@ describe("double sideflip", () => {
   });
 });
 
-describe.each(["cheat-900-sidekick", "backside-900-sidekick"])("%s", (id) => {
-  it("drives the straight right leg out at hip height toward the target, side on, after two turns", () => {
+describe.each([
+  ["cheat-900-sidekick", 450],
+  ["backside-900-sidekick", 450],
+  ["doubleleg-sidekick", 300],
+] as const)("%s", (id, minTurn) => {
+  it(`drives the straight right leg out at hip height toward the target, side on, after turning ${minTurn}°`, () => {
     const samples = sampleClip(byId(id));
     const [a, b] = longestFlight(samples)!;
     const air = samples.slice(a, b + 1);
-    const kick = air.reduce((best, s) => (s.right > best.right ? s : best));
+    // The kick is where the right foot reaches furthest toward the target.
+    const kick = air.reduce((best, s) => (s.ballR.z - s.hips.z > best.ballR.z - best.hips.z ? s : best));
     expect(kick.right, "foot at hip height").toBeGreaterThan(kick.hips.y - 0.1);
     expect(kick.ballR.distanceTo(kick.hips), "leg straight").toBeGreaterThan(0.85);
     expect(kick.ballR.z - kick.hips.z, "toward the target").toBeGreaterThan(0.6);
     expect(Math.abs(kick.fwdZ), "body side on to the target").toBeLessThan(0.5);
-    expect(yawTravel(samples, samples[a].t, kick.t), "two turns before the kick").toBeGreaterThan(450);
+    expect(yawTravel(samples, samples[a].t, kick.t), "turns before the kick").toBeGreaterThan(minTurn);
   });
 });
 
@@ -740,9 +747,9 @@ describe("cheat feilong", () => {
   });
 });
 
-describe("front axe", () => {
+describe.each(["front-axe", "webster-axe"])("%s", (id) => {
   it("opens the straight right leg up over the top with the left folded, then lands on the right foot", () => {
-    const samples = sampleClip(byId("front-axe"));
+    const samples = sampleClip(byId(id));
     const [a, b] = longestFlight(samples)!;
     const axe = samples
       .slice(a, b + 1)
@@ -761,5 +768,39 @@ describe("janitor twist", () => {
     };
     expect(air("janitor-twist").some(chestUpFlat)).toBe(true);
     expect(air("janitor").some(chestUpFlat)).toBe(false);
+  });
+});
+
+/* Contracts for the eighth batch (2026-10). */
+
+describe.each([
+  ["cheat-900-hyper", "cheat-900"],
+  ["full-hyper", "full"],
+  ["butterfly-twist-hyper", "butterfly-twist"],
+] as const)("%s", (id, base) => {
+  it(`lands on the right foot and keeps the left leg up for a moment, where the ${base} does not land on the right`, () => {
+    expect(byId(base).landing).not.toBe("right");
+    const samples = sampleClip(byId(id));
+    const [, end] = longestFlight(samples)!;
+    const after = samples.slice(end + 1);
+    const down = after.findIndex((s) => Math.min(s.left, s.right) < 0.03);
+    expect(after[down].right, "right foot down first").toBeLessThan(0.03);
+    const held = after.slice(down, down + 8);
+    for (const s of held) expect(s.left, `t=${s.t.toFixed(2)}: left leg still up`).toBeGreaterThan(0.1);
+  });
+});
+
+describe.each([
+  ["arabian-x-out", "arabian", inverted],
+  ["doubleleg-x-out", "double-leg", (s: Sample) => s.hips.y > 1.2],
+] as const)("%s", (id, base, during) => {
+  it(`splits the legs wide in the air, which the ${base} does not`, () => {
+    const spread = (trickId: string) => {
+      const samples = sampleClip(byId(trickId));
+      const [a, b] = longestFlight(samples)!;
+      return Math.max(...samples.slice(a, b + 1).filter(during).map((s) => s.ballL.distanceTo(s.ballR)));
+    };
+    expect(spread(id), "feet far apart").toBeGreaterThan(1.2);
+    expect(spread(base), `the ${base} keeps its legs together`).toBeLessThan(1.2);
   });
 });
