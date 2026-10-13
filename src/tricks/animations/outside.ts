@@ -1063,3 +1063,50 @@ export function buildRaizHyperhook(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("raiz-hyperhook");
 }
+
+/** Sailor Moon Hawkeye: the sailor moon whose tilted spin ends a little early;
+ * then the right (round) leg, chambered across the front, hooks against the
+ * spin, sweeping out straight to the right side heel first; the left foot lands. */
+export function buildSailorMoonHawkeye(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D, { hands: true });
+  sailorMoonEntry(r);
+  r.flight(0.47, 0.84, { travel: [0.3, 0.3] });
+  r.at(0.56, { heading: 245, spin: 175, ...legL(-40, 20, 15), ...legR(-15, -20, 10), ...armL(90, 160, 10), ...armR(170, -30, 10), ...torso(-25, 0, 0), ...head(-25, 0) });
+  r.at(0.62, { heading: 255, spin: 260, ...legL(-20, 30, 10), ...legR(-30, -30, 10), ...armL(120, 120, 10), ...armR(140, -60, 10), ...torso(-20, 0, 0), ...head(-20, 0) });
+  // Upright again: the right knee crosses in front, then the hawkeye.
+  r.at(0.68, { heading: 290, spin: 350, ...legL(50, 20, 70), ...legR(80, 35, 120, -20), ...armL(90, 90, 40), ...armR(80, -60, 60), ...torso(5, -5, 10), ...head(0, 40) });
+  r.at(0.7, { spin: 360 });
+  r.at(0.75, { heading: 350, ...legL(60, 20, 70), ...legR(100, -85, 5, 0, 20), ...armL(60, 120, 30), ...armR(50, -110, 40), ...torso(0, 25, 0), ...head(0, -60) });
+  r.at(0.8, { heading: 380, ...legL(45, 15, 55), ...legR(60, -40, 90), ...armL(40, 110, 30), ...armR(45, -60, 40), ...torso(5, 5, 0), ...head(0, -20) });
+  r.at(0.84, { heading: 395, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 405, spin: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("sailor-moon-hawkeye");
+}
+
+/** Cheat 720 Twist Round (Raiz Twist Round): the raiz twist, then a right-leg
+ * round kick at the target as the body comes upright (a laid-back cheat 900),
+ * before the left foot lands. */
+export function buildCheat720TwistRound(): THREE.AnimationClip {
+  const D = 2.0;
+  const r = new Rig(D);
+  outsideStep(r);
+  r.at(0.4, { heading: 185, tilt: 55, spin: 0, twist: 0, ...legL(-40, 10, 20), ...legR(5, 0, 5, 0, 35), ...armL(60, 170, 10), ...armR(170, -60, 10), ...torso(-20, 0, 0), ...head(-20, 10) });
+  r.flight(0.4, 0.86, { travel: [0.35, 0.35] });
+  r.at(0.49, { heading: 225, spin: 100, twist: 0, ...legL(-40, 15, 15), ...legR(-10, -20, 10), ...armL(90, 160, 10), ...armR(170, -30, 10), ...torso(-25, 0, 0), ...head(-25, 0) });
+  // The twist: legs together and arms in while the body lies flat on the spin.
+  r.at(0.55, { heading: 250, spin: 150, twist: 60, ...legL(-10, 5, 5), ...legR(-10, -5, 5), ...armsTight, ...torso(-10, 0, 0), ...head(-20, 0) });
+  r.at(0.61, { heading: 275, spin: 200, twist: 200, ...legL(-10, 5, 5), ...legR(-10, -5, 5), ...armsTight, ...torso(-10, 0, 0), ...head(-20, 0) });
+  r.at(0.67, { heading: 300, spin: 255, twist: 330, ...legL(-5, 5, 5), ...legR(-5, -5, 5), ...armsTight, ...torso(-10, 0, 0), ...head(-15, 0) });
+  // Coming upright: chamber, then the round kick at the target.
+  r.at(0.72, { heading: 320, spin: 330, twist: 360, ...legL(30, 15, 20), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-10, 0) });
+  r.at(0.745, { spin: 360 });
+  r.at(0.79, { heading: 355, ...legL(35, 15, 30), ...legR(118, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.86, { heading: 380, spin: 360, twist: 360, ...legL(25, 8, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.86, 1);
+  settle(r, "R", 0.91, 0.96, { heading: 390, spin: 360, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("cheat-720-twist-round");
+}

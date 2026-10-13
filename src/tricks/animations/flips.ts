@@ -1,6 +1,6 @@
 import type * as THREE from "three";
 import { Rig } from "../rig";
-import { armL, armR, armsBack, armsDown, armsTight, armsUp, armsWide, head, legL, legR, legsAbsorb, legsTuck, settle, torso } from "./poses";
+import { armL, armR, armsBack, armsDown, armsTight, armsUp, armsWide, head, legL, legR, legsAbsorb, legsTuck, settle, stepDownBehind, torso } from "./poses";
 import { cheatStep } from "./kicks";
 
 /* Backward / forward flips authored on the semantic rig (left-twisting tricker). */
@@ -1613,4 +1613,76 @@ export function buildFullDoubleleg(): THREE.AnimationClip {
   // Both feet are down: keep their spacing and only soften the knees.
   r.at(1, { pitch: -360, twist: 360, ...legL(30, 10, 45), ...legR(30, -10, 45), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("full-doubleleg");
+}
+
+/** Full Hyperhook: the full twist finished with a hyperhook: as the twist
+ * comes round, the left leg chambers out to the side and hooks at the target,
+ * and the right foot lands first (hyper) with the kicking leg set down last. */
+export function buildFullHyperhook(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.33);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.33, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.33, 0.84, { travel: [0, -0.4] });
+  r.at(0.44, { pitch: -110, twist: 100, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.54, { pitch: -195, twist: 190, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
+  // Chamber the left leg out to the side, then the hook at the target.
+  r.at(0.62, { pitch: -265, twist: 225, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 20) });
+  r.at(0.71, { pitch: -325, twist: 265, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.84, { pitch: -360, twist: 335, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { twist: 355, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.92, 0.96, { pitch: -360, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("full-hyperhook");
+}
+
+/** Full Shuriken: the full twist finished with a shuriken: as the twist comes
+ * round, the straight left leg sweeps across like an outside crescent kick and
+ * comes down to land first (complete), the right leg set down after. */
+export function buildFullShuriken(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.33);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.33, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.33, 0.84, { travel: [0, -0.4] });
+  r.at(0.44, { pitch: -110, twist: 110, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.54, { pitch: -195, twist: 200, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
+  // The crescent: the straight left leg sweeps from the right across to the left.
+  r.at(0.62, { pitch: -270, twist: 250, ...legL(95, -40, 10), ...legR(40, -10, 80), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(0, 10) });
+  r.at(0.69, { pitch: -320, twist: 300, ...legL(115, 60, 10), ...legR(35, -10, 70), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
+  // The kicking leg comes straight down to land while the right stays tucked up.
+  r.at(0.77, { pitch: -350, twist: 335, ...legL(55, 30, 20), ...legR(45, -15, 85), ...armsTight, ...torso(5, 5, 0), ...head(0, 5) });
+  r.at(0.84, { pitch: -360, twist: 350, ...legL(20, 8, 30), ...legR(45, -20, 85), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { pitch: -360, twist: 360 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("full-shuriken");
+}
+
+/** Arabian Scissor Half: the arabian scissor with another half twist after the
+ * scissor (a full variation), landing on both feet facing the way it started. */
+export function buildArabianScissorHalf(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.32);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.32, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.32, 0.8, { travel: [0, -0.5] });
+  r.at(0.42, { pitch: -75, twist: 100, ...legL(15, 5, 25), ...legR(15, -5, 25), ...armsTight, ...torso(-5, 0, 0), ...head(-15, 0) });
+  r.at(0.5, { pitch: -140, twist: 180, ...legL(90, 5, 110), ...legR(90, -5, 110), ...armsTight, ...torso(30, 0, 0), ...head(25, 0) });
+  // The scissor: semi-piked right leg, the right hand on its shin.
+  r.at(0.56, { pitch: -195, twist: 180, ...legL(110, 5, 125), ...legR(115, -5, 15), ...armL(60, 60, 20), ...armR(105, -10, 5), ...torso(35, 0, 0), ...head(25, 0) });
+  r.at(0.62, { pitch: -245, twist: 185, ...legL(110, 5, 125), ...legR(110, -5, 20), ...armL(60, 60, 20), ...armR(100, -10, 5), ...torso(35, 0, 0), ...head(25, 0) });
+  // Let go and twist the other half turn on the way down.
+  r.at(0.7, { pitch: -305, twist: 290, ...legL(30, 5, 35), ...legR(30, -5, 35), ...armsTight, ...torso(10, 0, 0), ...head(5, 0) });
+  r.at(0.8, { pitch: -360, twist: 360, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, twist: 360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("arabian-scissor-half");
 }
