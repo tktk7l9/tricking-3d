@@ -360,8 +360,9 @@ export function buildAerialTwist(): THREE.AnimationClip {
   return r.build("aerial-twist");
 }
 
-/** When the scoot's right foot leaves the floor and its left foot lands (normalized time). */
-const SCOOT = { push: 0.456, land: 0.515 };
+/** Scoot timing (normalized): the body tips forward from `dive` to `hand`, the
+ * left hand takes the weight from the right foot at `push`, and the left foot lands at `land`. */
+const SCOOT = { dive: 0.43, push: 0.44, hand: 0.47, land: 0.515 };
 
 /** Scoot: crouch on the right leg, drop onto the left hand, push off the
  * right foot and swing the right leg around while turning 180° over the hand,
@@ -372,14 +373,20 @@ export function buildScoot(): THREE.AnimationClip {
   const r = new Rig(D, { hands: true });
   r.start({ ...armsDown, ...legL(10, 10), ...legR(-10, -10) });
   r.pin("R", 0, SCOOT.push);
+  // The left foot lifts straight up before the right leg starts to bend.
+  r.at(0.03, { heading: 0, pitch: 0, ...legL(31.6, 10, 41.7, 0, -20), ...legR(-10, -10) });
   r.at(0.07, { ...legL(45, 12, 60), ...legR(15, -10, 20) });
   r.at(0.16, { heading: 15, pitch: 25, ...legL(65, 15, 85), ...legR(45, -10, 60), ...torso(25, 0, 0), ...armL(80, 20, 10), ...armR(50, -100, 20) });
   r.at(0.3, { heading: 40, pitch: 45, ...legL(110, 20, 130), ...legR(55, -10, 80), ...torso(45, 0, 10), ...armL(150, 30, 5), ...armR(70, -100, 20), ...head(-20, 20) });
   r.at(0.42, { heading: 85, pitch: 70, ...legL(125, 25, 140), ...legR(70, -20, 95, 0, 30), ...torso(60, 0, 20), ...armL(175, 40, 0), ...armR(60, -110, 25), ...head(-25, 30) });
-  // The turn speeds up only once the hand has taken the weight from the pushing foot.
-  r.at(0.45, { heading: 92, pitch: 72, ...legR(45, -25, 65, 0, 40) });
+  // Only the body tipping forward moves between DIVE and HAND: the hand comes
+  // straight down while the pushing foot is planted, takes the weight, and the
+  // same tip then lifts the foot off; the turn speeds up only after that.
+  const still = { heading: 88, ...legR(55, -22, 80, 0, 35), ...torso(58, 0, 18), ...armL(175, 42, 0) };
+  r.at(SCOOT.dive, { ...still, pitch: 71 });
+  r.at(SCOOT.hand, { ...still, pitch: 76 });
   r.pin("handL", SCOOT.push, SCOOT.land);
-  r.at(0.5, { heading: 130, pitch: 75, ...legL(125, 30, 140), ...legR(15, -30, 40, 0, 30), ...torso(55, 0, 15), ...armL(175, 45, 0), ...armR(70, -110, 25), ...head(-30, 20) });
+  r.at(0.5, { heading: 130, pitch: 76, ...legL(125, 30, 140), ...legR(15, -30, 40, 0, 30), ...torso(55, 0, 15), ...armL(175, 45, 0), ...armR(70, -110, 25), ...head(-30, 20) });
   r.at(0.58, { heading: 175, pitch: 50, ...legL(75, 25, 60), ...legR(-30, -35, 10), ...torso(30, 0, 10), ...armL(160, 55, 5), ...armR(85, -90, 20), ...head(-20, 10) });
   r.at(0.64, { heading: 198, pitch: 25, ...legL(45, 15, 35), ...legR(-35, -30, 20), ...torso(15, 0, 0), ...armL(100, 60, 20), ...armR(100, -60, 20), ...head(-15, 0) });
   r.pin("L", SCOOT.land, 1);
@@ -418,8 +425,8 @@ export function buildMasterscoot(): THREE.AnimationClip {
   return r.build("master-swing");
 }
 
-/** When the scoot hyper's right foot pushes off and lands again (normalized time). */
-const SCOOT_HYPER = { push: 0.456, land: 0.533 };
+/** Scoot hyper timing (normalized), as in the scoot; the right foot lands again at `land`. */
+const SCOOT_HYPER = { dive: 0.43, push: 0.44, hand: 0.47, land: 0.533 };
 
 /** Scoot Hyper: the scoot's drop onto the left hand and push off the right
  * foot, but the right leg swings round and lands first (hyper) while the left
@@ -429,15 +436,20 @@ export function buildScootHyper(): THREE.AnimationClip {
   const r = new Rig(D, { hands: true });
   r.start({ ...armsDown, ...legL(10, 10), ...legR(-10, -10) });
   r.pin("R", 0, SCOOT_HYPER.push);
+  // The left foot lifts straight up before the right leg starts to bend.
+  r.at(0.03, { heading: 0, pitch: 0, ...legL(31.6, 10, 41.7, 0, -20), ...legR(-10, -10) });
   r.at(0.07, { ...legL(45, 12, 60), ...legR(15, -10, 20) });
   r.at(0.16, { heading: 15, pitch: 25, ...legL(65, 15, 85), ...legR(45, -10, 60), ...torso(25, 0, 0), ...armL(80, 20, 10), ...armR(50, -100, 20) });
   r.at(0.3, { heading: 40, pitch: 45, ...legL(110, 20, 130), ...legR(55, -10, 80), ...torso(45, 0, 10), ...armL(150, 30, 5), ...armR(70, -100, 20), ...head(-20, 20) });
   r.at(0.42, { heading: 85, pitch: 70, ...legL(125, 25, 140), ...legR(70, -20, 95, 0, 30), ...torso(60, 0, 20), ...armL(175, 40, 0), ...armR(60, -110, 25), ...head(-25, 30) });
-  r.at(0.45, { heading: 92, pitch: 72, ...legR(45, -25, 65, 0, 40), ...legL(90, 28, 145) });
+  // As in the scoot, only the forward tip moves while the hand comes down and the foot leaves.
+  const still = { heading: 88, ...legR(55, -22, 80, 0, 35), ...torso(58, 0, 18), ...armL(175, 42, 0) };
+  r.at(SCOOT_HYPER.dive, { ...still, pitch: 71, ...legL(100, 27, 145) });
+  r.at(SCOOT_HYPER.hand, { ...still, pitch: 76 });
   r.pin("handL", SCOOT_HYPER.push, SCOOT_HYPER.land);
   // Over the hand the left leg reaches back and up out of the way while the
   // right leg, after its push, swings in under the body and lands first.
-  r.at(0.5, { heading: 130, pitch: 75, ...legL(0, 30, 90), ...legR(-10, -30, 20), ...torso(55, 0, 15), ...armL(175, 45, 0), ...armR(70, -110, 25), ...head(-30, 20) });
+  r.at(0.5, { heading: 130, pitch: 76, ...legL(0, 30, 90), ...legR(-10, -30, 20), ...torso(55, 0, 15), ...armL(175, 45, 0), ...armR(70, -110, 25), ...head(-30, 20) });
   r.at(0.56, { heading: 165, pitch: 62, ...legL(-30, 25, 45), ...legR(30, -15, 40), ...torso(45, 0, 10), ...armL(172, 50, 0), ...armR(75, -105, 25), ...head(-25, 15) });
   r.at(0.6, { heading: 185, pitch: 42, ...legL(-15, 20, 60), ...legR(32, -8, 38), ...torso(30, 0, 5), ...armL(150, 55, 5), ...armR(85, -95, 20), ...head(-20, 10) });
   r.at(0.66, { heading: 196, pitch: 25, ...legL(40, 15, 80), ...legR(28, -5, 35), ...torso(18, 0, 0), ...armL(110, 60, 20), ...armR(100, -60, 20), ...head(-15, 0) });

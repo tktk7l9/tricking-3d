@@ -851,14 +851,17 @@ export function buildWebster(): THREE.AnimationClip {
 export function buildJanitor(): THREE.AnimationClip {
   const D = 1.7;
   const r = new Rig(D);
-  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  // Both feet push off and land together, so the legs move as a mirrored
+  // pair with their planes kept parallel (az 0) and the heading held while
+  // both feet are down; otherwise one foot would slide against the other.
+  r.start({ ...armsDown, ...legL(0, 0), ...legR(0, 0) });
   r.pin("L", 0, 0.3);
-  r.at(0.16, { ...legL(40, 8, 55), ...legR(40, -8, 55), ...armsBack, ...torso(20, 0, 0), ...head(5, 0) });
+  r.at(0.16, { heading: 0, ...legL(40, 0, 55), ...legR(40, 0, 55), ...armsBack, ...torso(20, 0, 0), ...head(5, 0) });
   r.at(0.3, {
-    heading: 10,
+    heading: 0,
     pitch: 55,
-    ...legL(55, 5, 5, 0, 35),
-    ...legR(55, -5, 5, 0, 35),
+    ...legL(55, 0, 5, 0, 35),
+    ...legR(55, 0, 5, 0, 35),
     ...armL(100, 10, 10),
     ...armR(100, -10, 10),
     ...torso(10, 0, 10),
@@ -868,7 +871,7 @@ export function buildJanitor(): THREE.AnimationClip {
   r.at(0.42, { heading: 60, pitch: 85, ...legL(-20, 30, 10), ...legR(-10, -30, 10), ...armsWide, ...torso(-10, 0, 0), ...head(-30, 20) });
   r.at(0.55, { heading: 130, pitch: 85, ...legL(0, 10, 5), ...legR(0, -10, 5), ...armsWide, ...torso(-10, 0, 0), ...head(-30, 10) });
   r.at(0.65, { heading: 170, pitch: 55, ...legL(50, 5, 20), ...legR(50, -5, 20), ...armL(90, 60, 20), ...armR(90, -60, 20), ...torso(0, 0, 0), ...head(-10, 0) });
-  r.at(0.72, { heading: 180, pitch: 20, ...legL(40, 8, 45), ...legR(40, -8, 45), ...armsWide, ...torso(20, 0, 0), ...head(0, 0) });
+  r.at(0.72, { heading: 180, pitch: 20, ...legL(40, 0, 45), ...legR(40, 0, 45), ...armsWide, ...torso(20, 0, 0), ...head(0, 0) });
   r.pin("L", 0.72, 1);
   r.at(1, { heading: 180, pitch: 0, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
   return r.build("janitor");
