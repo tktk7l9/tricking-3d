@@ -256,7 +256,8 @@ function corkEntry(r: Rig) {
     ...torso(10, 0, -25),
     ...head(0, -10),
   });
-  r.at(0.36, {
+  // The roll starts only once the feet have left the floor.
+  r.at(0.36, { roll: 0,
     heading: 45,
     pitch: -20,
     ...legL(0, 5, 5, 0, 35),
@@ -952,7 +953,8 @@ export function buildWrapFull(): THREE.AnimationClip {
     ...torso(5, 0, 10),
     ...head(0, 20),
   });
-  r.at(0.38, {
+  // The twist and roll start only once the foot has left the floor.
+  r.at(0.38, { twist: 0, roll: 0,
     heading: 120,
     pitch: -20,
     ...legL(10, 10, 70, 0, -50),
@@ -980,7 +982,8 @@ export function buildTakFull(): THREE.AnimationClip {
     ...torso(18, 0, 25),
     ...head(5, 50),
   });
-  r.at(0.4, {
+  // The twist and roll start only once the foot has left the floor.
+  r.at(0.4, { twist: 0, roll: 0,
     heading: 210,
     pitch: -20,
     ...legL(60, 30, 40),
@@ -1122,7 +1125,8 @@ export function buildWrapFullRound(): THREE.AnimationClip {
   r.pin("R", 0, 0.38);
   r.at(0.18, { heading: 30, ...legL(-10, -35, 60, 0, -60), ...legR(30, -5, 45), ...armL(50, 20, 20), ...armR(50, -160, 20), ...torso(15, 0, -20), ...head(5, -10) });
   r.at(0.3, { heading: 80, ...legL(-20, -20, 55, 0, -60), ...legR(35, 0, 50), ...armL(120, 60, 15), ...armR(100, -120, 20), ...torso(5, 0, 10), ...head(0, 20) });
-  r.at(0.38, { heading: 120, pitch: -20, ...legL(10, 10, 70, 0, -50), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 20), ...head(-20, 30) });
+  // The twist and roll start only once the foot has left the floor.
+  r.at(0.38, { twist: 0, roll: 0, heading: 120, pitch: -20, ...legL(10, 10, 70, 0, -50), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 20), ...head(-20, 30) });
   r.flight(0.38, 0.84, { travel: [0.2, 0] });
   r.at(0.48, { heading: 140, pitch: -110, twist: 90, roll: -15, ...legL(25, 5, 60), ...legR(25, -5, 60), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
   r.at(0.58, { heading: 160, pitch: -215, twist: 220, roll: -15, ...legL(20, 5, 50), ...legR(20, -5, 50), ...head(-20, 30) });
@@ -1233,7 +1237,8 @@ export function buildTakFullRound(): THREE.AnimationClip {
   const r = new Rig(D);
   cheatStep(r, 0.4);
   r.at(0.28, { pitch: 0, heading: 165, ...legR(35, 0, 55), ...legL(45, 10, 85, 0, -40), ...armL(55, 110, 30), ...armR(50, -40, 30), ...torso(18, 0, 25), ...head(5, 50) });
-  r.at(0.4, { heading: 210, pitch: -20, ...legL(60, 30, 40), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 30), ...head(-20, 40) });
+  // The twist and roll start only once the foot has left the floor.
+  r.at(0.4, { twist: 0, roll: 0, heading: 210, pitch: -20, ...legL(60, 30, 40), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 30), ...head(-20, 40) });
   r.flight(0.4, 0.86, { travel: [0.2, 0] });
   r.at(0.5, { heading: 230, pitch: -110, twist: 90, roll: -15, ...legL(25, 5, 60), ...legR(25, -5, 60), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
   r.at(0.6, { heading: 250, pitch: -215, twist: 220, roll: -15, ...legL(20, 5, 50), ...legR(20, -5, 50), ...head(-20, 30) });
@@ -1323,7 +1328,8 @@ export function buildWrapFullHyper(): THREE.AnimationClip {
   r.pin("R", 0, 0.38);
   r.at(0.18, { heading: 30, ...legL(-10, -35, 60, 0, -60), ...legR(30, -5, 45), ...armL(50, 20, 20), ...armR(50, -160, 20), ...torso(15, 0, -20), ...head(5, -10) });
   r.at(0.3, { heading: 80, ...legL(-20, -20, 55, 0, -60), ...legR(35, 0, 50), ...armL(120, 60, 15), ...armR(100, -120, 20), ...torso(5, 0, 10), ...head(0, 20) });
-  r.at(0.38, { heading: 120, pitch: -20, ...legL(10, 10, 70, 0, -50), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 20), ...head(-20, 30) });
+  // The twist and roll start only once the foot has left the floor.
+  r.at(0.38, { twist: 0, roll: 0, heading: 120, pitch: -20, ...legL(10, 10, 70, 0, -50), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 20), ...head(-20, 30) });
   r.flight(0.38, 0.82, { travel: [0.2, 0] });
   r.at(0.49, { heading: 140, pitch: -110, twist: 90, roll: -15, ...legL(25, 5, 60), ...legR(25, -5, 60), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
   r.at(0.62, { heading: 160, pitch: -215, twist: 220, roll: -15, ...legL(20, 5, 50), ...legR(20, -5, 50), ...head(-20, 30) });
@@ -1387,7 +1393,8 @@ export function buildTakFullSwipe(): THREE.AnimationClip {
   const r = new Rig(D);
   cheatStep(r, 0.4);
   r.at(0.28, { pitch: 0, heading: 165, ...legR(35, 0, 55), ...legL(45, 10, 85, 0, -40), ...armL(55, 110, 30), ...armR(50, -40, 30), ...torso(18, 0, 25), ...head(5, 50) });
-  r.at(0.4, { heading: 210, pitch: -20, ...legL(60, 30, 40), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 30), ...head(-20, 40) });
+  // The twist and roll start only once the foot has left the floor.
+  r.at(0.4, { twist: 0, roll: 0, heading: 210, pitch: -20, ...legL(60, 30, 40), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 30), ...head(-20, 40) });
   r.flight(0.4, 0.86, { travel: [0.2, 0] });
   r.at(0.5, { heading: 230, pitch: -110, twist: 90, roll: -15, ...legL(25, 5, 60), ...legR(25, -5, 60), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
   r.at(0.6, { heading: 250, pitch: -215, twist: 220, roll: -15, ...legL(20, 5, 50), ...legR(20, -5, 50), ...head(-20, 30) });
@@ -1411,7 +1418,8 @@ export function buildWrapFullSwipe(): THREE.AnimationClip {
   r.pin("R", 0, 0.38);
   r.at(0.18, { heading: 30, ...legL(-10, -35, 60, 0, -60), ...legR(30, -5, 45), ...armL(50, 20, 20), ...armR(50, -160, 20), ...torso(15, 0, -20), ...head(5, -10) });
   r.at(0.3, { heading: 80, ...legL(-20, -20, 55, 0, -60), ...legR(35, 0, 50), ...armL(120, 60, 15), ...armR(100, -120, 20), ...torso(5, 0, 10), ...head(0, 20) });
-  r.at(0.38, { heading: 120, pitch: -20, ...legL(10, 10, 70, 0, -50), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 20), ...head(-20, 30) });
+  // The twist and roll start only once the foot has left the floor.
+  r.at(0.38, { twist: 0, roll: 0, heading: 120, pitch: -20, ...legL(10, 10, 70, 0, -50), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 20), ...head(-20, 30) });
   r.flight(0.38, 0.84, { travel: [0.2, 0] });
   r.at(0.48, { heading: 140, pitch: -110, twist: 90, roll: -15, ...legL(25, 5, 60), ...legR(25, -5, 60), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
   r.at(0.58, { heading: 160, pitch: -215, twist: 220, roll: -15, ...legL(20, 5, 50), ...legR(20, -5, 50), ...head(-20, 30) });
