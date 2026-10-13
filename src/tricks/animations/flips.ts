@@ -1506,7 +1506,7 @@ export function buildJanitorScissorTwist(): THREE.AnimationClip {
   r.at(0.3, { heading: 0, pitch: 55, twist: 0, ...legL(55, 0, 5, 0, 35), ...legR(55, 0, 5, 0, 35), ...armL(100, 10, 10), ...armR(100, -10, 10), ...torso(10, 0, 10), ...head(-20, 10) });
   r.flight(0.3, 0.78, { travel: [0.1, 0.6] });
   // Both legs leave the floor alike, so neither foot slides before takeoff.
-  r.at(0.33, { heading: 12, pitch: 70, twist: 0, ...legL(10, 0, 5), ...legR(10, 0, 5), ...armL(100, 10, 10), ...armR(100, -10, 10), ...torso(5, 0, 5), ...head(-20, 10) });
+  r.at(0.33, { heading: 12, pitch: 70, twist: 0, ...legL(40, 0, 5), ...legR(40, 0, 5), ...armL(100, 10, 10), ...armR(100, -10, 10), ...torso(5, 0, 5), ...head(-20, 10) });
   // The scissor: the right leg semi-piked under the chest, the right hand on its shin.
   r.at(0.38, { heading: 35, pitch: 82, twist: 0, ...legL(-15, 5, 10), ...legR(100, -5, 15), ...armL(80, 90, 20), ...armR(100, -10, 5), ...torso(15, 0, 0), ...head(-20, 10) });
   r.at(0.43, { heading: 58, pitch: 85, twist: 5, ...legL(-15, 5, 10), ...legR(105, -5, 15), ...armL(80, 90, 20), ...armR(100, -10, 5), ...torso(20, 0, 0), ...head(-20, 10) });
