@@ -734,3 +734,25 @@ export function buildSpyder(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("spider");
 }
+
+/** Side flip: two-footed takeoff with the arms thrown up and across, a tucked
+ * flip to the left side (about the forward axis), landing on both feet. */
+export function buildSideFlip(): THREE.AnimationClip {
+  const D = 1.6;
+  const r = new Rig(D);
+  const squat = { ...legL(22, 8, 45, 0, -23), ...legR(22, -8, 45, 0, -23) };
+  const land = { ...legL(25, 8, 40), ...legR(25, -8, 40) };
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.31);
+  r.at(0.16, { ...squat, ...armL(40, 130, 20), ...armR(70, -30, 30), ...torso(15, -10, 0), ...head(0, 0, 10) });
+  r.at(0.31, { roll: -10, ...legL(0, 8, 5, 0, 35), ...legR(0, -8, 5, 0, 35), ...armL(160, 60, 10), ...armR(170, -60, 10), ...torso(-5, 10, 0), ...head(-10, 0, -15) });
+  r.flight(0.31, 0.8, { travel: [0.4, 0] });
+  r.at(0.42, { roll: -100, ...legL(90, 5, 110), ...legR(90, -5, 110), ...armsTight, ...torso(20, 15, 0), ...head(10, 0, -25) });
+  r.at(0.5, { roll: -180, ...legL(120, 5, 130), ...legR(120, -5, 130), ...armsTight, ...torso(30, 20, 0), ...head(20, 0, -35) });
+  r.at(0.62, { roll: -265, ...legL(110, 5, 120), ...legR(110, -5, 120), ...armsTight, ...torso(25, 10, 0), ...head(10, 0, -20) });
+  r.at(0.72, { roll: -325, ...legL(45, 8, 45), ...legR(45, -8, 45), ...armsWide, ...torso(10, 5, 0), ...head(0, 0, -5) });
+  r.at(0.8, { roll: -360, ...land, ...armsWide, ...torso(10, 0, 0), ...head(0, 0, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { roll: -360, ...land, ...armsDown, ...torso(5, 0, 0), ...head(0, 0, 0) });
+  return r.build("side-flip");
+}

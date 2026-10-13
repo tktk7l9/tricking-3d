@@ -1,6 +1,6 @@
 import type * as THREE from "three";
 import { Rig } from "../rig";
-import { armL, armR, armsBack, armsDown, armsTight, armsUp, armsWide, head, legL, legR, legsAbsorb, torso } from "./poses";
+import { armL, armR, armsBack, armsDown, armsTight, armsUp, armsWide, head, legL, legR, legsAbsorb, legsTuck, torso } from "./poses";
 
 /* Backward / forward flips authored on the semantic rig (left-twisting tricker). */
 
@@ -693,9 +693,9 @@ export function buildFrontXOut(): THREE.AnimationClip {
 export function buildWebsterHalf(): THREE.AnimationClip {
   const D = 1.7;
   const r = new Rig(D);
-  r.start({ ...armsDown, ...legR(0, -5), ...legL(-15, 5, 25, 0, 30), ...torso(10, 0, 0) });
+  r.start({ ...armsDown, ...legR(0, -5), ...legL(-15, 5, 50, 0, 10), ...torso(10, 0, 0) });
   r.pin("R", 0, 0.3);
-  r.at(0.18, { ...legR(35, -5, 60), ...legL(-20, 5, 50, 0, 30), ...armsBack, ...torso(15, 0, 0), ...head(8, 0) });
+  r.at(0.18, { ...legR(35, -5, 60), ...legL(-20, 5, 60, 0, 20), ...armsBack, ...torso(15, 0, 0), ...head(8, 0) });
   r.at(0.3, {
     pitch: 25,
     twist: 0,
@@ -716,6 +716,127 @@ export function buildWebsterHalf(): THREE.AnimationClip {
   r.pin("L", 0.8, 1);
   r.at(1, { pitch: 360, twist: 180, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("webster-half");
+}
+
+/** Two-footed squat with the feet flat under the hips (hip bend half the knee
+ * bend, ankles flexed as far as the shins lean), so both feet stay put. */
+const squat = { ...legL(22, 8, 45, 0, -23), ...legR(22, -8, 45, 0, -23) };
+/** Both feet pushing off, toes pointed. */
+const pushOff = { ...legL(0, 8, 5, 0, 35), ...legR(0, -8, 5, 0, 35) };
+/** Two-footed landing stance; the knees soften without moving the feet. */
+const landStance = { ...legL(25, 8, 40), ...legR(25, -8, 40) };
+
+/** Back tuck: two-footed takeoff, the knees pulled to the chest over the top,
+ * opened out to land on both feet. */
+export function buildBackFlip(): THREE.AnimationClip {
+  const D = 1.6;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.32);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.32, { pitch: -15, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.32, 0.8, { travel: [0, -0.4] });
+  r.at(0.42, { pitch: -95, ...legL(60, 5, 70), ...legR(60, -5, 70), ...armL(110, 30, 30), ...armR(110, -30, 30), ...torso(10, 0, 0), ...head(-25, 0) });
+  r.at(0.55, { pitch: -190, ...legsTuck, ...armsTight, ...torso(40, 0, 0), ...head(35, 0) });
+  r.at(0.66, { pitch: -275, ...legL(110, 5, 120), ...legR(110, -5, 120), ...armsTight, ...torso(35, 0, 0), ...head(25, 0) });
+  r.at(0.74, { pitch: -330, ...legL(40, 8, 40), ...legR(40, -8, 40), ...armsWide, ...torso(12, 0, 0), ...head(5, 0) });
+  r.at(0.8, { pitch: -360, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("back-flip");
+}
+
+/** Full Twist: a back flip with a full twist about the long axis, the body
+ * long and the arms pulled in, landing on both feet. */
+export function buildFull(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.33);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.33, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.33, 0.8, { travel: [0, -0.4] });
+  r.at(0.44, { pitch: -110, twist: 110, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.55, { pitch: -200, twist: 230, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
+  r.at(0.67, { pitch: -290, twist: 335, ...legL(25, 5, 25), ...legR(25, -5, 25), ...armsTight, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.8, { pitch: -360, twist: 360, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, twist: 360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("full");
+}
+
+/** Gainer (Gainer Tuck): the swing takeoff off the left foot, a tucked back
+ * flip that keeps travelling forward, landing on both feet. */
+export function buildGainer(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  swingStance(r);
+  r.pin("L", 0, 0.36);
+  r.at(0.2, { ...legL(25, 5, 35), ...legR(45, -5, 50), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.36, { pitch: -20, ...legL(0, 5, 5, 0, 35), ...legR(100, -5, 5), ...armsUp, ...torso(-15, 0, 0), ...head(-30, 0) });
+  r.flight(0.36, 0.8, { travel: [0, 0.6] });
+  r.at(0.46, { pitch: -110, ...legL(70, 5, 90), ...legR(100, -5, 100), ...armsTight, ...torso(20, 0, 0), ...head(10, 0) });
+  r.at(0.56, { pitch: -200, ...legsTuck, ...armsTight, ...torso(40, 0, 0), ...head(35, 0) });
+  r.at(0.66, { pitch: -280, ...legL(110, 5, 120), ...legR(110, -5, 120), ...armsTight, ...torso(35, 0, 0), ...head(25, 0) });
+  r.at(0.74, { pitch: -330, ...legL(40, 8, 40), ...legR(40, -8, 40), ...armsWide, ...torso(12, 0, 0), ...head(5, 0) });
+  r.at(0.8, { pitch: -360, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("gainer");
+}
+
+/** Corkscrew: the cork entry (swing takeoff off the left foot, twisting off
+ * axis), landing in complete on the left foot with the right leg trailing. */
+export function buildCorkscrew(): THREE.AnimationClip {
+  const r = new Rig(1.9);
+  corkEntry(r);
+  r.at(0.68, { heading: 95, pitch: -290, twist: 300, roll: -10, ...legL(30, 5, 30), ...legR(-5, -5, 45), ...armL(80, 60, 30), ...armR(80, -60, 30), ...head(-10, 10) });
+  r.at(0.76, { heading: 105, pitch: -340, twist: 350, roll: 0, ...legL(30, 0, 25), ...legR(-20, -5, 50), ...armsWide, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(0.82, { heading: 110, pitch: -360, twist: 360, roll: 0, ...legL(25, 0, 25), ...legR(-30, -5, 50), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.82, 1);
+  r.at(0.91, { heading: 110, ...legL(25, 0, 35), ...legR(-30, -5, 50) });
+  r.at(1, { heading: 110, pitch: -360, twist: 360, ...legL(25, 0, 35), ...legR(-30, -5, 50), ...armsDown, ...torso(5, 0, 0) });
+  return r.build("corkscrew");
+}
+
+/** Front Tuck: two-footed takeoff into a tucked front flip, landing on both feet. */
+export function buildFrontFlip(): THREE.AnimationClip {
+  const D = 1.6;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.31);
+  r.at(0.16, { ...squat, ...armL(60, 20, 20), ...armR(60, -20, 20), ...torso(20, 0, 0), ...head(5, 0) });
+  r.at(0.31, { pitch: 15, ...pushOff, ...armsUp, ...torso(15, 0, 0), ...head(20, 0) });
+  r.flight(0.31, 0.8, { travel: [0, 0.6] });
+  r.at(0.42, { pitch: 110, ...legL(90, 5, 110), ...legR(90, -5, 110), ...armsTight, ...torso(40, 0, 0), ...head(35, 0) });
+  r.at(0.5, { pitch: 180, ...legsTuck, ...armsTight, ...torso(45, 0, 0), ...head(40, 0) });
+  r.at(0.62, { pitch: 265, ...legL(110, 5, 120), ...legR(110, -5, 120), ...armsTight, ...torso(35, 0, 0), ...head(25, 0) });
+  r.at(0.72, { pitch: 325, ...legL(45, 8, 45), ...legR(45, -8, 45), ...armsWide, ...torso(12, 0, 0), ...head(5, 0) });
+  r.at(0.8, { pitch: 360, ...landStance, ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: 360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("front-flip");
+}
+
+/** Webster: off the right foot with the left leg swinging back and up, a
+ * front flip that tucks over the top, landing on both feet. */
+export function buildWebster(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  // Standing on the right foot with the left foot just off the floor behind.
+  r.start({ ...armsDown, ...legR(0, -5), ...legL(-15, 5, 50, 0, 10), ...torso(10, 0, 0) });
+  r.pin("R", 0, 0.3);
+  r.at(0.18, { ...legR(35, -5, 60), ...legL(-20, 5, 60, 0, 20), ...armsBack, ...torso(15, 0, 0), ...head(8, 0) });
+  r.at(0.3, { pitch: 25, ...legR(0, -5, 5, 0, 35), ...legL(-60, 5, 20), ...armL(110, 20, 10), ...armR(110, -20, 10), ...torso(25, 0, 0), ...head(30, 0) });
+  r.flight(0.3, 0.8, { travel: [0, 0.8] });
+  r.at(0.38, { pitch: 85, ...legL(-45, 5, 30), ...legR(45, -5, 60), ...armsTight, ...torso(35, 0, 0), ...head(35, 0) });
+  r.at(0.46, { pitch: 150, ...legL(70, 5, 100), ...legR(100, -5, 120), ...armsTight, ...torso(45, 0, 0), ...head(40, 0) });
+  r.at(0.56, { pitch: 230, ...legsTuck, ...armsTight, ...torso(40, 0, 0), ...head(30, 0) });
+  r.at(0.68, { pitch: 305, ...legL(45, 8, 45), ...legR(45, -8, 45), ...armsWide, ...torso(15, 0, 0), ...head(10, 0) });
+  r.at(0.8, { pitch: 360, ...landStance, ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: 360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("webster");
 }
 
 /** Janitor flip: two-foot punch into a chest-down dive that flat-spins 180°,

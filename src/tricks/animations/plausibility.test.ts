@@ -124,13 +124,11 @@ function expectLeg(s: Sample, leg: TrickMeta["takeoff"], what: string) {
   else expect(diff, `${what}: right foot lower`).toBeGreaterThan(0.04);
 }
 
-// Hand-keyed Builder clips predate the contact solver and sink a few cm in a crouch.
-const LEGACY = new Set(["back-flip", "front-flip", "side-flip", "gainer", "full", "corkscrew", "webster"]);
 
 describe.each(TRICKS.map((t) => [t.id, t] as const))("%s", (_id, trick) => {
   it("never pushes a foot through the floor and starts and ends standing on it", () => {
     const samples = sampleClip(trick);
-    const floor = LEGACY.has(trick.id) ? -0.1 : -0.012;
+    const floor = -0.012;
     for (const s of samples) {
       expect(Math.min(s.left, s.right), `t=${s.t.toFixed(2)}`).toBeGreaterThan(floor);
     }
