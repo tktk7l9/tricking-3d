@@ -26,6 +26,14 @@ describe("TrickPicker", () => {
     expect(getByRole(host, "button", { name: /バク宙|Back Flip/ })).toBeTruthy();
   });
 
+  it("lets a long name wrap only between its words", () => {
+    const host = mountHost("aside");
+    new TrickPicker(host, makeState());
+    const name = host.querySelector('[data-id="roundoff"] .jp')!;
+    expect(name.innerHTML).toBe("ロンダート<wbr>（ラウンドオフ）");
+    expect(name.textContent).toBe("ロンダート（ラウンドオフ）");
+  });
+
   it("marks the current trick as pressed and follows state changes", async () => {
     const host = mountHost("aside");
     const state = makeState();
