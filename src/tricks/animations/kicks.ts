@@ -1,6 +1,6 @@
 import type * as THREE from "three";
 import { Rig } from "../rig";
-import { armL, armR, armsDown, armsUp, armsWide, armsTight, head, legL, legR, legsAbsorb, torso } from "./poses";
+import { armL, armR, armsDown, armsUp, armsWide, armsTight, head, legL, legR, legsAbsorb, settle, torso } from "./poses";
 
 /* Vertical kicks (left-twisting tricker, spinning counter-clockwise).
  *
@@ -899,12 +899,39 @@ export function buildSwing360(): THREE.AnimationClip {
 export function buildLotus(): THREE.AnimationClip {
   const D = 1.7;
   const r = new Rig(D);
-  r.start({ ...armsDown, ...legL(15, 5), ...legR(-15, -5) });
-  r.pin("L", 0, 0.14);
-  r.at(0.14, { heading: 25, ...legR(40, 10, 15), ...legL(-10, 5, 15), ...armL(30, 140, 20), ...armR(35, -40, 20), ...torso(8, 0, 10) });
-  r.pin("R", 0.14, 0.26);
-  r.at(0.26, { heading: 55, ...legL(45, 15, 20), ...legR(-10, -5, 15), ...armL(35, 40, 20), ...armR(30, -150, 20), ...torso(10, 0, -10), ...head(0, 20) });
-  r.pin("L", 0.26, 0.42);
+  // Two running steps. Each foot lifts straight up, swings through with the
+  // knee folded, stops over the spot it lands on and is lowered straight onto
+  // it; the heading and the standing leg hold still while a foot is near the
+  // floor, and both feet hold for a moment at each change of support.
+  const stand = { ...legL(15, 5, 0, 0, 15), ...legR(-15, -5, 0, 0, -15) };
+  r.start({ ...armsDown, ...stand });
+  r.pin("L", 0, 0.15);
+  r.at(0.03, { heading: 0, ...stand, ...legR(1, -5, 34, 0, -33) });
+  r.at(0.075, { heading: 12, ...legR(30, 5, 75, 0, -45) });
+  const pushL = legL(-10, 5, 15, 0, -25);
+  const overR = legR(38.5, 10, 42, 0, -4);
+  const downR = legR(26, 10, 19.5, 0, 6.5);
+  r.at(0.12, { heading: 25, ...pushL, ...overR, ...armL(30, 140, 20), ...armR(35, -40, 20), ...torso(8, 0, 10) });
+  r.at(0.125, { heading: 25, ...pushL, ...overR });
+  r.at(0.15, { heading: 25, ...pushL, ...downR });
+  r.pin("R", 0.15, 0.28);
+  r.at(0.17, { heading: 25, ...pushL, ...downR });
+  const liftL = legL(0, 5, 36.7, 0, -36.7);
+  r.at(0.195, { heading: 25, ...liftL, ...downR });
+  r.at(0.2, { heading: 25, ...liftL, ...downR });
+  r.at(0.225, { heading: 45, ...legL(35, 15, 75, 0, -40) });
+  const pushR = legR(-10, -5, 15, 0, -25);
+  const overL = legL(38.5, 15, 42, 0, -4);
+  const downL = legL(26, 15, 19.5, 0, 6.5);
+  r.at(0.25, { heading: 55, ...pushR, ...overL, ...armL(35, 40, 20), ...armR(30, -150, 20), ...torso(10, 0, -10), ...head(0, 20) });
+  r.at(0.255, { heading: 55, ...pushR, ...overL });
+  r.at(0.28, { heading: 55, ...pushR, ...downL });
+  r.pin("L", 0.28, 0.42);
+  r.at(0.3, { heading: 55, ...pushR, ...downL });
+  const liftR = legR(0, -5, 36.7, 0, -36.7);
+  r.at(0.312, { heading: 55, ...liftR, ...downL });
+  r.at(0.316, { heading: 55, ...liftR, ...downL });
+  r.at(0.328, { ...legR(35, 10, 80, 0, -40) });
   r.at(0.34, {
     heading: 110,
     ...legR(80, 30, 20),
@@ -960,7 +987,8 @@ export function buildLotus(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("R", 0.82, 1);
-  r.at(0.92, { heading: 390, ...legsAbsorb });
-  r.at(1, { heading: 390, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  r.at(0.86, { ...legL(10, 15, 90, 0, -40) });
+  settle(r, "L", 0.89, 0.95, { heading: 390 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("lotus");
 }
