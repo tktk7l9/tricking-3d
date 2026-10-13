@@ -586,3 +586,50 @@ export function buildButterflyTwistDoubleleg(): THREE.AnimationClip {
   r.at(1, { heading: 350, pitch: 0, twist: 360, ...legL(30, 10, 45), ...legR(30, -10, 45), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("butterfly-twist-doubleleg");
 }
+
+/** Butterfly Kick Scissor: the butterfly kick with a scissor: after its swing
+ * up behind, the right (inside kicking) leg comes through straight-ish into a
+ * semi-pike under the body and the right hand grabs its shin, then lets go
+ * and the right foot lands as in the butterfly kick. */
+export function buildButterflyKickScissor(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.flight(0.42, 0.8, { travel: [0.4, 0.15] });
+  r.at(0.5, { heading: 160, pitch: 80, ...legR(-30, -40, 10), ...legL(-10, 40, 10), ...armsWide, ...torso(-10, 0, 0), ...head(-30, 0) });
+  // The scissor: the right leg semi-piked under the chest, the right hand on its shin.
+  r.at(0.58, { heading: 225, pitch: 80, ...legR(105, -10, 15), ...legL(-30, 35, 10), ...armL(80, 90, 20), ...armR(100, -10, 5), ...torso(20, 0, 0), ...head(-20, 0) });
+  r.at(0.65, { heading: 270, pitch: 72, ...legR(110, -10, 20), ...legL(-25, 30, 10), ...armL(80, 90, 20), ...armR(100, -10, 5), ...torso(25, 0, 0), ...head(-15, 0) });
+  r.at(0.72, { heading: 315, pitch: 50, ...legR(60, -10, 20), ...legL(0, 30, 10), ...armL(70, 90, 20), ...armR(70, -90, 20), ...torso(10, 0, 0), ...head(-10, 0) });
+  r.at(0.8, { heading: 345, pitch: 25, ...legR(50, 0, 30), ...legL(-10, 30, 10), ...armL(60, 90, 20), ...armR(60, -90, 20), ...torso(20, 0, 0), ...head(0, 0) });
+  r.pin("R", 0.8, 1);
+  // The trailing left leg folds as it swings in under the body.
+  r.at(0.84, { ...legL(10, 15, 90, 0, -40) });
+  settle(r, "L", 0.88, 0.94, { heading: 360, pitch: 0 });
+  r.at(0.88, { ...torso(10, 0, 0) });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("butterfly-kick-scissor");
+}
+
+/** Butterfly Twist Hawkeye: the butterfly twist whose inside (right) leg, as
+ * the body comes up after the twist, hooks against the spin: chambered across
+ * the front, it sweeps out straight to the right side, heel first; the left
+ * foot lands. */
+export function buildButterflyTwistHawkeye(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.at(0.42, { twist: 0 });
+  r.flight(0.42, 0.84, { travel: [0.4, 0.15] });
+  r.at(0.5, { heading: 150, pitch: 85, twist: 100, ...legR(-12, -8, 5), ...legL(-12, 8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-20, 30) });
+  r.at(0.58, { heading: 215, pitch: 85, twist: 230, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...head(-20, 30) });
+  r.at(0.65, { heading: 260, pitch: 70, twist: 340, ...legL(20, 10, 10), ...legR(-15, -10, 5), ...armL(80, 60, 40), ...armR(80, -60, 40), ...head(-20, 10) });
+  // The right knee crosses in front, then the straight leg hooks out to the right side.
+  r.at(0.71, { heading: 285, pitch: 40, twist: 360, ...legL(30, 15, 20), ...legR(80, 35, 120, -20), ...armL(90, 90, 40), ...armR(80, -60, 60), ...torso(5, -5, 10), ...head(-10, 20) });
+  r.at(0.77, { heading: 320, pitch: 10, ...legL(35, 15, 30), ...legR(100, -85, 5, 0, 20), ...armL(60, 120, 30), ...armR(50, -110, 40), ...torso(0, 25, 0), ...head(0, -60) });
+  r.at(0.84, { heading: 345, pitch: 0, ...legL(25, 8, 25), ...legR(55, -40, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, -20) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 360, pitch: 0, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("butterfly-twist-hawkeye");
+}

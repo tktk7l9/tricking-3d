@@ -961,3 +961,25 @@ export function buildSailorMoonDoublelegTwist(): THREE.AnimationClip {
   r.at(1, { heading: 700, spin: 360, ...legL(30, 10, 45), ...legR(30, -10, 45), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("sailor-moon-doubleleg-twist");
 }
+
+/** Cheat 720 Twist (Raiz Twist): the raiz with a full twist about the body's
+ * long axis while it lies flat on the tilted spin, legs together and arms
+ * pulled in, before the left foot lands. */
+export function buildCheat720Twist(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  outsideStep(r);
+  r.at(0.4, { heading: 185, tilt: 55, spin: 0, twist: 0, ...legL(-40, 10, 20), ...legR(5, 0, 5, 0, 35), ...armL(60, 170, 10), ...armR(170, -60, 10), ...torso(-20, 0, 0), ...head(-20, 10) });
+  r.flight(0.4, 0.84, { travel: [0.35, 0.35] });
+  r.at(0.5, { heading: 225, spin: 100, twist: 0, ...legL(-40, 15, 15), ...legR(-10, -20, 10), ...armL(90, 160, 10), ...armR(170, -30, 10), ...torso(-25, 0, 0), ...head(-25, 0) });
+  // The twist: legs together and arms in while the body lies flat on the spin.
+  r.at(0.56, { heading: 250, spin: 150, twist: 60, ...legL(-10, 5, 5), ...legR(-10, -5, 5), ...armsTight, ...torso(-10, 0, 0), ...head(-20, 0) });
+  r.at(0.63, { heading: 275, spin: 200, twist: 200, ...legL(-10, 5, 5), ...legR(-10, -5, 5), ...armsTight, ...torso(-10, 0, 0), ...head(-20, 0) });
+  r.at(0.7, { heading: 300, spin: 255, twist: 330, ...legL(-5, 5, 5), ...legR(-5, -5, 5), ...armsTight, ...torso(-10, 0, 0), ...head(-15, 0) });
+  r.at(0.77, { heading: 325, spin: 315, twist: 360, ...legL(30, 15, 20), ...legR(-20, -20, 10), ...armsWide, ...torso(-10, 0, 0), ...head(-10, 0) });
+  r.at(0.84, { heading: 345, spin: 360, twist: 360, ...legL(25, 10, 15), ...legR(-35, -10, 45), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 360, spin: 360, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("cheat-720-twist");
+}
