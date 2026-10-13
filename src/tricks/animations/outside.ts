@@ -813,3 +813,28 @@ export function buildDoubleSideflip(): THREE.AnimationClip {
   r.at(1, { roll: -720, ...land, ...armsDown, ...torso(5, 0, 0), ...head(0, 0, 0) });
   return r.build("double-sideflip");
 }
+
+/** Doubleleg Twist Round: the doubleleg twist with a right-leg round kick once
+ * the twist is done, before the left foot lands. */
+export function buildDoublelegTwistRound(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -15) });
+  r.pin("L", 0, 0.34);
+  doublelegSetup(r, 0.17, 0.26, 0.34);
+  r.at(0.18, { ...armL(45, 10, 20), ...armR(60, -140, 20), ...torso(15, 0, -35), ...head(5, -20) });
+  r.at(0.34, { tilt: 25, spin: 0, twist: 0, ...armL(150, 90, 10), ...armR(130, -30, 20), ...torso(-10, 0, 35), ...head(-10, 40) });
+  r.flight(0.34, 0.85, { travel: [0.1, 0.1], apex: 0.55 });
+  r.at(0.44, { heading: 170, spin: 110, ...legL(75, 5, 10), ...legR(75, -5, 10), ...armL(110, 60, 10), ...armR(110, -60, 10), ...torso(10, 0, 20), ...head(-10, 20) });
+  r.at(0.52, { heading: 230, spin: 200, twist: 0, ...legL(100, 5, 5), ...legR(100, -5, 5), ...armL(100, 20, 10), ...armR(100, -20, 10), ...torso(20, 0, 10), ...head(0, 10) });
+  r.at(0.6, { heading: 285, spin: 285, twist: 170, ...legL(40, 5, 10), ...legR(40, -5, 10), ...armsTight, ...torso(5, 0, 0), ...head(0, 30) });
+  r.at(0.67, { heading: 325, spin: 330, twist: 330, ...legL(20, 5, 15), ...legR(25, -5, 15), ...armsTight, ...torso(5, 0, 0), ...head(0, 20) });
+  // Chamber, then the round kick once the twist is done.
+  r.at(0.72, { heading: 345, spin: 355, twist: 360, ...legL(30, 10, 30), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-10, 0) });
+  r.at(0.78, { heading: 360, spin: 360, ...legL(35, 10, 30), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.85, { heading: 370, spin: 360, twist: 360, ...legL(25, 10, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.85, 1);
+  settle(r, "R", 0.91, 0.97, { heading: 375, spin: 360, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("doubleleg-twist-round");
+}

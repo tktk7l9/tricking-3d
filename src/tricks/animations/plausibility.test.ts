@@ -345,6 +345,7 @@ describe.each([
   ["pop-540", 350, 500, false, "right"],
   ["pop-720", 500, 650, false, "left"],
   ["swing-900", 450, 760, false, "right"],
+  ["backside-900-sidekick", 450, 580, true, "right"],
 ] as const)("%s", (id, minAirTurn, minTurn, backside, kickLeg) => {
   it(`turns more than ${minAirTurn}° counter-clockwise in the air (${minTurn}° overall) and kicks the ${kickLeg} foot above hip height`, () => {
     const samples = sampleClip(byId(id));
@@ -665,17 +666,24 @@ describe.each([
 /** Lying flat in the air with the chest facing up (the twist of a butterfly twist). */
 const chestUpFlat = (s: Sample) => s.fwdY > 0.6 && Math.abs(s.head - s.hips.y) < 0.35;
 
+/** Both feet above the hips (the V of a doubleleg). */
+const legsUp = (s: Sample) => s.left > s.hips.y && s.right > s.hips.y;
+
 describe.each([
   ["corkscrew-round", inverted],
   ["sideflip-round", inverted],
   ["butterfly-twist-round", chestUpFlat],
+  ["full-round", inverted],
+  ["wrap-full-round", inverted],
+  ["doubleleg-twist-round", legsUp],
 ] as const)("%s", (id, turnedOver) => {
-  it("kicks the right foot above the hips once it has turned over, before landing", () => {
+  it("kicks the right foot alone above the hips, body upright, once it has turned over, before landing", () => {
     const samples = sampleClip(byId(id));
     const last = samples.reduce((acc, s, i) => (turnedOver(s) ? i : acc), -1);
     expect(last, "turns over in the air").toBeGreaterThan(0);
     const [, end] = longestFlight(samples)!;
-    expect(samples.slice(last, end + 1).some((s) => s.right > s.hips.y), "round kick after turning over").toBe(true);
+    const kick = (s: Sample) => s.head > s.hips.y + 0.3 && s.right > s.hips.y && s.left < s.hips.y;
+    expect(samples.slice(last, end + 1).some(kick), "round kick after turning over").toBe(true);
   });
 });
 
@@ -688,9 +696,9 @@ describe("double sideflip", () => {
   });
 });
 
-describe("cheat 900 sidekick", () => {
+describe.each(["cheat-900-sidekick", "backside-900-sidekick"])("%s", (id) => {
   it("drives the straight right leg out at hip height toward the target, side on, after two turns", () => {
-    const samples = sampleClip(byId("cheat-900-sidekick"));
+    const samples = sampleClip(byId(id));
     const [a, b] = longestFlight(samples)!;
     const air = samples.slice(a, b + 1);
     const kick = air.reduce((best, s) => (s.right > best.right ? s : best));
@@ -699,5 +707,59 @@ describe("cheat 900 sidekick", () => {
     expect(kick.ballR.z - kick.hips.z, "toward the target").toBeGreaterThan(0.6);
     expect(Math.abs(kick.fwdZ), "body side on to the target").toBeLessThan(0.5);
     expect(yawTravel(samples, samples[a].t, kick.t), "two turns before the kick").toBeGreaterThan(450);
+  });
+});
+
+/* Contracts for the seventh batch (2026-10). */
+
+/** Separate stretches of the clip where `up` holds. */
+const stretches = (samples: Sample[], up: (s: Sample) => boolean) =>
+  samples.filter((s, i) => up(s) && (i === 0 || !up(samples[i - 1]))).length;
+
+describe("tornado double", () => {
+  it("kicks the right foot above the hips twice in the air, where the tornado kicks once", () => {
+    const kicks = (id: string) => {
+      const samples = sampleClip(byId(id));
+      const [a, b] = longestFlight(samples)!;
+      return stretches(samples.slice(a, b + 1), (s) => s.right > s.hips.y);
+    };
+    expect(kicks("tornado-double")).toBe(2);
+    expect(kicks("cheat-kick")).toBe(1);
+  });
+});
+
+describe("cheat feilong", () => {
+  it("swings the straight left leg up above the hips before the right leg's round kick", () => {
+    const crescent = (s: Sample) => s.left > s.hips.y && s.ballL.distanceTo(s.hips) > 0.85;
+    const samples = sampleClip(byId("cheat-feilong"));
+    const first = samples.findIndex(crescent);
+    expect(first, "left leg crescent").toBeGreaterThan(0);
+    const round = samples.findIndex((s, i) => i > first && !crescent(s) && s.right > s.hips.y);
+    expect(round, "then the right round kick").toBeGreaterThan(first);
+    expect(sampleClip(byId("cheat-kick")).some(crescent), "the tornado drives the left knee instead").toBe(false);
+  });
+});
+
+describe("front axe", () => {
+  it("opens the straight right leg up over the top with the left folded, then lands on the right foot", () => {
+    const samples = sampleClip(byId("front-axe"));
+    const [a, b] = longestFlight(samples)!;
+    const axe = samples
+      .slice(a, b + 1)
+      .some((s) => s.right > s.hips.y + 0.5 && s.ballR.distanceTo(s.hips) > 0.85 && s.ballL.distanceTo(s.hips) < 0.65);
+    expect(axe, "right leg straight up, left leg folded").toBe(true);
+    expect(samples.some(inverted)).toBe(true);
+  });
+});
+
+describe("janitor twist", () => {
+  it("turns over (chest up) while flat in the air, which the janitor never does", () => {
+    const air = (id: string) => {
+      const samples = sampleClip(byId(id));
+      const [a, b] = longestFlight(samples)!;
+      return samples.slice(a, b + 1);
+    };
+    expect(air("janitor-twist").some(chestUpFlat)).toBe(true);
+    expect(air("janitor").some(chestUpFlat)).toBe(false);
   });
 });
