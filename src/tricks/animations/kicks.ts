@@ -273,14 +273,14 @@ export function buildCheat900(): THREE.AnimationClip {
 }
 
 /** Backside pop shared by the Backside 720 / 900: stand with the back to the
- * target (heading 180), wind the torso to the right, pre-turn a little on the
- * ground and pop off both feet at `uOff`. */
-function backsidePop(r: Rig, uOff: number) {
+ * target (heading 180), wind the torso to the right, pre-turn `preTurn`
+ * degrees on the ground and pop off both feet at `uOff`. */
+function backsidePop(r: Rig, uOff: number, preTurn = 50) {
   r.start({ ...armsDown, heading: 180, ...legL(0, 10), ...legR(0, -10), ...head(0, 30) });
   r.pin("L", 0, uOff);
-  turnOnLeftFoot(r, 180, 230, 10);
+  turnOnLeftFoot(r, 180, 180 + preTurn, 10);
   r.at(0.2, {
-    heading: 230,
+    heading: 180 + preTurn,
     ...legL(35, 10, 50),
     ...legR(35, -10, 50),
     ...armL(45, 10, 20),
@@ -289,7 +289,7 @@ function backsidePop(r: Rig, uOff: number) {
     ...head(5, 20),
   });
   r.at(uOff, {
-    heading: 234,
+    heading: 184 + preTurn,
     ...legL(0, 10, 5, 0, 35),
     ...legR(0, -10, 5, 0, 35),
     ...armL(150, 90, 15),
@@ -1169,18 +1169,19 @@ export function buildPop360GyroRound(): THREE.AnimationClip {
 export function buildBackside1080(): THREE.AnimationClip {
   const D = 1.9;
   const r = new Rig(D);
-  backsidePop(r, 0.38);
-  r.flight(0.38, 0.85, { travel: [0.05, 0.1], apex: 0.5 });
+  // More of the turn happens on the ground, so about 720° are left for the air.
+  backsidePop(r, 0.38, 80);
+  r.flight(0.38, 0.8, { travel: [0.05, 0.1], apex: 0.5 });
   r.at(0.45, { heading: 350, ...legL(60, 30, 110), ...legR(35, -10, 90), ...armsTight, ...torso(5, 0, 10), ...head(0, 40) });
   r.at(0.53, { heading: 540, ...legL(60, 30, 110), ...legR(35, -10, 90), ...armsTight, ...torso(5, 0, 10), ...head(0, 40) });
   // Chamber the left leg out to the side, keep spinning, then the hook.
   r.at(0.62, { heading: 740, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 40) });
   r.at(0.67, { heading: 850, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armsTight, ...torso(0, 10, 10), ...head(0, 40) });
   r.at(0.74, { heading: 985, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
-  r.at(0.85, { heading: 1055, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
-  r.pin("R", 0.85, 1);
-  r.at(0.9, { heading: 1080, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  stepDownBehind(r, 0.93, 0.97, { heading: 1080 });
+  r.at(0.8, { heading: 1010, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.8, 1);
+  r.at(0.86, { heading: 1030, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.9, 0.95, { heading: 1035 });
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("backside-1080");
 }
