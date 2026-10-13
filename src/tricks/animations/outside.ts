@@ -1,5 +1,5 @@
 import type * as THREE from "three";
-import { Rig } from "../rig";
+import { Rig, type Pose } from "../rig";
 import { cheatStep, turnOnLeftFoot } from "./kicks";
 import { armL, armR, armsDown, armsTight, armsWide, head, legL, legR, settle, torso } from "./poses";
 
@@ -23,6 +23,18 @@ function outsideStep(r: Rig) {
     ...torso(15, 0, 25),
     ...head(5, 40),
   });
+}
+
+/** The right-hand plant of the gumbi and the sailor moons. From `u0` to `u1`
+ * only the body's roll changes (with a little heading so the roll stays level),
+ * which tips it over the line from the right foot to the right hand: the hand
+ * comes straight down onto the floor and takes the weight, then the same tip
+ * lifts the right foot straight off. `plant` holds everything else still.
+ * The body rolls level again by `uLevel`, once the foot is well clear. */
+function rollOntoRightHand(r: Rig, u0: number, u1: number, plant: Pose, roll: number, uLevel: number) {
+  r.at(u0, { ...plant, roll: 0 });
+  r.at(u1, { ...plant, roll, heading: (plant.heading ?? 0) - 0.3 * roll });
+  r.at(uLevel, { roll: 0 });
 }
 
 /** Raiz: right-foot takeoff, left heel drives up behind, body lays back and
@@ -108,16 +120,11 @@ export function buildGumbi(): THREE.AnimationClip {
     ...torso(-5, 0, 0),
     ...head(-20, 10),
   });
-  r.at(0.4, {
-    heading: 190,
-    spin: 70,
-    ...legL(-50, 15, 70),
-    ...legR(20, 0, 30, 0, 20),
-    ...armR(67, -118, 0),
-  });
+  r.at(0.4, { ...legL(-50, 15, 70) });
   // The right hand takes the weight as the right foot leaves.
+  rollOntoRightHand(r, 0.4, 0.43, { heading: 190, tilt: 60, spin: 70, ...legR(25, 0, 50, 0, 20), ...armR(62, -118, 0), ...torso(-5, 0, 0) }, 6, 0.56);
   r.pin("handR", 0.4, 0.52);
-  r.at(0.44, {
+  r.at(0.45, {
     heading: 205,
     spin: 100,
     ...legL(-50, 20, 50),
@@ -203,17 +210,12 @@ export function buildSailorMoon(): THREE.AnimationClip {
     ...torso(-5, 0, 0),
     ...head(-20, 10),
   });
-  r.at(0.4, {
-    heading: 190,
-    spin: 70,
-    ...legL(-50, 15, 70),
-    ...legR(25, 0, 50, 0, 20),
-    ...armR(67, -118, 0),
-  });
+  r.at(0.4, { ...legL(-50, 15, 70) });
   // The right hand lands just before the right foot pushes off and carries the
   // body briefly; then it lets go and the raiz spin finishes in the air.
+  rollOntoRightHand(r, 0.4, 0.43, { heading: 190, tilt: 55, spin: 70, ...legR(25, 0, 50, 0, 20), ...armR(67, -118, 0), ...torso(-5, 0, 0) }, 6, 0.56);
   r.pin("handR", 0.4, 0.47);
-  r.at(0.44, {
+  r.at(0.45, {
     heading: 205,
     spin: 100,
     ...legL(-50, 20, 75),
@@ -396,9 +398,10 @@ export function buildSailorMoonRound(): THREE.AnimationClip {
     ...torso(-5, 0, 0),
     ...head(-20, 10),
   });
-  r.at(0.4, { heading: 190, spin: 70, ...legL(-50, 15, 70), ...legR(25, 0, 50, 0, 20), ...armR(67, -118, 0) });
+  r.at(0.4, { ...legL(-50, 15, 70) });
+  rollOntoRightHand(r, 0.4, 0.43, { heading: 190, tilt: 55, spin: 70, ...legR(25, 0, 50, 0, 20), ...armR(67, -118, 0), ...torso(-5, 0, 0) }, 6, 0.56);
   r.pin("handR", 0.4, 0.47);
-  r.at(0.44, {
+  r.at(0.45, {
     heading: 205,
     spin: 100,
     ...legL(-50, 20, 75),

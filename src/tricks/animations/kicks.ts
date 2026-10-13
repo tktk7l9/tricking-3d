@@ -22,32 +22,31 @@ export function turnOnLeftFoot(r: Rig, from: number, to: number, stanceAz = 8) {
 }
 
 /** The cheat step shared by the cheat kicks and the outside tricks: pivot on
- * the left foot while the right foot lifts and steps round, hand the weight to
- * the right foot with both feet still for a moment, then lift the left foot
- * straight up. The right foot stays pinned until `rightUntil`. */
+ * the left foot while the right foot lifts straight up and steps round, stops
+ * over the spot it lands on and is lowered onto it; both feet hold still for a
+ * moment, then the left foot lifts straight up. The heading and the standing
+ * leg do not move while a foot is near the floor. The right foot stays pinned
+ * until `rightUntil`. */
 export function cheatStep(r: Rig, rightUntil: number) {
-  r.start({ ...armsDown, ...legL(15, 5, 0, 0, 15), ...legR(-10, -5, 0, 0, -10) });
+  const stand = { ...legL(15, 5, 0, 0, 15), ...legR(-15, -5, 0, 0, -15) };
+  r.start({ ...armsDown, ...stand });
   r.pin("L", 0, 0.14);
-  // The right foot clears the floor before the weight moves onto the left foot.
-  r.at(0.035, { heading: 0, ...legR(10, -5, 40, 0, -30), ...legL(15, 5, 0, 0, 15) });
+  r.at(0.035, { heading: 0, ...stand, ...legR(1, -5, 34, 0, -33) });
   r.at(0.06, { heading: 14, ...legR(15, -10, 65, 0, -45) });
-  r.at(0.09, { heading: 30, ...legR(15, -12, 65) });
-  r.at(0.14, {
-    heading: 62,
-    ...legR(35, -15, 25),
-    ...legL(-5, 5, 10),
-    ...armL(40, 40, 20),
-    ...armR(35, -150, 20),
-    ...torso(8, 0, 20),
-    ...head(0, 40),
-  });
+  r.at(0.09, { heading: 30, ...legR(15, -12, 65, 0, -40) });
+  const pushL = legL(-10, 5, 15, 0, -25);
+  const overR = legR(38.5, -12, 42, 0, -4);
+  const downR = legR(26, -12, 19.5, 0, 6.5);
+  r.at(0.13, { heading: 66, ...pushL, ...overR });
+  r.at(0.135, { heading: 66, ...pushL, ...overR });
+  r.at(0.14, { ...armL(40, 40, 20), ...armR(35, -150, 20), ...torso(8, 0, 20), ...head(0, 40) });
   r.pin("R", 0.14, rightUntil);
-  // Weight handover: the right foot reaches the floor with the left leg still
-  // straight, both feet hold still for a moment, then the left foot comes up.
-  r.at(0.17, { heading: 66, ...legR(30, -12, 10), ...legL(-5, 5, 12) });
-  r.at(0.185, { heading: 66, ...legR(30, -12, 10), ...legL(-5, 5, 12) });
-  r.at(0.205, { heading: 66, ...legR(30, -12, 10), ...legL(8, 8, 40, 0, -25) });
-  r.at(0.225, { heading: 70, ...legR(30, -12, 12), ...legL(35, 10, 75, 0, -40) });
+  r.at(0.16, { heading: 66, ...pushL, ...downR });
+  r.at(0.18, { heading: 66, ...pushL, ...downR });
+  const liftL = legL(0, 5, 36.7, 0, -36.7);
+  r.at(0.2, { heading: 66, ...liftL, ...downR });
+  r.at(0.205, { heading: 66, ...liftL, ...downR });
+  r.at(0.225, { heading: 70, ...legL(35, 10, 75, 0, -40) });
   r.at(0.25, { heading: 125 });
 }
 
