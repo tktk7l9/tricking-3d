@@ -1,7 +1,7 @@
 import type * as THREE from "three";
 import { Rig, type Pose } from "../rig";
 import { cheatStep, turnOnLeftFoot } from "./kicks";
-import { armL, armR, armsDown, armsTight, armsWide, head, legL, legR, settle, torso } from "./poses";
+import { armL, armR, armsDown, armsTight, armsWide, head, legL, legR, settle, stepDownBehind, torso } from "./poses";
 
 /* Outside tricks (raiz, doubleleg, spyder) for a left-twisting tricker. */
 
@@ -534,8 +534,8 @@ export function buildSideswipe(): THREE.AnimationClip {
   r.pin("R", 0.82, 1);
   // Finish the turn with the left foot still up, then set it down behind and hold.
   r.at(0.88, { heading: 365, spin: 360, ...legR(22, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  r.at(0.95, { heading: 365, ...legR(22, 0, 30), ...legL(-15, 10, 20) });
-  r.at(1, { heading: 365, ...legR(22, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 365, spin: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("sideswipe");
 }
 

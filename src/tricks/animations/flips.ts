@@ -345,13 +345,11 @@ export function buildCorkSwipe(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("R", 0.82, 1);
-  r.at(0.91, { ...legR(25, 0, 40), ...legL(-20, 5, 40) });
+  settle(r, "L", 0.88, 0.94, { pitch: -360, twist: 360 });
   r.at(1, {
     heading: 115,
     pitch: -360,
     twist: 360,
-    ...legR(20, 0, 30),
-    ...legL(-20, 5, 25),
     ...armsDown,
     ...torso(5, 0, 0),
   });
@@ -397,13 +395,11 @@ export function buildCorkscrewHyper(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("R", 0.82, 1);
-  r.at(0.91, { ...legR(25, 0, 40), ...legL(-20, 5, 40) });
+  settle(r, "L", 0.88, 0.94, { pitch: -360, twist: 360 });
   r.at(1, {
     heading: 115,
     pitch: -360,
     twist: 360,
-    ...legR(20, 0, 30),
-    ...legL(-20, 5, 25),
     ...armsDown,
     ...torso(5, 0, 0),
   });
@@ -802,8 +798,8 @@ export function buildCorkscrew(): THREE.AnimationClip {
   r.at(0.76, { heading: 105, pitch: -340, twist: 350, roll: 0, ...legL(30, 0, 25), ...legR(-20, -5, 50), ...armsWide, ...torso(5, 0, 0), ...head(0, 0) });
   r.at(0.82, { heading: 110, pitch: -360, twist: 360, roll: 0, ...legL(25, 0, 25), ...legR(-30, -5, 50), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
   r.pin("L", 0.82, 1);
-  r.at(0.91, { heading: 110, ...legL(25, 0, 35), ...legR(-30, -5, 50) });
-  r.at(1, { heading: 110, pitch: -360, twist: 360, ...legL(25, 0, 35), ...legR(-30, -5, 50), ...armsDown, ...torso(5, 0, 0) });
+  settle(r, "R", 0.88, 0.94, { heading: 110, pitch: -360, twist: 360, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("corkscrew");
 }
 

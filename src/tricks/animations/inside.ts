@@ -391,7 +391,7 @@ export function buildScoot(): THREE.AnimationClip {
   r.at(0.64, { heading: 198, pitch: 25, ...legL(45, 15, 35), ...legR(-35, -30, 20), ...torso(15, 0, 0), ...armL(100, 60, 20), ...armR(100, -60, 20), ...head(-15, 0) });
   r.pin("L", SCOOT.land, 1);
   r.at(0.76, { heading: 205, pitch: 20, ...legL(40, 10, 40), ...legR(-30, -20, 30), ...torso(15, 0, 0), ...armsWide });
-  r.at(1, { heading: 210, pitch: 0, ...legL(15, 5, 30), ...legR(-25, -10, 25), ...torso(5, 0, 0), ...armsDown, ...head(0, 0) });
+  r.at(1, { heading: 210, pitch: 0, ...legL(15, 5, 30), ...legR(-25, -10, 45, 0, -20), ...torso(5, 0, 0), ...armsDown, ...head(0, 0) });
   return r.build("scoot");
 }
 
@@ -421,7 +421,7 @@ export function buildMasterscoot(): THREE.AnimationClip {
   r.at(0.68, { heading: 198, pitch: 38, ...legL(45, 12, 35), ...legR(-35, -28, 22), ...torso(12, 0, 0), ...armL(100, 60, 20), ...armR(105, -60, 20), ...head(-10, 0) });
   r.pin("L", MASTER.land, 1);
   r.at(0.76, { heading: 205, pitch: 25, ...legL(40, 10, 40), ...legR(-30, -20, 30), ...torso(15, 0, 0), ...armsWide });
-  r.at(1, { heading: 210, pitch: 0, ...legL(15, 5, 30), ...legR(-25, -10, 25), ...torso(5, 0, 0), ...armsDown, ...head(0, 0) });
+  r.at(1, { heading: 210, pitch: 0, ...legL(15, 5, 30), ...legR(-25, -10, 45, 0, -20), ...torso(5, 0, 0), ...armsDown, ...head(0, 0) });
   return r.build("master-swing");
 }
 
@@ -455,7 +455,7 @@ export function buildScootHyper(): THREE.AnimationClip {
   r.at(0.66, { heading: 196, pitch: 25, ...legL(40, 15, 80), ...legR(28, -5, 35), ...torso(18, 0, 0), ...armL(110, 60, 20), ...armR(100, -60, 20), ...head(-15, 0) });
   r.pin("R", SCOOT_HYPER.land, 1);
   r.at(0.76, { heading: 204, pitch: 15, ...legL(55, 10, 70), ...legR(20, -5, 35), ...torso(12, 0, 0), ...armsWide });
-  r.at(1, { heading: 210, pitch: 0, ...legL(40, 10, 60), ...legR(15, -5, 30), ...torso(5, 0, 0), ...armsDown, ...head(0, 0) });
+  r.at(1, { heading: 210, pitch: 0, ...legL(55, 10, 90, 0, -30), ...legR(15, -5, 30), ...torso(5, 0, 0), ...armsDown, ...head(0, 0) });
   return r.build("scoot-hyper");
 }
 
