@@ -253,6 +253,8 @@ export function buildSailorMoon(): THREE.AnimationClip {
     ...torso(-10, 0, 0),
     ...head(-10, 0),
   });
+  // The spin is finished just before touchdown so the left foot comes straight down.
+  r.at(0.795, { spin: 358, heading: 342 });
   r.at(0.82, {
     heading: 345,
     spin: 360,

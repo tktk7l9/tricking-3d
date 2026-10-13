@@ -48,6 +48,7 @@ export function cheatStep(r: Rig, rightUntil: number) {
   r.at(0.185, { heading: 66, ...legR(30, -12, 10), ...legL(-5, 5, 12) });
   r.at(0.205, { heading: 66, ...legR(30, -12, 10), ...legL(8, 8, 40, 0, -25) });
   r.at(0.225, { heading: 70, ...legR(30, -12, 12), ...legL(35, 10, 75, 0, -40) });
+  r.at(0.25, { heading: 125 });
 }
 
 /** Cheat setup shared by Tornado / 540 / Cheat 720: pivot on the left foot

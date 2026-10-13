@@ -209,7 +209,7 @@ export class Rig {
 
   constructor(duration: number, opts: { fps?: number; hands?: boolean } = {}) {
     this.duration = duration;
-    this.fps = opts.fps ?? 60;
+    this.fps = opts.fps ?? 120;
     this.handsTouch = opts.hands ?? false;
   }
 
@@ -326,7 +326,8 @@ export class Rig {
     let planted: Effector | null = null;
     let anchor = new THREE.Vector2();
     let prevRel: Record<Effector, Contact> | null = null;
-    let flightStart: { xz: THREE.Vector2; y: number } | null = null;
+    // Where the flight starts, and where and when the takeoff foot let go of the floor.
+    let flightStart: { xz: THREE.Vector2; y: number; releaseU: number; releaseXZ: THREE.Vector2 | null } | null = null;
     let lastY = 0;
 
     for (const t of times) {
@@ -338,15 +339,29 @@ export class Rig {
       let y: number;
       if (fi >= 0) {
         const f = this.flights[fi];
-        if (!flightStart) flightStart = { xz: xz.clone(), y: lastY };
+        if (!flightStart) flightStart = { xz: xz.clone(), y: lastY, releaseU: 0, releaseXZ: null };
         const T = f.t1 - f.t0;
         const u = (t - f.t0) / T;
         const apex = f.apex ?? (G * T * T) / 8;
         const y0 = flightStart.y;
         const y1 = landingY[fi];
         y = y0 + (y1 - y0) * u + 4 * apex * u * (1 - u);
-        xz = new THREE.Vector2(flightStart.xz.x + f.travel[0] * u, flightStart.xz.y + f.travel[1] * u);
-        planted = null;
+        const end = new THREE.Vector2(flightStart.xz.x + f.travel[0], flightStart.xz.y + f.travel[1]);
+        if (planted && !flightStart.releaseXZ && rel[planted].y + y <= HOLD) {
+          // The takeoff foot rolls off the floor rather than sliding: it stays
+          // put until it has risen clear, then the flight carries on to its end.
+          xz = anchor.clone().sub(rel[planted].xz);
+          flightStart.releaseU = u;
+        } else {
+          if (!flightStart.releaseXZ) {
+            flightStart.releaseXZ =
+              flightStart.releaseU > 0 ? xz.clone() : flightStart.xz.clone();
+          }
+          const from = flightStart.releaseXZ;
+          const k = (u - flightStart.releaseU) / (1 - flightStart.releaseU);
+          xz = from.clone().add(end.clone().sub(from).multiplyScalar(k));
+          planted = null;
+        }
       } else {
         // Touchdown sample: finish the flight's travel exactly before planting.
         const ended = this.flights.find((f) => Math.abs(t - f.t1) < 1e-9);

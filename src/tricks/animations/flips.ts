@@ -1,6 +1,7 @@
 import type * as THREE from "three";
 import { Rig } from "../rig";
-import { armL, armR, armsBack, armsDown, armsTight, armsUp, armsWide, head, legL, legR, legsAbsorb, legsTuck, torso } from "./poses";
+import { armL, armR, armsBack, armsDown, armsTight, armsUp, armsWide, head, legL, legR, legsAbsorb, legsTuck, settle, torso } from "./poses";
+import { cheatStep } from "./kicks";
 
 /* Backward / forward flips authored on the semantic rig (left-twisting tricker). */
 
@@ -166,14 +167,20 @@ export function buildLoser(): THREE.AnimationClip {
   const D = 1.7;
   const r = new Rig(D);
   r.start({ ...armsDown, ...legL(5, 8), ...legR(-5, -8), ...torso(5, 0, 0) });
+  // Step back: the right foot lifts straight up, moves back in the air and is
+  // set down behind; both feet hold while the weight moves back onto it.
   r.pin("L", 0, 0.18);
+  r.at(0.04, { ...legL(5, 8), ...legR(15, -8, 40, 0, -25) });
+  r.at(0.12, { ...legR(-20, -8, 30, 0, -10) });
   r.at(0.18, { ...legL(10, 8, 15), ...legR(-25, -8, 15), ...armsBack, ...torso(10, 0, 0), ...head(5, 0) });
   r.pin("R", 0.18, 0.34);
+  r.at(0.21, { ...legL(10, 8, 15), ...legR(-25, -8, 15) });
   // Weight sinks onto the back (right) foot; at takeoff that foot is ahead of
   // the hips so the push drives the body backward, chest kept up. The left
-  // knee folds as the leg swings through under the body so it clears the floor.
-  r.at(0.26, { pitch: 0, ...legL(30, 8, 20), ...legR(10, -8, 45), ...armsBack, ...torso(10, 0, 0) });
-  r.at(0.3, { ...legL(-10, 5, 70) });
+  // foot lifts straight up and its knee stays folded as the leg swings back.
+  r.at(0.24, { ...legL(30, 8, 60, 0, -30) });
+  r.at(0.26, { pitch: 0, ...legL(25, 8, 75, 0, -40), ...legR(10, -8, 45), ...armsBack, ...torso(10, 0, 0) });
+  r.at(0.3, { ...legL(-10, 5, 80) });
   r.at(0.34, {
     pitch: 10,
     ...legL(-55, 5, 20),
@@ -915,8 +922,9 @@ function offAxisFull(r: Rig, uOff: number, uLand: number, headingAtTakeoff: numb
     ...head(0, 0),
   });
   r.pin("L", uLand, 1);
-  r.at((uLand + 1) / 2, { ...legR(5, -5, 35), ...legL(25, 5, 40) });
-  r.at(1, { heading: headingAtTakeoff + 70, pitch: -360, twist: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  r.at(uLand + 0.03, { ...legR(10, -15, 90, 0, -40) });
+  settle(r, "R", uLand + 0.07, uLand + 0.13, { heading: headingAtTakeoff + 70, pitch: -360, twist: 360, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
 }
 
 /** Wrap full: from a hyper landing on the right foot, the left leg wraps behind
@@ -928,7 +936,7 @@ export function buildWrapFull(): THREE.AnimationClip {
   r.pin("R", 0, 0.38);
   r.at(0.18, {
     heading: 30,
-    ...legL(-10, -35, 50),
+    ...legL(-10, -35, 60, 0, -60),
     ...legR(30, -5, 45),
     ...armL(50, 20, 20),
     ...armR(50, -160, 20),
@@ -937,7 +945,7 @@ export function buildWrapFull(): THREE.AnimationClip {
   });
   r.at(0.3, {
     heading: 80,
-    ...legL(-20, -20, 40),
+    ...legL(-20, -20, 55, 0, -60),
     ...legR(35, 0, 50),
     ...armL(120, 60, 15),
     ...armR(100, -120, 20),
@@ -947,7 +955,7 @@ export function buildWrapFull(): THREE.AnimationClip {
   r.at(0.38, {
     heading: 120,
     pitch: -20,
-    ...legL(10, 10, 60),
+    ...legL(10, 10, 70, 0, -50),
     ...legR(0, 0, 5, 0, 35),
     ...armsUp,
     ...torso(-10, 0, 20),
@@ -961,22 +969,12 @@ export function buildWrapFull(): THREE.AnimationClip {
 export function buildTakFull(): THREE.AnimationClip {
   const D = 1.9;
   const r = new Rig(D);
-  r.start({ ...armsDown, ...legL(15, 5), ...legR(-10, -5) });
-  r.pin("L", 0, 0.16);
-  r.at(0.16, {
-    heading: 70,
-    ...legR(40, -15, 20),
-    ...legL(-5, 5, 10),
-    ...armL(40, 40, 20),
-    ...armR(35, -150, 20),
-    ...torso(8, 0, 20),
-    ...head(0, 40),
-  });
-  r.pin("R", 0.16, 0.4);
+  cheatStep(r, 0.4);
   r.at(0.28, {
+    pitch: 0,
     heading: 165,
     ...legR(35, 0, 55),
-    ...legL(15, 10, 70),
+    ...legL(45, 10, 85, 0, -40),
     ...armL(55, 110, 30),
     ...armR(50, -40, 30),
     ...torso(18, 0, 25),
