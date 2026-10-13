@@ -798,3 +798,31 @@ export function buildDoubleAerialTwist(): THREE.AnimationClip {
   r.at(1, { ...torso(0, 0, 0), ...armsDown, ...head(0, 0, 0) });
   return r.build("double-aerial-twist");
 }
+
+/** Triple Aerial Twist: the aerial twist with two more twists about the long
+ * axis while upside down, arms and legs pulled in tight, landing complete on
+ * the left foot. */
+export function buildTripleAerialTwist(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -10), ...head(0, 0, 10) });
+  cartwheelEntry(r);
+  // Both feet hold still while the weight moves onto the left foot, then the right foot lifts.
+  r.at(0.145, { roll: -12, ...legL(45, 80, 45), ...legR(0, -10, 0) });
+  r.at(0.17, { roll: -15, ...legL(45, 80, 50), ...legR(17, -10, 35, 0, -18), ...torso(10, 10, 0), ...armL(60, 60, 20), ...armR(50, -150, 20) });
+  r.at(0.3, { roll: -55, twist: 0, ...legL(55, 80, 25, 0, 35), ...legR(35, -90, 10), ...torso(0, 15, 0), ...armL(150, 110, 10), ...armR(120, -60, 20), ...head(-10, 0, 20) });
+  r.flight(0.3, 0.78, { travel: [0.9, 0] });
+  const tight = { ...legL(0, 8, 0), ...legR(0, -8, 0), ...torso(0, 0, 0), ...armsTight, ...head(-10, 20, 0) };
+  r.at(0.38, { roll: -115, twist: 80, ...legL(10, 50, 10), ...legR(10, -50, 0), ...torso(0, 5, 0), ...armsTight, ...head(-10, 20, 0) });
+  r.at(0.45, { roll: -165, twist: 340, ...tight });
+  r.at(0.52, { roll: -210, twist: 600, ...tight });
+  r.at(0.59, { roll: -250, twist: 850, ...tight });
+  // The twists end early and the roll comes almost upright before touchdown.
+  r.at(0.67, { roll: -298, twist: 1050, ...legL(15, 25, 10), ...legR(20, -40, 40), ...armL(90, 90, 20), ...armR(90, -90, 20), ...head(-5, 0, 0) });
+  r.at(0.78, { roll: -345, twist: 1080, ...legL(15, 20, 15), ...legR(45, -45, 100), ...torso(0, -5, 0), ...armsWide, ...head(0, 0, 0) });
+  r.pin("L", 0.78, 1);
+  settle(r, "R", 0.86, 0.93, { roll: -360, twist: 1080 }, 12);
+  r.at(0.86, { ...torso(0, 0, 0) });
+  r.at(1, { ...torso(0, 0, 0), ...armsDown, ...head(0, 0, 0) });
+  return r.build("triple-aerial-twist");
+}

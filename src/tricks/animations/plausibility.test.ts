@@ -733,6 +733,8 @@ describe.each([
   ["double-butterfly-twist-round", chestUpFlat],
   ["cheat-720-twist-round", chestDownFlat],
   ["double-full-round", inverted],
+  ["triple-full-round", inverted],
+  ["tak-double-full-round", inverted],
 ] as const)("%s", (id, turnedOver) => {
   it("kicks the right foot alone above the hips, body upright, once it has turned over, before landing", () => {
     const samples = sampleClip(byId(id));
@@ -858,6 +860,8 @@ describe.each([
   ["gainer-scissor-swipe", "gainer-scissor"],
   ["double-full-swipe", "double-full"],
   ["triple-full-hyper", "triple-full"],
+  ["triple-full-hyperhook", "triple-full"],
+  ["tak-double-full-hyper", "tak-double-full"],
 ] as const)("%s", (id, base) => {
   it(`lands on the right foot and keeps the left leg up for a moment, where the ${base} does not land on the right`, () => {
     expect(byId(base).landing).not.toBe("right");
@@ -1176,6 +1180,7 @@ describe.each([
   ["full-hyperhook", "full"],
   ["butterfly-twist-hyperhook", "butterfly-twist-hyper"],
   ["double-full-hyperhook", "double-full"],
+  ["triple-full-hyperhook", "triple-full"],
 ] as const)("%s", (id, base) => {
   it(`hooks the straight left leg above the hips once upright, which the ${base} never does`, () => {
     const hook = (s: Sample) => s.head > s.hips.y + 0.3 && s.left > s.hips.y && s.ballL.distanceTo(s.hips) > 0.85;
@@ -1193,6 +1198,9 @@ describe.each([
   ["double-full-swipe", 4, "full-swipe", 2],
   ["double-full-doubleleg", 4, "full-doubleleg", 2],
   ["kick-full", 2, "flash-kick", 0],
+  ["kick-double-full", 4, "kick-full", 2],
+  ["quad-full", 8, "triple-full", 6],
+  ["triple-full-round", 6, "double-full-round", 4],
 ] as const)("%s", (id, count, base, baseCount) => {
   it(`turns side on ${count} times in the air (${count / 2} twists), where the ${base} does it ${baseCount} times`, () => {
     const sideOn = (s: Sample) => Math.abs(Math.sin((s.yaw * Math.PI) / 180)) > 0.8 && Math.abs(s.fwdY) < 0.6;
@@ -1220,18 +1228,22 @@ describe("full doubleleg", () => {
 
 /* Contracts for the sixteenth batch (2026-10). */
 
-describe("butterfly twist shuriken", () => {
-  it("swings the straight left leg above the hips after the twist and lands on it first, which the butterfly twist never does", () => {
-    const crescent = (s: Sample) => s.left > s.hips.y && s.ballL.distanceTo(s.hips) > 0.85;
-    const afterTwist = (id: string) => {
-      const samples = sampleClip(byId(id));
-      const last = samples.reduce((acc, s, i) => (chestUpFlat(s) ? i : acc), -1);
-      expect(last, "twists flat in the air").toBeGreaterThan(0);
+describe.each([
+  ["butterfly-twist-shuriken", "butterfly-twist", chestUpFlat],
+  ["corkscrew-shuriken", "corkscrew", inverted],
+] as const)("%s", (id, base, turnedOver) => {
+  it(`swings the straight left leg above the hips once it has turned over and lands on it first, which the ${base} never does`, () => {
+    // Upright, so a flip's legs swinging over the top on the way round do not count.
+    const crescent = (s: Sample) => s.head > s.hips.y + 0.3 && s.left > s.hips.y && s.ballL.distanceTo(s.hips) > 0.85;
+    const afterTurningOver = (trickId: string) => {
+      const samples = sampleClip(byId(trickId));
+      const last = samples.reduce((acc, s, i) => (turnedOver(s) ? i : acc), -1);
+      expect(last, "turns over in the air").toBeGreaterThan(0);
       return samples.slice(last);
     };
-    expect(afterTwist("butterfly-twist-shuriken").some(crescent)).toBe(true);
-    expect(afterTwist("butterfly-twist").some(crescent)).toBe(false);
-    const samples = sampleClip(byId("butterfly-twist-shuriken"));
+    expect(afterTurningOver(id).some(crescent)).toBe(true);
+    expect(afterTurningOver(base).some(crescent)).toBe(false);
+    const samples = sampleClip(byId(id));
     const [, end] = longestFlight(samples)!;
     const after = samples.slice(end + 1);
     const down = after.findIndex((s) => Math.min(s.left, s.right) < 0.03);
@@ -1303,5 +1315,19 @@ describe("double full doubleleg", () => {
     };
     expect(doubleleg("double-full-doubleleg")).toBe(true);
     expect(doubleleg("double-full")).toBe(false);
+  });
+});
+
+/* Contracts for the eighteenth batch (2026-10). */
+
+describe("triple aerial twist", () => {
+  it("turns side on more often in the air than the double aerial twist (a third twist)", () => {
+    const sideOn = (s: Sample) => Math.abs(Math.sin((s.yaw * Math.PI) / 180)) > 0.8 && Math.abs(s.fwdY) < 0.6;
+    const turns = (id: string) => {
+      const samples = sampleClip(byId(id), 300);
+      const [a, b] = longestFlight(samples)!;
+      return stretches(samples.slice(a, b + 1), sideOn);
+    };
+    expect(turns("triple-aerial-twist")).toBeGreaterThan(turns("double-aerial-twist"));
   });
 });
