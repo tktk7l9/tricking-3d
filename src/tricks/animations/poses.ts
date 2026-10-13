@@ -51,6 +51,20 @@ export const legsAbsorb: Pose = { ...legL(25, 0, 40), ...legR(25, 0, 40) };
 export const legsTuck: Pose = { ...legL(120, 5, 130), ...legR(120, -5, 130) };
 
 /**
+ * The left foot of a right-foot landing set down behind: it stops right over
+ * its spot at `uOver` and is lowered straight onto it by `uDown`, on its toes
+ * like the standing foot (hip bend matching the knee, so the two soles sit
+ * level); after that the legs and `final` no longer change.
+ */
+export function stepDownBehind(r: Rig, uOver: number, uDown: number, final: Pose) {
+  const standing = legR(15, 0, 30);
+  const down = { ...final, ...standing, ...legL(-16, 10, 0, 0, -1) };
+  r.at(uOver, { ...final, ...standing, ...legL(2, 10, 37.6, 0, -20.7) });
+  r.at(uDown, down);
+  r.at(1, down);
+}
+
+/**
  * Second-foot touchdown shared by the one-footed landings. The planted foot
  * holds while the body finishes turning with the free foot raised over the
  * spot it lands on (by `uAbove`); the free foot is then lowered straight onto

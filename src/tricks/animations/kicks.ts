@@ -1,6 +1,6 @@
 import type * as THREE from "three";
 import { Rig } from "../rig";
-import { armL, armR, armsDown, armsUp, armsWide, armsTight, head, legL, legR, legsAbsorb, settle, torso } from "./poses";
+import { armL, armR, armsDown, armsUp, armsWide, armsTight, head, legL, legR, legsAbsorb, settle, stepDownBehind, torso } from "./poses";
 
 /* Vertical kicks (left-twisting tricker, spinning counter-clockwise).
  *
@@ -165,8 +165,8 @@ export function build540(): THREE.AnimationClip {
   });
   r.pin("R", 0.8, 1);
   r.at(0.88, { heading: 540, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  r.at(0.95, { heading: 540, ...legR(15, 0, 30), ...legL(-15, 10, 20) });
-  r.at(1, { heading: 540, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 540 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("540-kick");
 }
 
@@ -213,8 +213,8 @@ export function buildCheat720(): THREE.AnimationClip {
   });
   r.pin("R", 0.82, 1);
   r.at(0.88, { heading: 720, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  r.at(0.95, { heading: 720, ...legR(15, 0, 30), ...legL(-15, 10, 20) });
-  r.at(1, { heading: 720, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 720 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("cheat-720");
 }
 
@@ -365,8 +365,8 @@ export function buildBackside720(): THREE.AnimationClip {
   });
   r.pin("R", 0.8, 1);
   r.at(0.88, { heading: 720, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  r.at(0.95, { heading: 720, ...legR(15, 0, 30), ...legL(-15, 10, 20) });
-  r.at(1, { heading: 720, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 720 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("backside-720");
 }
 
@@ -458,8 +458,8 @@ export function buildBackside900Hyper(): THREE.AnimationClip {
   r.at(0.84, { heading: 820, ...legL(45, 70, 100), ...legR(20, 0, 30), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0) });
   r.pin("R", 0.84, 1);
   r.at(0.88, { heading: 845, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  r.at(0.95, { heading: 845, ...legR(15, 0, 30), ...legL(-15, 10, 20) });
-  r.at(1, { heading: 845, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 845 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("backside-900-hyper");
 }
 
@@ -646,8 +646,8 @@ export function buildPop540(): THREE.AnimationClip {
   });
   r.pin("R", 0.8, 1);
   r.at(0.88, { heading: 540, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  r.at(0.95, { heading: 540, ...legR(15, 0, 30), ...legL(-15, 10, 20) });
-  r.at(1, { heading: 540, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 540 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("pop-540");
 }
 
@@ -696,8 +696,8 @@ export function buildPop720(): THREE.AnimationClip {
   });
   r.pin("R", 0.82, 1);
   r.at(0.88, { heading: 720, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  r.at(0.95, { heading: 720, ...legR(15, 0, 30), ...legL(-15, 10, 20) });
-  r.at(1, { heading: 720, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 720 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("pop-720");
 }
 
@@ -780,10 +780,8 @@ export function buildCheat900Hyper(): THREE.AnimationClip {
   r.at(0.84, { heading: 810, ...legL(45, 70, 100), ...legR(20, 0, 30), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0) });
   r.pin("R", 0.84, 1);
   r.at(0.89, { heading: 835, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  // Over its spot, then straight down onto the toes beside the standing foot.
-  r.at(0.92, { heading: 835, ...legR(15, 0, 30), ...legL(2, 10, 37.6, 0, -20.7) });
-  r.at(0.96, { heading: 835, ...legR(15, 0, 30), ...legL(-16, 10, 0, 0, -1) });
-  r.at(1, { heading: 835, ...legR(15, 0, 30), ...legL(-16, 10, 0, 0, -1), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 835 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("cheat-900-hyper");
 }
 
@@ -810,10 +808,8 @@ export function buildSwing1080(): THREE.AnimationClip {
   r.at(0.86, { heading: 1050, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
   r.pin("R", 0.86, 1);
   r.at(0.91, { heading: 1075, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  // Over its spot, then straight down onto the toes beside the standing foot.
-  r.at(0.935, { heading: 1075, ...legR(15, 0, 30), ...legL(2, 10, 37.6, 0, -20.7) });
-  r.at(0.97, { heading: 1075, ...legR(15, 0, 30), ...legL(-16, 10, 0, 0, -1) });
-  r.at(1, { heading: 1075, ...legR(15, 0, 30), ...legL(-16, 10, 0, 0, -1), ...armsDown, ...torso(5, 0, 0) });
+  stepDownBehind(r, 0.935, 0.97, { heading: 1075 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("swing-1080");
 }
 

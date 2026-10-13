@@ -238,6 +238,39 @@ describe.each(contactKeyed.map((t) => [t.id, t] as const))("%s contact keypoints
   });
 });
 
+/* The last frame: both feet rest on the floor, unless the trick deliberately
+ * ends with one leg held up (listed here, each for a reason its keypoints or
+ * contracts state), and then that foot is clearly up and the other is down.
+ * No foot ends hovering just off the floor. */
+
+const ENDS_WITH_LEG_UP: Record<string, "left" | "right"> = {
+  "gainer-switch": "right", // ready to swing into the next trick
+  "butterfly-kick-switch": "right", // landed on the switched leg
+  scoot: "right", // right leg left behind
+  "master-swing": "right", // ready for the next trick
+  "touchdown-raiz": "right", // right leg left behind
+  "scoot-hyper": "left", // left leg kept in front
+};
+
+/** How far above the floor (metres) a foot may end and still count as resting on it. */
+const RESTING = 0.005;
+
+describe.each(TRICKS.map((t) => [t.id, t] as const))("%s end", (id, trick) => {
+  it("ends with both feet on the floor, or one leg clearly held up", () => {
+    const samples = sampleClip(trick);
+    const last = samples[samples.length - 1];
+    const up = ENDS_WITH_LEG_UP[id];
+    if (!up) {
+      expect(last.left, "left foot on the floor").toBeLessThan(RESTING);
+      expect(last.right, "right foot on the floor").toBeLessThan(RESTING);
+      return;
+    }
+    const [raised, standing] = up === "left" ? [last.left, last.right] : [last.right, last.left];
+    expect(standing, "standing foot on the floor").toBeLessThan(RESTING);
+    expect(raised, `${up} leg clearly up`).toBeGreaterThan(0.12);
+  });
+});
+
 /* Contracts specific to the tricks that fill the progression tree (2026-10). */
 
 const byId = (id: string): TrickMeta => TRICKS.find((t) => t.id === id)!;
