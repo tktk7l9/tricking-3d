@@ -117,3 +117,68 @@ describe("InfoPanel", () => {
     expect(keypointButtons(host)[0].getAttribute("aria-current")).toBe("step");
   });
 });
+
+describe("InfoPanel progression", () => {
+  const progression = (host: HTMLElement) => getByRole(host, "region", { name: /技のつながり/ });
+  /** The links (or the "none" note) under one of the two progression headings. */
+  const group = (host: HTMLElement, heading: string) => {
+    const next = getByRole(progression(host), "heading", { level: 4, name: heading }).nextElementSibling!;
+    return {
+      hrefs: Array.from(next.querySelectorAll("a")).map((a) => a.getAttribute("href")),
+      text: next.textContent,
+    };
+  };
+
+  afterEach(() => {
+    history.replaceState(null, "", "/");
+  });
+
+  it("shows the tricks to learn first and the tricks this one leads to, each linking to that trick", () => {
+    const host = mountHost("aside");
+    new InfoPanel(host, makeState({ trickId: "540-gyro" }));
+    expect(group(host, "先に覚える技").hrefs).toEqual(["#540-kick"]);
+    expect(group(host, "次に挑戦できる技").hrefs).toEqual(["#cheat-900-gyro"]);
+    // Screen readers hear both names, as separate words.
+    expect(getByRole(host, "link", { name: "540キック 540 Kick" })).toBeTruthy();
+  });
+
+  it("lists every neighbour of a trick with many, in catalogue order", () => {
+    const host = mountHost("aside");
+    new InfoPanel(host, makeState({ trickId: "back-flip" }));
+    expect(group(host, "先に覚える技").text).toBe("収録している技の中にはありません");
+    expect(group(host, "次に挑戦できる技").hrefs).toEqual(["#x-out", "#back-pike", "#flash-kick", "#arabian", "#gainer"]);
+  });
+
+  it("follows the links as page navigation and keeps the new trick's name in focus", async () => {
+    const host = mountHost("aside");
+    const state = makeState({ trickId: "540-gyro" });
+    new InfoPanel(host, state);
+    await userEvent.click(getByRole(host, "link", { name: /^540キック/ }));
+    expect(location.hash).toBe("#540-kick");
+    state.set("trickId", "540-kick"); // what the app does on hashchange
+    const h2 = getByRole(host, "heading", { level: 2 });
+    expect(h2.textContent).toBe("540キック");
+    expect(document.activeElement).toBe(h2);
+  });
+
+  it("keeps focus on the name when the browser goes back to the previous trick", () => {
+    const host = mountHost("aside");
+    const state = makeState({ trickId: "540-kick" });
+    new InfoPanel(host, state);
+    getByRole(host, "heading", { level: 2 }).focus();
+    state.set("trickId", "540-gyro"); // back
+    const h2 = getByRole(host, "heading", { level: 2 });
+    expect(h2.textContent).toBe("540ジャイロ");
+    expect(document.activeElement).toBe(h2);
+  });
+
+  it("leaves focus where it is when the trick is picked from elsewhere (e.g. the trick list)", () => {
+    const host = mountHost("aside");
+    const elsewhere = mountHost("button");
+    const state = makeState({ trickId: "540-gyro" });
+    new InfoPanel(host, state);
+    elsewhere.focus();
+    state.set("trickId", "back-flip");
+    expect(document.activeElement).toBe(elsewhere);
+  });
+});

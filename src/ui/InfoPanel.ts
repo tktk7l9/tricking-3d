@@ -3,6 +3,8 @@ import { getTrick, type TrickMeta } from "../tricks/catalog";
 import { clampSeekTime } from "../lib/seek";
 import { axisLabel, categoryLabel, takeoffLabel } from "../lib/labels";
 import { phraseHtml } from "../lib/phrases";
+import { hashForTrick } from "../lib/hash";
+import { prerequisitesOf, unlocksOf } from "../lib/progression";
 
 export class InfoPanel {
   private host: HTMLElement;
@@ -21,8 +23,12 @@ export class InfoPanel {
   }
 
   private render(t: TrickMeta) {
+    // Re-rendering removes whatever had focus in the panel (a link just
+    // followed, or the name when the browser goes back); the new trick's name
+    // takes it instead of the page losing it.
+    const hadFocus = this.host.contains(document.activeElement);
     this.host.innerHTML = `
-      <h2>${phraseHtml(t.nameJp)}</h2>
+      <h2 tabindex="-1">${phraseHtml(t.nameJp)}</h2>
       <div class="meta">${escapeHtml(t.nameEn)}</div>
       <dl class="meta-grid">
         <dt>カテゴリ</dt><dd>${categoryLabel(t.category)}</dd>
@@ -38,7 +44,9 @@ export class InfoPanel {
         <h3>キーポイント <span class="hint">（押すとその瞬間で止まります）</span></h3>
         <div class="kp-list"></div>
       </div>
+      ${progressionHtml(t)}
     `;
+    if (hadFocus) this.host.querySelector("h2")!.focus();
 
     const list = this.host.querySelector(".kp-list") as HTMLDivElement;
     this.kpRoot = list;
@@ -83,6 +91,31 @@ export class InfoPanel {
       else this.kpButtons[i].removeAttribute("aria-current");
     }
   }
+}
+
+/** Where the trick sits in the progression: the tricks to learn first and the
+ * tricks it leads to, each a link that opens that trick (SHIG 59). */
+function progressionHtml(t: TrickMeta): string {
+  return `
+    <section class="progression" aria-labelledby="progression-title">
+      <h3 id="progression-title">技のつながり <span class="hint">（押すとその技に切り替わります）</span></h3>
+      <h4>先に覚える技</h4>
+      ${trickLinks(prerequisitesOf(t.id))}
+      <h4>次に挑戦できる技</h4>
+      ${trickLinks(unlocksOf(t.id))}
+    </section>
+  `;
+}
+
+function trickLinks(tricks: TrickMeta[]): string {
+  if (tricks.length === 0) return `<p class="prog-none">収録している技の中にはありません</p>`;
+  const items = tricks.map(
+    (x) =>
+      `<li><a class="prog-link" href="${hashForTrick(x.id)}"><span class="jp">${phraseHtml(
+        x.nameJp,
+      )}</span> <span class="en" lang="en">${escapeHtml(x.nameEn)}</span></a></li>`,
+  );
+  return `<ul class="prog-list">${items.join("")}</ul>`;
 }
 
 function escapeHtml(s: string): string {

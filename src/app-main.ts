@@ -12,7 +12,7 @@ import { Timeline } from "./ui/Timeline";
 import { InfoPanel } from "./ui/InfoPanel";
 import { CameraSwitcher, OverlaySwitcher } from "./ui/CameraSwitcher";
 import { DEFAULT_TRICK_ID, TRICKS, getTrick } from "./tricks/catalog";
-import { hashForTrick, trickIdFromHash } from "./lib/hash";
+import { hashForTrick, trickIdFromHash, trickIdOnHashChange } from "./lib/hash";
 import { STILL, buildFollowPath, followOffsetAt, type FollowPath } from "./lib/follow";
 import { phraseHtml } from "./lib/phrases";
 import { PanelTabs } from "./ui/PanelTabs";
@@ -103,8 +103,10 @@ export async function startApp() {
   state.subscribe("trickId", syncHash);
   // An unknown trick in the URL falls back to the default; make the URL say so.
   if (location.hash) syncHash(initialId);
+  // Links between tricks add history entries, so the browser's back button
+  // returns to the previous trick (SHIG 60).
   window.addEventListener("hashchange", () => {
-    const id = trickIdFromHash(location.hash, trickIds);
+    const id = trickIdOnHashChange(location.hash, trickIds, DEFAULT_TRICK_ID);
     if (id) state.set("trickId", id);
     else syncHash(state.get("trickId"));
   });

@@ -25,6 +25,35 @@ describe("trick catalog", () => {
     }
   });
 
+  it("resolves every prerequisite to another trick in the catalogue, each listed once", () => {
+    const ids = new Set(TRICKS.map((t) => t.id));
+    for (const t of TRICKS) {
+      const prerequisites = t.prerequisites ?? [];
+      if (t.prerequisites) expect(prerequisites.length, `${t.id}: leave an empty list out`).toBeGreaterThan(0);
+      expect(new Set(prerequisites).size, `${t.id}: duplicates`).toBe(prerequisites.length);
+      for (const p of prerequisites) {
+        expect(ids.has(p), `${t.id} -> ${p}`).toBe(true);
+        expect(p, `${t.id} lists itself`).not.toBe(t.id);
+      }
+    }
+  });
+
+  it("forms a progression without loops, so every trick traces back to a family's base trick", () => {
+    const state = new Map<string, "visiting" | "done">();
+    const visit = (id: string, path: string[]) => {
+      expect(state.get(id), `loop: ${[...path, id].join(" -> ")}`).not.toBe("visiting");
+      if (state.get(id) === "done") return;
+      state.set(id, "visiting");
+      for (const p of getTrick(id).prerequisites ?? []) visit(p, [...path, id]);
+      state.set(id, "done");
+    };
+    for (const t of TRICKS) visit(t.id, []);
+    // The bases of the original families have nothing before them.
+    for (const id of ["cheat-kick", "pop-kick", "back-flip", "front-flip", "cartwheel", "scoot", "side-flip"]) {
+      expect(getTrick(id).prerequisites, id).toBeUndefined();
+    }
+  });
+
   it("getTrick returns the entry or throws for unknown ids", () => {
     expect(getTrick("back-flip").nameJp).toBe("バク宙");
     expect(getTrick(DEFAULT_TRICK_ID).id).toBe(DEFAULT_TRICK_ID);
