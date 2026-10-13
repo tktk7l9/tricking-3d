@@ -996,3 +996,79 @@ export function buildTakFull(): THREE.AnimationClip {
   offAxisFull(r, 0.4, 0.82, 210);
   return r.build("tak");
 }
+
+/** Front Pike: a front flip held in a pike (knees straight, legs folded to the chest). */
+export function buildFrontPike(): THREE.AnimationClip {
+  const D = 1.6;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.31);
+  r.at(0.16, { ...squat, ...armL(60, 20, 20), ...armR(60, -20, 20), ...torso(20, 0, 0), ...head(5, 0) });
+  r.at(0.31, { pitch: 15, ...pushOff, ...armsUp, ...torso(15, 0, 0), ...head(20, 0) });
+  r.flight(0.31, 0.8, { travel: [0, 0.6] });
+  r.at(0.42, { pitch: 110, ...legL(80, 4, 10), ...legR(80, -4, 10), ...armL(100, 20, 10), ...armR(100, -20, 10), ...torso(35, 0, 0), ...head(30, 0) });
+  // The pike: knees straight, legs folded to the chest, hands reaching for the shins.
+  r.at(0.52, { pitch: 190, ...legL(125, 3, 0), ...legR(125, -3, 0), ...armL(80, 15, 10), ...armR(80, -15, 10), ...torso(40, 0, 0), ...head(35, 0) });
+  r.at(0.62, { pitch: 270, ...legL(115, 3, 0), ...legR(115, -3, 0), ...armL(85, 20, 10), ...armR(85, -20, 10), ...torso(30, 0, 0), ...head(20, 0) });
+  r.at(0.72, { pitch: 330, ...legL(45, 8, 45), ...legR(45, -8, 45), ...armsWide, ...torso(12, 0, 0), ...head(5, 0) });
+  r.at(0.8, { pitch: 360, ...landStance, ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: 360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("front-pike");
+}
+
+/** Webster X-Out: the webster's right-foot takeoff with an x-out (straddle) at the top. */
+export function buildWebsterXOut(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  // Standing on the right foot with the left foot just off the floor behind.
+  r.start({ ...armsDown, ...legR(0, -5), ...legL(-15, 5, 50, 0, 10), ...torso(10, 0, 0) });
+  r.pin("R", 0, 0.3);
+  r.at(0.18, { ...legR(35, -5, 60), ...legL(-20, 5, 60, 0, 20), ...armsBack, ...torso(15, 0, 0), ...head(8, 0) });
+  r.at(0.3, { pitch: 25, ...legR(0, -5, 5, 0, 35), ...legL(-60, 5, 20), ...armL(110, 20, 10), ...armR(110, -20, 10), ...torso(25, 0, 0), ...head(30, 0) });
+  r.flight(0.3, 0.8, { travel: [0, 0.8] });
+  r.at(0.38, { pitch: 85, ...legL(-45, 5, 30), ...legR(45, -5, 60), ...armsTight, ...torso(35, 0, 0), ...head(35, 0) });
+  // The x-out: right leg forward to the chest, left leg back, both straight.
+  r.at(0.5, { pitch: 190, ...legL(-55, 5, 5), ...legR(105, -5, 5), ...armsWide, ...torso(20, 0, 0), ...head(25, 0) });
+  r.at(0.6, { pitch: 265, ...legL(-40, 5, 10), ...legR(85, -5, 10), ...armsWide, ...torso(15, 0, 0), ...head(15, 0) });
+  r.at(0.7, { pitch: 325, ...legL(25, 8, 35), ...legR(40, -8, 35), ...armL(80, 90, 20), ...armR(80, -90, 20), ...torso(12, 0, 0), ...head(5, 0) });
+  r.at(0.8, { pitch: 360, ...landStance, ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: 360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("webster-x-out");
+}
+
+/** Gainer X-Out: the gainer's swing takeoff with an x-out (straddle) at the top. */
+export function buildGainerXOut(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  swingStance(r);
+  r.pin("L", 0, 0.36);
+  r.at(0.2, { ...legL(25, 5, 35), ...legR(45, -5, 50), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.36, { pitch: -20, ...legL(0, 5, 5, 0, 35), ...legR(100, -5, 5), ...armsUp, ...torso(-15, 0, 0), ...head(-30, 0) });
+  r.flight(0.36, 0.8, { travel: [0, 0.6] });
+  r.at(0.45, { pitch: -100, ...legL(30, 5, 45), ...legR(95, -5, 10), ...armL(130, 100, 10), ...armR(130, -100, 10), ...torso(-10, 0, 0), ...head(-35, 0) });
+  // The x-out: right leg up toward the chest, left leg back, both straight.
+  r.at(0.55, { pitch: -195, ...legL(-55, 5, 5), ...legR(100, -5, 5), ...armsWide, ...torso(-5, 0, 0), ...head(-30, 0) });
+  r.at(0.65, { pitch: -270, ...legL(-45, 5, 10), ...legR(85, -5, 10), ...armsWide, ...torso(0, 0, 0), ...head(-20, 0) });
+  r.at(0.73, { pitch: -325, ...legL(20, 8, 40), ...legR(40, -8, 40), ...armL(70, 90, 20), ...armR(70, -90, 20), ...torso(10, 0, 0), ...head(-5, 0) });
+  r.at(0.8, { pitch: -360, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("gainer-x-out");
+}
+
+/** Corkscrew Round: the corkscrew finished with a right-leg round kick as the
+ * body comes upright, before the left foot lands (an inverted Swing 900). */
+export function buildCorkscrewRound(): THREE.AnimationClip {
+  const r = new Rig(1.9);
+  corkEntry(r);
+  // Chamber, then the round kick as the twist finishes.
+  r.at(0.66, { heading: 95, pitch: -285, twist: 290, roll: -10, ...legL(30, 5, 40), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-10, 10) });
+  r.at(0.74, { heading: 105, pitch: -340, twist: 350, roll: 0, ...legL(30, 5, 30), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.82, { heading: 110, pitch: -360, twist: 360, roll: 0, ...legL(25, 0, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.82, 1);
+  settle(r, "R", 0.88, 0.94, { heading: 115, pitch: -360, twist: 360, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("corkscrew-round");
+}

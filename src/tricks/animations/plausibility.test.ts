@@ -631,3 +631,73 @@ describe("spyder twist", () => {
     expect(air(sampleClip(byId("spider"))).some(horizontalChestUp)).toBe(false);
   });
 });
+
+/* Contracts for the sixth batch (2026-10). */
+
+describe("front pike", () => {
+  it("folds the straight legs up to the chest over the top of the front flip", () => {
+    const samples = sampleClip(byId("front-pike"));
+    expect(samples.some(inverted)).toBe(true);
+    const [a, b] = longestFlight(samples)!;
+    const piked = samples
+      .slice(a, b + 1)
+      .some((s) => s.ballL.distanceTo(s.headPos) < 0.8 && s.ballL.distanceTo(s.hips) > 0.85 && s.ballR.distanceTo(s.hips) > 0.85);
+    expect(piked, "feet near the head with the knees straight").toBe(true);
+    expect(samples[samples.length - 1].hips.z, "travels forward").toBeGreaterThan(samples[0].hips.z + 0.3);
+  });
+});
+
+describe.each([
+  ["webster-x-out", "webster"],
+  ["gainer-x-out", "gainer"],
+] as const)("%s", (id, base) => {
+  it(`splits the legs wide upside down, which the ${base} does not, and travels forward`, () => {
+    const spread = (trickId: string) =>
+      Math.max(...sampleClip(byId(trickId)).filter(inverted).map((s) => s.ballL.distanceTo(s.ballR)));
+    const samples = sampleClip(byId(id));
+    expect(samples.some(inverted)).toBe(true);
+    expect(spread(id), "feet far apart upside down").toBeGreaterThan(1.2);
+    expect(spread(base), `the ${base} keeps its legs together`).toBeLessThan(1.2);
+    expect(samples[samples.length - 1].hips.z - samples[0].hips.z, "travels forward").toBeGreaterThan(0.3);
+  });
+});
+
+/** Lying flat in the air with the chest facing up (the twist of a butterfly twist). */
+const chestUpFlat = (s: Sample) => s.fwdY > 0.6 && Math.abs(s.head - s.hips.y) < 0.35;
+
+describe.each([
+  ["corkscrew-round", inverted],
+  ["sideflip-round", inverted],
+  ["butterfly-twist-round", chestUpFlat],
+] as const)("%s", (id, turnedOver) => {
+  it("kicks the right foot above the hips once it has turned over, before landing", () => {
+    const samples = sampleClip(byId(id));
+    const last = samples.reduce((acc, s, i) => (turnedOver(s) ? i : acc), -1);
+    expect(last, "turns over in the air").toBeGreaterThan(0);
+    const [, end] = longestFlight(samples)!;
+    expect(samples.slice(last, end + 1).some((s) => s.right > s.hips.y), "round kick after turning over").toBe(true);
+  });
+});
+
+describe("double sideflip", () => {
+  it("goes upside down twice in one jump, where the sideflip goes over once", () => {
+    const timesInverted = (id: string) =>
+      sampleClip(byId(id)).filter((s, i, all) => inverted(s) && (i === 0 || !inverted(all[i - 1]))).length;
+    expect(timesInverted("double-sideflip")).toBe(2);
+    expect(timesInverted("side-flip")).toBe(1);
+  });
+});
+
+describe("cheat 900 sidekick", () => {
+  it("drives the straight right leg out at hip height toward the target, side on, after two turns", () => {
+    const samples = sampleClip(byId("cheat-900-sidekick"));
+    const [a, b] = longestFlight(samples)!;
+    const air = samples.slice(a, b + 1);
+    const kick = air.reduce((best, s) => (s.right > best.right ? s : best));
+    expect(kick.right, "foot at hip height").toBeGreaterThan(kick.hips.y - 0.1);
+    expect(kick.ballR.distanceTo(kick.hips), "leg straight").toBeGreaterThan(0.85);
+    expect(kick.ballR.z - kick.hips.z, "toward the target").toBeGreaterThan(0.6);
+    expect(Math.abs(kick.fwdZ), "body side on to the target").toBeLessThan(0.5);
+    expect(yawTravel(samples, samples[a].t, kick.t), "two turns before the kick").toBeGreaterThan(450);
+  });
+});
