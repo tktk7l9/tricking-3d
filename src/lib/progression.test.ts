@@ -19,6 +19,7 @@ describe("progression", () => {
       "butterfly-twist-round",
       "butterfly-twist-hyper",
       "butterfly-twist-axe",
+      "double-butterfly-twist-hyper",
       "butterfly-twist-doubleleg",
       "aerial-twist",
       "cheat-720-twist",

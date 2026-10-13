@@ -1040,3 +1040,26 @@ export function buildSailorMoonHyperhook(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("sailor-moon-hyperhook");
 }
+
+/** Raiz Hyperhook (Windex): the raiz whose tilted spin ends a little early,
+ * then the left leg chambers out to the side and hooks at the target (an
+ * inverted cheat 720), and the right foot lands first (hyper). */
+export function buildRaizHyperhook(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  outsideStep(r);
+  r.at(0.4, { heading: 185, tilt: 55, spin: 0, ...legL(-40, 10, 20), ...legR(5, 0, 5, 0, 35), ...armL(60, 170, 10), ...armR(170, -60, 10), ...torso(-20, 0, 0), ...head(-20, 10) });
+  r.flight(0.4, 0.84, { travel: [0.35, 0.35] });
+  r.at(0.52, { heading: 230, spin: 110, ...legL(-45, 20, 15), ...legR(-10, -20, 10), ...armL(90, 160, 10), ...armR(170, -30, 10), ...torso(-25, 0, 0), ...head(-25, 0) });
+  r.at(0.6, { heading: 250, spin: 225, ...legL(-20, 30, 10), ...legR(-30, -30, 10), ...armL(120, 120, 10), ...armR(140, -60, 10), ...torso(-20, 0, 0), ...head(-20, 0) });
+  // Upright again: chamber the left leg out to the side, then the hook.
+  r.at(0.67, { heading: 258, spin: 350, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 40) });
+  r.at(0.69, { spin: 360 });
+  r.at(0.75, { heading: 268, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.84, { heading: 335, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { heading: 355, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 360, spin: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("raiz-hyperhook");
+}
