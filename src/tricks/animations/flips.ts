@@ -1072,3 +1072,92 @@ export function buildCorkscrewRound(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("corkscrew-round");
 }
+
+/** Front Axe: a front flip finished with an axe kick / step-out: the right leg
+ * opens straight up over the top and comes down first, the left steps down after. */
+export function buildFrontAxe(): THREE.AnimationClip {
+  const D = 1.6;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.31);
+  r.at(0.16, { ...squat, ...armL(60, 20, 20), ...armR(60, -20, 20), ...torso(20, 0, 0), ...head(5, 0) });
+  r.at(0.31, { pitch: 15, ...pushOff, ...armsUp, ...torso(15, 0, 0), ...head(20, 0) });
+  r.flight(0.31, 0.8, { travel: [0, 0.6] });
+  r.at(0.42, { pitch: 110, ...legL(90, 5, 110), ...legR(90, -5, 110), ...armsTight, ...torso(40, 0, 0), ...head(35, 0) });
+  r.at(0.5, { pitch: 180, ...legsTuck, ...armsTight, ...torso(45, 0, 0), ...head(40, 0) });
+  // The axe: the right leg opens straight up over the top while the left stays folded.
+  r.at(0.6, { pitch: 255, ...legL(110, 5, 120), ...legR(140, -5, 5), ...armL(80, 60, 20), ...armR(80, -60, 20), ...torso(30, 0, 0), ...head(20, 0) });
+  r.at(0.7, { pitch: 320, ...legL(90, 5, 110), ...legR(95, -5, 5), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.8, { pitch: 360, ...legR(20, -8, 25), ...legL(60, 8, 95, 0, -35), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("R", 0.8, 1);
+  settle(r, "L", 0.86, 0.92, { pitch: 360 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("front-axe");
+}
+
+/** Full Round: the full twist with a right-leg round kick once the twist is
+ * done, before the left foot lands; the kicking leg is set down after it. */
+export function buildFullRound(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.33);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.33, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.33, 0.84, { travel: [0, -0.4] });
+  r.at(0.44, { pitch: -110, twist: 110, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.55, { pitch: -200, twist: 230, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
+  // Chamber, then the round kick once the twist is done.
+  r.at(0.65, { pitch: -280, twist: 335, ...legL(30, 5, 35), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-5, 0) });
+  r.at(0.74, { pitch: -342, twist: 360, ...legL(30, 5, 30), ...legR(120, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.84, { pitch: -360, twist: 360, ...legL(25, 8, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { pitch: -360, twist: 360 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("full-round");
+}
+
+/** Wrap Full Round: the wrap full's off-axis full twist, with a right-leg round
+ * kick as the body comes upright, before the left foot lands. */
+export function buildWrapFullRound(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legR(5, -5, 10), ...legL(40, 10, 60), ...torso(5, 0, 0) });
+  r.pin("R", 0, 0.38);
+  r.at(0.18, { heading: 30, ...legL(-10, -35, 60, 0, -60), ...legR(30, -5, 45), ...armL(50, 20, 20), ...armR(50, -160, 20), ...torso(15, 0, -20), ...head(5, -10) });
+  r.at(0.3, { heading: 80, ...legL(-20, -20, 55, 0, -60), ...legR(35, 0, 50), ...armL(120, 60, 15), ...armR(100, -120, 20), ...torso(5, 0, 10), ...head(0, 20) });
+  r.at(0.38, { heading: 120, pitch: -20, ...legL(10, 10, 70, 0, -50), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 20), ...head(-20, 30) });
+  r.flight(0.38, 0.84, { travel: [0.2, 0] });
+  r.at(0.48, { heading: 140, pitch: -110, twist: 90, roll: -15, ...legL(25, 5, 60), ...legR(25, -5, 60), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
+  r.at(0.58, { heading: 160, pitch: -215, twist: 220, roll: -15, ...legL(20, 5, 50), ...legR(20, -5, 50), ...head(-20, 30) });
+  // Chamber, then the round kick as the twist finishes.
+  r.at(0.67, { heading: 175, pitch: -290, twist: 300, roll: -10, ...legL(30, 5, 40), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-10, 10) });
+  r.at(0.75, { heading: 185, pitch: -340, twist: 350, roll: 0, ...legL(30, 5, 30), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.84, { heading: 190, pitch: -360, twist: 360, roll: 0, ...legL(25, 0, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 195, pitch: -360, twist: 360, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("wrap-full-round");
+}
+
+/** Janitor Twist: the janitor's two-footed dive into a flat spin, with a full
+ * twist about the body's long axis (a "punched" butterfly twist) before both
+ * feet land facing back. */
+export function buildJanitorTwist(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  // As in the janitor, both feet push off and land together with the legs parallel.
+  r.start({ ...armsDown, ...legL(0, 0), ...legR(0, 0) });
+  r.pin("L", 0, 0.3);
+  r.at(0.16, { heading: 0, ...legL(40, 0, 55), ...legR(40, 0, 55), ...armsBack, ...torso(20, 0, 0), ...head(5, 0) });
+  r.at(0.3, { heading: 0, pitch: 55, twist: 0, ...legL(55, 0, 5, 0, 35), ...legR(55, 0, 5, 0, 35), ...armL(100, 10, 10), ...armR(100, -10, 10), ...torso(10, 0, 10), ...head(-20, 10) });
+  r.flight(0.3, 0.76, { travel: [0.1, 0.6] });
+  r.at(0.4, { heading: 50, pitch: 85, twist: 20, ...legL(-12, 5, 5), ...legR(-12, -5, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-25, 20) });
+  r.at(0.5, { heading: 100, pitch: 85, twist: 140, ...legL(-10, 5, 5), ...legR(-10, -5, 5), ...armsTight, ...head(-20, 20) });
+  r.at(0.59, { heading: 145, pitch: 80, twist: 270, ...legL(-5, 5, 5), ...legR(-5, -5, 5), ...armsTight, ...head(-20, 10) });
+  r.at(0.68, { heading: 172, pitch: 55, twist: 360, ...legL(50, 5, 20), ...legR(50, -5, 20), ...armL(90, 60, 20), ...armR(90, -60, 20), ...torso(0, 0, 0), ...head(-10, 0) });
+  r.at(0.76, { heading: 180, pitch: 20, twist: 360, ...legL(40, 0, 45), ...legR(40, 0, 45), ...armsWide, ...torso(20, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.76, 1);
+  r.at(1, { heading: 180, pitch: 0, twist: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  return r.build("janitor-twist");
+}

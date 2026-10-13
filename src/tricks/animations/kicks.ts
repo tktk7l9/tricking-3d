@@ -299,6 +299,26 @@ function backsidePop(r: Rig, uOff: number) {
   });
 }
 
+/** Backside 900 Sidekick: the backside 900's turns in the air, finished with a
+ * right-leg side kick (chambered to the side, then driven out sideways at the
+ * target) instead of the round kick, landing on the left foot. */
+export function buildBackside900Sidekick(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  backsidePop(r, 0.38);
+  r.flight(0.38, 0.82, { travel: [0.05, 0.1], apex: 0.5 });
+  r.at(0.48, { heading: 380, ...legL(60, 30, 110), ...legR(55, -40, 120, 50), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.58, { heading: 580, ...legL(70, 35, 115), ...legR(85, -40, 130), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.65, { heading: 750, ...legL(75, 30, 115), ...legR(90, -80, 125), ...armL(60, 60, 60), ...armR(60, -40, 80), ...torso(0, 10, 0), ...head(0, -50) });
+  r.at(0.72, { heading: 810, ...legL(60, 20, 100), ...legR(102, -90, 0, 0, 30), ...armL(40, 120, 30), ...armR(50, -110, 40), ...torso(0, 30, 0), ...head(0, -80) });
+  r.at(0.78, { heading: 825, ...legL(30, 10, 50), ...legR(60, -70, 100), ...armsWide, ...torso(5, 10, 0), ...head(0, -40) });
+  r.at(0.82, { heading: 830, ...legL(20, 5, 30), ...legR(45, -40, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, -20) });
+  r.pin("L", 0.82, 1);
+  settle(r, "R", 0.88, 0.94, { heading: 840 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("backside-900-sidekick");
+}
+
 /** Backside 720: pop from backside and spin ~360° in the air (Pop 360 Hook in
  * TKT), so the left-leg hook reaches the target with the same rotation as the
  * Cheat 720 (heading ~625 with the leg out to the left side); lands on the
@@ -703,6 +723,45 @@ export function buildCheat900Sidekick(): THREE.AnimationClip {
   settle(r, "R", 0.9, 0.96, { heading: 840 });
   r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("cheat-900-sidekick");
+}
+
+/** Tornado Double: the tornado with two right-leg round kicks before the left
+ * foot lands; the leg re-chambers between them. */
+export function buildTornadoDouble(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.82, { travel: [0.05, 0.25] });
+  r.at(0.48, { heading: 290, ...legL(95, 30, 110), ...legR(60, -70, 125, 70), ...armL(90, 90, 40), ...armR(80, -60, 60), ...torso(5, 10, 10), ...head(0, 40) });
+  r.at(0.55, { heading: 335, ...legL(75, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 10) });
+  r.at(0.61, { heading: 360, ...legL(70, 30, 110), ...legR(70, -60, 120, 70), ...armL(70, 100, 40), ...armR(70, -50, 60), ...torso(5, 10, 0), ...head(0, 5) });
+  r.at(0.68, { heading: 395, ...legL(65, 25, 100), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.75, { heading: 415, ...legL(45, 15, 60), ...legR(60, -20, 70, 30), ...armL(40, 110, 30), ...armR(45, -60, 40), ...torso(5, 0, 0) });
+  r.at(0.82, { heading: 425, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0) });
+  r.pin("L", 0.82, 1);
+  settle(r, "R", 0.88, 0.94, { heading: 435 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("tornado-double");
+}
+
+/** Cheat Feilong: a tornado whose left leg, instead of driving the knee up,
+ * swings up straight and sweeps across like a crescent kick, before the right
+ * leg's round kick; the left foot lands. */
+export function buildCheatFeilong(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "swing");
+  r.flight(0.4, 0.8, { travel: [0.05, 0.25] });
+  // The crescent: the straight left leg arcs from the right across to the left.
+  r.at(0.45, { heading: 250, ...legL(100, -15, 5), ...legR(35, -20, 60), ...armL(110, 70, 30), ...armR(90, -70, 40), ...torso(0, 5, 20), ...head(0, 40) });
+  r.at(0.51, { heading: 295, ...legL(95, 55, 10), ...legR(60, -70, 125, 70), ...armL(90, 110, 40), ...armR(80, -60, 60), ...torso(5, 10, 10), ...head(0, 30) });
+  r.at(0.62, { heading: 380, ...legL(60, 30, 100), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.72, { heading: 405, ...legL(45, 15, 60), ...legR(60, -20, 70, 30), ...armL(40, 110, 30), ...armR(45, -60, 40), ...torso(5, 0, 0) });
+  r.at(0.8, { heading: 420, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0) });
+  r.pin("L", 0.8, 1);
+  settle(r, "R", 0.86, 0.92, { heading: 430 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("cheat-feilong");
 }
 
 export function buildTornadoSidekick(): THREE.AnimationClip {
