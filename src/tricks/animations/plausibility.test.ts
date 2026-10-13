@@ -708,6 +708,9 @@ describe.each([
 /** Lying flat in the air with the chest facing up (the twist of a butterfly twist). */
 const chestUpFlat = (s: Sample) => s.fwdY > 0.6 && Math.abs(s.head - s.hips.y) < 0.35;
 
+/** Flat in the air with the chest toward the floor. */
+const chestDownFlat = (s: Sample) => s.fwdY < -0.6 && Math.abs(s.head - s.hips.y) < 0.35;
+
 /** Both feet above the hips (the V of a doubleleg). */
 const legsUp = (s: Sample) => s.left > s.hips.y && s.right > s.hips.y;
 
@@ -724,6 +727,8 @@ describe.each([
   ["butterfly-twist-swipe", chestUpFlat],
   ["tak-full-swipe", inverted],
   ["wrap-full-swipe", inverted],
+  ["double-butterfly-twist-round", chestUpFlat],
+  ["cheat-720-twist-round", chestDownFlat],
 ] as const)("%s", (id, turnedOver) => {
   it("kicks the right foot alone above the hips, body upright, once it has turned over, before landing", () => {
     const samples = sampleClip(byId(id));
@@ -773,12 +778,14 @@ describe.each([
   ["tornado-double", "cheat-kick"],
   ["cheat-900-double", "cheat-900"],
   ["cheat-900-double-hyper", "cheat-900-hyper"],
+  ["butterfly-twist-double-round", "butterfly-twist-round"],
 ] as const)("%s", (id, base) => {
   it(`kicks the right foot above the hips twice in the air, where the ${base} kicks once`, () => {
     const kicks = (trickId: string) => {
       const samples = sampleClip(byId(trickId));
       const [a, b] = longestFlight(samples)!;
-      return stretches(samples.slice(a, b + 1), (s) => s.right > s.hips.y);
+      // Upright only: a butterfly's right leg also swings up behind as it takes off.
+      return stretches(samples.slice(a, b + 1), (s) => s.right > s.hips.y && s.head > s.hips.y + 0.3);
     };
     expect(kicks(id)).toBe(2);
     expect(kicks(base)).toBe(1);
@@ -841,6 +848,8 @@ describe.each([
   ["cheat-900-double-hyper", "cheat-900-double"],
   ["raiz-hyperhook", "raiz"],
   ["double-butterfly-twist-hyper", "double-butterfly-twist"],
+  ["full-hyperhook", "full"],
+  ["butterfly-twist-hyperhook", "butterfly-twist"],
 ] as const)("%s", (id, base) => {
   it(`lands on the right foot and keeps the left leg up for a moment, where the ${base} does not land on the right`, () => {
     expect(byId(base).landing).not.toBe("right");
@@ -871,17 +880,20 @@ describe.each([
 
 /* Contracts for the ninth batch (2026-10). */
 
-describe("arabian half", () => {
-  it("twists a full turn and lands facing the way it started, where the arabian lands facing back", () => {
-    const ends = (id: string) => {
-      const samples = sampleClip(byId(id));
+describe.each([
+  ["arabian-half", "arabian"],
+  ["arabian-scissor-half", "arabian-scissor"],
+] as const)("%s", (id, base) => {
+  it(`twists a full turn and lands facing the way it started, where the ${base} lands facing back`, () => {
+    const ends = (trickId: string) => {
+      const samples = sampleClip(byId(trickId));
       expect(samples.some(inverted)).toBe(true);
       return [samples[0].fwdZ, samples[samples.length - 1].fwdZ];
     };
-    const [start, end] = ends("arabian-half");
+    const [start, end] = ends(id);
     expect(start, "starts facing the target").toBeGreaterThan(0.9);
     expect(end, "lands facing the target").toBeGreaterThan(0.9);
-    expect(ends("arabian")[1], "the arabian lands facing back").toBeLessThan(-0.9);
+    expect(ends(base)[1], `the ${base} lands facing back`).toBeLessThan(-0.9);
   });
 });
 
@@ -965,6 +977,7 @@ const hawkeye = (s: Sample) =>
 describe.each([
   ["tornado-hawkeye", "cheat-kick"],
   ["butterfly-twist-hawkeye", "butterfly-twist-round"],
+  ["sailor-moon-hawkeye", "sailor-moon"],
 ] as const)("%s", (id, base) => {
   it(`drives the straight right leg out to the body's right side at hip height, which the ${base} never does`, () => {
     expect(sampleClip(byId(id)).some(hawkeye)).toBe(true);
@@ -1014,6 +1027,7 @@ describe.each([
   ["double-butterfly-twist", 2, "butterfly-twist", 1],
   ["double-butterfly-twist-hyper", 2, "butterfly-twist-hyper", 1],
   ["triple-butterfly-twist", 3, "double-butterfly-twist", 2],
+  ["double-butterfly-twist-round", 2, "butterfly-twist-round", 1],
 ] as const)("%s", (id, count, base, baseCount) => {
   it(`turns chest up ${count} times while flat in the air, where the ${base} does it ${baseCount === 1 ? "once" : "twice"}`, () => {
     const twists = (trickId: string) => {
@@ -1058,6 +1072,7 @@ describe("sailor moon doubleleg twist", () => {
 describe.each([
   ["pop-360-shuriken", "pop-kick"],
   ["cheat-720-shuriken", "cheat-720"],
+  ["full-shuriken", "full"],
 ] as const)("%s", (id, base) => {
   it(`lands on the left (kicking) foot and keeps the right leg up for a moment, where the ${base} does not land on the left`, () => {
     expect(byId(base).landing).not.toBe("left");
@@ -1082,6 +1097,7 @@ describe.each([
   ["butterfly-kick-scissor", "butterfly", flatInAir],
   ["janitor-scissor-twist", "janitor-twist", flatInAir],
   ["full-scissor", "full", (s: Sample) => s.left > 0.12 && s.right > 0.12],
+  ["arabian-scissor-half", "arabian-half", inverted],
 ] as const)("%s", (id, base, during) => {
   it(`grabs the right leg with the right hand in the air, which the ${base} never does`, () => {
     const grabs = (trickId: string) => sampleClip(byId(trickId)).some((s) => scissorGrab(s) && during(s));
@@ -1103,9 +1119,9 @@ describe("janitor scissor twist", () => {
 describe.each([
   ["cheat-720-twist", "raiz"],
   ["sailor-moon-twist", "sailor-moon"],
+  ["cheat-720-twist-round", "raiz"],
 ] as const)("%s", (twistId, base) => {
   it(`turns chest down while flat on the tilted spin (a full twist), which the ${base} never does`, () => {
-    const chestDownFlat = (s: Sample) => s.fwdY < -0.6 && Math.abs(s.head - s.hips.y) < 0.35;
     const air = (id: string) => {
       const samples = sampleClip(byId(id));
       const [a, b] = longestFlight(samples)!;
@@ -1148,6 +1164,8 @@ describe("full late round", () => {
 describe.each([
   ["sailor-moon-hyperhook", "sailor-moon"],
   ["raiz-hyperhook", "raiz"],
+  ["full-hyperhook", "full"],
+  ["butterfly-twist-hyperhook", "butterfly-twist-hyper"],
 ] as const)("%s", (id, base) => {
   it(`hooks the straight left leg above the hips once upright, which the ${base} never does`, () => {
     const hook = (s: Sample) => s.head > s.hips.y + 0.3 && s.left > s.hips.y && s.ballL.distanceTo(s.hips) > 0.85;

@@ -1,6 +1,6 @@
 import type * as THREE from "three";
 import { Rig } from "../rig";
-import { armL, armR, armsDown, armsTight, armsWide, head, legL, legR, legsAbsorb, settle, torso } from "./poses";
+import { armL, armR, armsDown, armsTight, armsWide, head, legL, legR, legsAbsorb, settle, stepDownBehind, torso } from "./poses";
 
 /* Inside tricks (butterfly, aerial, masterswing families) for a left-twisting
  * tricker. Butterfly tricks take off from the left foot with the right leg
@@ -675,4 +675,74 @@ export function buildTripleButterflyTwist(): THREE.AnimationClip {
   r.at(0.92, { ...torso(10, 0, 0) });
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("triple-butterfly-twist");
+}
+
+/** Butterfly Twist Hyperhook: the butterfly twist finished with a hyperhook:
+ * as the body comes up after the twist, the left leg chambers out to the side
+ * and hooks at the target, and the right foot lands first (hyper). */
+export function buildButterflyTwistHyperhook(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.at(0.42, { twist: 0 });
+  r.flight(0.42, 0.84, { travel: [0.4, 0.15] });
+  r.at(0.5, { heading: 150, pitch: 85, twist: 100, ...legR(-12, -8, 5), ...legL(-12, 8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-20, 30) });
+  r.at(0.58, { heading: 205, pitch: 85, twist: 230, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  // Coming up out of the twist: chamber the left leg out to the side, then the hook.
+  r.at(0.65, { heading: 238, pitch: 55, twist: 340, ...legL(60, 60, 70), ...legR(20, -10, 60), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(-10, 30) });
+  r.at(0.68, { twist: 360 });
+  r.at(0.73, { heading: 265, pitch: 12, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.84, { heading: 335, pitch: 0, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { heading: 355, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 360, pitch: 0, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("butterfly-twist-hyperhook");
+}
+
+/** Butterfly Twist Double Round: the butterfly twist with two right-leg round
+ * kicks as the body comes up, the leg re-chambering between them, before the
+ * left foot lands. */
+export function buildButterflyTwistDoubleRound(): THREE.AnimationClip {
+  const D = 2.0;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.at(0.42, { twist: 0 });
+  r.flight(0.42, 0.85, { travel: [0.4, 0.15] });
+  r.at(0.5, { heading: 150, pitch: 85, twist: 110, ...legR(-12, -8, 5), ...legL(-12, 8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-20, 30) });
+  r.at(0.57, { heading: 210, pitch: 85, twist: 250, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  r.at(0.63, { heading: 250, pitch: 65, twist: 345, ...legL(20, 10, 10), ...legR(-15, -10, 5), ...armL(80, 60, 40), ...armR(80, -60, 40), ...head(-20, 10) });
+  // Chamber, the first round kick, re-chamber, the second.
+  r.at(0.67, { heading: 275, pitch: 40, twist: 360, ...legL(30, 15, 20), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-10, 0) });
+  r.at(0.71, { heading: 300, pitch: 15, ...legL(35, 15, 30), ...legR(118, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.75, { heading: 325, pitch: 5, ...legL(35, 15, 30), ...legR(70, -60, 120, 70), ...armL(70, 100, 40), ...armR(70, -50, 60), ...torso(5, 10, 0), ...head(0, 5) });
+  r.at(0.8, { heading: 360, pitch: 0, ...legL(30, 12, 30), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.85, { heading: 375, pitch: 0, ...legL(25, 8, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0) });
+  r.pin("L", 0.85, 1);
+  settle(r, "R", 0.91, 0.96, { heading: 385, pitch: 0, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("butterfly-twist-double-round");
+}
+
+/** Double Butterfly Twist Round: the double butterfly twist with a right-leg
+ * round kick as the body comes up after the second twist, before the left
+ * foot lands. */
+export function buildDoubleButterflyTwistRound(): THREE.AnimationClip {
+  const D = 2.0;
+  const r = new Rig(D);
+  butterflySetup(r);
+  r.at(0.42, { twist: 0 });
+  r.flight(0.42, 0.86, { travel: [0.4, 0.15], apex: 0.6 });
+  r.at(0.49, { heading: 140, pitch: 85, twist: 150, ...legR(-12, -8, 5), ...legL(-12, 8, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-20, 30) });
+  r.at(0.56, { heading: 185, pitch: 85, twist: 360, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  r.at(0.63, { heading: 225, pitch: 85, twist: 570, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...armsTight, ...head(-20, 30) });
+  r.at(0.69, { heading: 260, pitch: 60, twist: 700, ...legL(20, 10, 10), ...legR(-15, -10, 5), ...armL(80, 60, 40), ...armR(80, -60, 40), ...head(-20, 10) });
+  // Chamber, then the round kick as the body comes up.
+  r.at(0.73, { heading: 290, pitch: 35, twist: 720, ...legL(30, 15, 20), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-10, 0) });
+  r.at(0.79, { heading: 325, pitch: 10, ...legL(35, 15, 30), ...legR(118, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.86, { heading: 350, pitch: 0, ...legL(25, 8, 25), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0) });
+  r.pin("L", 0.86, 1);
+  settle(r, "R", 0.91, 0.96, { heading: 360, pitch: 0, twist: 720 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("double-butterfly-twist-round");
 }
