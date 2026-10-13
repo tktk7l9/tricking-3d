@@ -4,6 +4,15 @@ import { armL, armR, armsBack, armsDown, armsTight, armsUp, armsWide, head, legL
 
 /* Backward / forward flips authored on the semantic rig (left-twisting tricker). */
 
+/** One-foot (swing) entry stance shared by the gainers and corks: standing on
+ * the left foot, flat, with the right foot just off the floor behind, ready to
+ * swing through. */
+function swingStance(r: Rig) {
+  r.start({ ...armsDown, ...legL(20, 5, 0, 0, 20), ...legR(-15, -5, 35, 0, -20), ...torso(8, 0, 0) });
+  // The swing leg's knee folds as it passes under the body, so the foot clears the floor.
+  r.at(0.1, { ...legR(5, -5, 80, 0, -40) });
+}
+
 /** Back flip with a split kick at the peak: the right leg leads over the top and lands first. */
 function flashFlight(r: Rig, u0: number, u1: number) {
   const mid = (a: number, b: number, k: number) => a + (b - a) * k;
@@ -43,7 +52,9 @@ function flashFlight(r: Rig, u0: number, u1: number) {
     ...head(0, 0),
   });
   r.pin("R", u1, 1);
-  r.at(mid(u1, 1, 0.5), { ...legL(10, 0, 40), ...legR(25, 0, 40) });
+  // The trailing left foot is carried forward in the air, then set down beside the right.
+  r.at(mid(u1, 1, 0.45), { ...legL(35, 0, 85, 0, -40), ...legR(25, 0, 40) });
+  r.at(mid(u1, 1, 0.75), { pitch: -360, ...legsAbsorb });
   r.at(1, { pitch: -360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
 }
 
@@ -65,9 +76,9 @@ export function buildFlashKick(): THREE.AnimationClip {
 export function buildGainerFlash(): THREE.AnimationClip {
   const D = 1.7;
   const r = new Rig(D);
-  r.start({ ...armsDown, ...legL(20, 5), ...legR(-15, -5), ...torso(8, 0, 0) });
+  swingStance(r);
   r.pin("L", 0, 0.36);
-  r.at(0.2, { ...legL(25, 5, 35), ...legR(30, -5, 40), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.2, { ...legL(25, 5, 35), ...legR(45, -5, 50), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
   r.at(0.36, {
     pitch: -20,
     ...legL(0, 5, 5, 0, 35),
@@ -86,9 +97,9 @@ export function buildGainerFlash(): THREE.AnimationClip {
 export function buildGainerSwitch(): THREE.AnimationClip {
   const D = 1.7;
   const r = new Rig(D);
-  r.start({ ...armsDown, ...legL(20, 5), ...legR(-15, -5), ...torso(8, 0, 0) });
+  swingStance(r);
   r.pin("L", 0, 0.36);
-  r.at(0.2, { ...legL(25, 5, 35), ...legR(30, -5, 40), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.2, { ...legL(25, 5, 35), ...legR(45, -5, 50), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
   r.at(0.36, {
     pitch: -20,
     ...legL(0, 5, 5, 0, 35),
@@ -218,13 +229,13 @@ export function buildLoser(): THREE.AnimationClip {
  * right, left-foot takeoff with the right leg swinging up, then the first 210°
  * of the backflip with the left twist (flight 0.36 → 0.82). */
 function corkEntry(r: Rig) {
-  r.start({ ...armsDown, ...legL(20, 5), ...legR(-15, -5), ...torso(8, 0, 0) });
+  swingStance(r);
   r.pin("L", 0, 0.36);
   r.at(0.2, {
     heading: 15,
     twist: 0,
     ...legL(25, 5, 35),
-    ...legR(30, -5, 40),
+    ...legR(45, -5, 50),
     ...armL(45, 10, 20),
     ...armR(50, -150, 20),
     ...torso(10, 0, -25),
@@ -505,9 +516,9 @@ export function buildXOut(): THREE.AnimationClip {
 export function buildGainerArabian(): THREE.AnimationClip {
   const D = 1.7;
   const r = new Rig(D);
-  r.start({ ...armsDown, ...legL(20, 5), ...legR(-15, -5), ...torso(8, 0, 0) });
+  swingStance(r);
   r.pin("L", 0, 0.36);
-  r.at(0.2, { ...legL(25, 5, 35), ...legR(30, -5, 40), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.2, { ...legL(25, 5, 35), ...legR(45, -5, 50), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
   r.at(0.36, {
     pitch: -20,
     twist: 0,

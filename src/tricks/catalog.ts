@@ -1072,7 +1072,7 @@ export const TRICKS: TrickMeta[] = [
       { t: 0.48, label: "反った姿勢で逆さを通過" },
       { t: 0.52, label: "左手をつく" },
       { t: 0.66, label: "左足で接地" },
-      { t: 0.85, label: "右足で接地" },
+      { t: 0.87, label: "右足で接地" },
       { t: 1.0, label: "着地" },
     ],
     duration: 1.8,
