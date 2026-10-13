@@ -383,6 +383,7 @@ describe.each([
   ["cheat-900-hyper", 450, 760, false, "right"],
   ["swing-1080", 650, 1000, false, "left"],
   ["pop-360-gyro", 500, 650, false, "left"],
+  ["540-gyro", 550, 800, false, "right"],
 ] as const)("%s", (id, minAirTurn, minTurn, backside, kickLeg) => {
   it(`turns more than ${minAirTurn}° counter-clockwise in the air (${minTurn}° overall) and kicks the ${kickLeg} foot above hip height`, () => {
     const samples = sampleClip(byId(id));
@@ -929,5 +930,98 @@ describe("sailor moon doubleleg", () => {
     };
     expect(afterInverted("sailor-moon-doubleleg").some(legsUp)).toBe(true);
     expect(afterInverted("sailor-moon").some(legsUp)).toBe(false);
+  });
+});
+
+/* Contracts for the eleventh batch (2026-10). */
+
+/** Body-relative direction (degrees, counter-clockwise positive) of a point seen from the hips. */
+const bearing = (s: Sample, p: THREE.Vector3) => {
+  let d = (Math.atan2(p.x - s.hips.x, p.z - s.hips.z) * 180) / Math.PI - s.yaw;
+  while (d > 180) d -= 360;
+  while (d < -180) d += 360;
+  return d;
+};
+
+describe("tornado hawkeye", () => {
+  it("drives the straight right leg out to the body's right side at hip height, which the tornado never does", () => {
+    const hawkeye = (s: Sample) =>
+      s.right > s.hips.y - 0.15 && s.ballR.distanceTo(s.hips) > 0.85 && bearing(s, s.ballR) < -60 && bearing(s, s.ballR) > -120;
+    expect(sampleClip(byId("tornado-hawkeye")).some(hawkeye)).toBe(true);
+    expect(sampleClip(byId("cheat-kick")).some(hawkeye)).toBe(false);
+  });
+});
+
+describe("cheat 720 double", () => {
+  it("straightens the left leg above the hips twice in the air, where the cheat 720 does it once", () => {
+    const kicks = (id: string) => {
+      const samples = sampleClip(byId(id));
+      const [a, b] = longestFlight(samples)!;
+      return stretches(samples.slice(a, b + 1), (s) => s.left > s.hips.y && s.ballL.distanceTo(s.hips) > 0.85);
+    };
+    expect(kicks("cheat-720-double")).toBe(2);
+    expect(kicks("cheat-720")).toBe(1);
+  });
+});
+
+describe("full down", () => {
+  it("goes upside down untwisted and turns side on only after, where the full twists on the way up", () => {
+    const sideOn = (s: Sample) => Math.abs(Math.sin((s.yaw * Math.PI) / 180)) > 0.8 && Math.abs(s.fwdY) < 0.6;
+    const order = (id: string) => {
+      const samples = sampleClip(byId(id));
+      return [samples.findIndex(inverted), samples.findIndex(sideOn)];
+    };
+    const [inv, side] = order("full-down");
+    expect(inv).toBeGreaterThan(0);
+    expect(side, "twists after going upside down").toBeGreaterThan(inv);
+    const [fullInv, fullSide] = order("full");
+    expect(fullSide, "the full twists before").toBeLessThan(fullInv);
+  });
+});
+
+describe("gainer scissor", () => {
+  it("grabs the right leg with the right hand at the top, which the gainer arabian never does", () => {
+    const grab = (s: Sample) => s.palmR.distanceTo(s.ballR) < 0.4 && inverted(s);
+    expect(sampleClip(byId("gainer-scissor")).some(grab)).toBe(true);
+    expect(sampleClip(byId("gainer-arabian")).some(grab)).toBe(false);
+  });
+});
+
+describe("double butterfly twist", () => {
+  it("turns chest up twice while flat in the air, where the butterfly twist does it once", () => {
+    const twists = (id: string) => {
+      const samples = sampleClip(byId(id), 300);
+      const [a, b] = longestFlight(samples)!;
+      return stretches(samples.slice(a, b + 1), chestUpFlat);
+    };
+    expect(twists("double-butterfly-twist")).toBe(2);
+    expect(twists("butterfly-twist")).toBe(1);
+  });
+});
+
+describe("butterfly twist doubleleg", () => {
+  it("swings both legs up together after the twist, which the butterfly twist never does", () => {
+    const afterTwist = (id: string) => {
+      const samples = sampleClip(byId(id));
+      const last = samples.reduce((acc, s, i) => (chestUpFlat(s) ? i : acc), -1);
+      expect(last, "twists flat in the air").toBeGreaterThan(0);
+      return samples.slice(last);
+    };
+    expect(afterTwist("butterfly-twist-doubleleg").some(legsUp)).toBe(true);
+    expect(afterTwist("butterfly-twist").some(legsUp)).toBe(false);
+  });
+});
+
+describe("sailor moon doubleleg twist", () => {
+  it("twists a full turn after the doubleleg, which the sailor moon doubleleg does not", () => {
+    const turnAfterDoubleleg = (id: string) => {
+      const samples = sampleClip(byId(id));
+      const last = samples.reduce((acc, s, i) => (legsUp(s) ? i : acc), -1);
+      expect(last, "doubleleg").toBeGreaterThan(0);
+      const [, end] = longestFlight(samples)!;
+      return yawTravel(samples, samples[last].t, samples[end].t);
+    };
+    expect(turnAfterDoubleleg("sailor-moon-doubleleg-twist")).toBeGreaterThan(250);
+    expect(turnAfterDoubleleg("sailor-moon-doubleleg")).toBeLessThan(100);
   });
 });

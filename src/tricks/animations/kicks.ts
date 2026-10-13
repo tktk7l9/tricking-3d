@@ -879,6 +879,66 @@ export function buildCheat900Feilong(): THREE.AnimationClip {
   return r.build("cheat-900-feilong");
 }
 
+/** Tornado Hawkeye: the tornado whose inside (right) leg, instead of the round
+ * kick, hooks against the spin: chambered across the front, it sweeps out
+ * straight to the right side, heel first; the left foot lands. */
+export function buildTornadoHawkeye(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.8, { travel: [0.05, 0.25] });
+  r.at(0.5, { heading: 300, ...legL(95, 30, 110), ...legR(80, 35, 120, -20), ...armL(90, 90, 40), ...armR(80, -60, 60), ...torso(5, -5, 10), ...head(0, 40) });
+  // The hook against the spin: the straight right leg sweeps from the front out to the right side.
+  r.at(0.6, { heading: 365, ...legL(75, 30, 110), ...legR(100, -85, 5, 0, 20), ...armL(60, 120, 30), ...armR(50, -110, 40), ...torso(0, 25, 0), ...head(0, -60) });
+  r.at(0.7, { heading: 400, ...legL(50, 20, 70), ...legR(60, -40, 90), ...armL(40, 110, 30), ...armR(45, -60, 40), ...torso(5, 5, 0), ...head(0, -20) });
+  r.at(0.8, { heading: 420, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.8, 1);
+  settle(r, "R", 0.86, 0.92, { heading: 430 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("tornado-hawkeye");
+}
+
+/** 540 Gyro: the 540's right-leg round kick, then another full spin with the
+ * arms in, landing back on the left foot (complete). */
+export function build540Gyro(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.84, { travel: [0.05, 0.2], apex: 0.55 });
+  r.at(0.5, { heading: 310, ...legL(95, 30, 115), ...legR(60, -70, 125, 70), ...armL(90, 90, 40), ...armR(80, -60, 60), ...torso(5, 10, 10), ...head(0, 40) });
+  r.at(0.58, { heading: 385, ...legL(75, 35, 120), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  // The gyro: legs drawn in and arms tight for one more full spin.
+  r.at(0.64, { heading: 470, ...legL(70, 30, 100), ...legR(60, -20, 90), ...armsTight, ...torso(5, 5, 0), ...head(0, 30) });
+  r.at(0.71, { heading: 640, ...legL(65, 25, 100), ...legR(60, -20, 95), ...armsTight, ...torso(5, 5, 0), ...head(0, 30) });
+  r.at(0.78, { heading: 780, ...legL(35, 10, 45), ...legR(50, -20, 80), ...armL(60, 70, 30), ...armR(60, -70, 30), ...torso(5, 0, 0), ...head(0, 10) });
+  r.at(0.84, { heading: 860, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 870 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("540-gyro");
+}
+
+/** Cheat 720 Double: the cheat 720 whose left leg kicks twice: first a
+ * straightened chamber out to the side, folded back in, then the hook at the
+ * target; the right foot lands. */
+export function buildCheat720Double(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "swing");
+  r.flight(0.4, 0.82, { travel: [0.05, 0.2] });
+  r.at(0.49, { heading: 320, ...legL(60, 30, 110), ...legR(35, -10, 90), ...armsTight, ...torso(5, 0, 10), ...head(0, 40) });
+  // First kick: the chamber straightens out to the left side, then folds back in.
+  r.at(0.56, { heading: 420, ...legL(105, 70, 5, 0, 20), ...legR(30, -10, 80), ...armL(40, 150, 20), ...armR(80, -30, 60), ...torso(0, 20, 0), ...head(0, 30) });
+  r.at(0.63, { heading: 510, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 40) });
+  r.at(0.72, { heading: 625, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.82, { heading: 695, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.82, 1);
+  r.at(0.88, { heading: 720, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.92, 0.96, { heading: 720 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("cheat-720-double");
+}
+
 export function buildTornadoSidekick(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D);
