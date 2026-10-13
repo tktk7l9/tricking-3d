@@ -384,6 +384,8 @@ describe.each([
   ["swing-1080", 650, 1000, false, "left"],
   ["pop-360-gyro", 500, 650, false, "left"],
   ["540-gyro", 550, 800, false, "right"],
+  ["cheat-900-gyro", 800, 1100, false, "right"],
+  ["pop-900", 600, 750, false, "right"],
 ] as const)("%s", (id, minAirTurn, minTurn, backside, kickLeg) => {
   it(`turns more than ${minAirTurn}° counter-clockwise in the air (${minTurn}° overall) and kicks the ${kickLeg} foot above hip height`, () => {
     const samples = sampleClip(byId(id));
@@ -943,12 +945,21 @@ const bearing = (s: Sample, p: THREE.Vector3) => {
   return d;
 };
 
-describe("tornado hawkeye", () => {
-  it("drives the straight right leg out to the body's right side at hip height, which the tornado never does", () => {
-    const hawkeye = (s: Sample) =>
-      s.right > s.hips.y - 0.15 && s.ballR.distanceTo(s.hips) > 0.85 && bearing(s, s.ballR) < -60 && bearing(s, s.ballR) > -120;
-    expect(sampleClip(byId("tornado-hawkeye")).some(hawkeye)).toBe(true);
-    expect(sampleClip(byId("cheat-kick")).some(hawkeye)).toBe(false);
+/** The hawkeye: with the body upright, the straight right leg out to its right side at about hip height. */
+const hawkeye = (s: Sample) =>
+  s.head > s.hips.y + 0.3 &&
+  s.right > s.hips.y - 0.15 &&
+  s.ballR.distanceTo(s.hips) > 0.85 &&
+  bearing(s, s.ballR) < -60 &&
+  bearing(s, s.ballR) > -120;
+
+describe.each([
+  ["tornado-hawkeye", "cheat-kick"],
+  ["butterfly-twist-hawkeye", "butterfly-twist-round"],
+] as const)("%s", (id, base) => {
+  it(`drives the straight right leg out to the body's right side at hip height, which the ${base} never does`, () => {
+    expect(sampleClip(byId(id)).some(hawkeye)).toBe(true);
+    expect(sampleClip(byId(base)).some(hawkeye)).toBe(false);
   });
 });
 
@@ -1023,5 +1034,61 @@ describe("sailor moon doubleleg twist", () => {
     };
     expect(turnAfterDoubleleg("sailor-moon-doubleleg-twist")).toBeGreaterThan(250);
     expect(turnAfterDoubleleg("sailor-moon-doubleleg")).toBeLessThan(100);
+  });
+});
+
+/* Contracts for the twelfth batch (2026-10). */
+
+describe("pop 360 shuriken", () => {
+  it("lands on the left (kicking) foot and keeps the right leg up for a moment, where the pop 360 lands on both feet", () => {
+    expect(byId("pop-kick").landing).toBe("both");
+    const samples = sampleClip(byId("pop-360-shuriken"));
+    const [start, end] = longestFlight(samples)!;
+    expect(samples.slice(start, end + 1).some((s) => s.left > s.hips.y), "left foot kicks above the hips").toBe(true);
+    const after = samples.slice(end + 1);
+    const down = after.findIndex((s) => Math.min(s.left, s.right) < 0.03);
+    expect(after[down].left, "left foot down first").toBeLessThan(0.03);
+    const held = after.slice(down, down + 8);
+    for (const s of held) expect(s.right, `t=${s.t.toFixed(2)}: right leg still up`).toBeGreaterThan(0.1);
+  });
+});
+
+/** In the air with the body lying flat (chest down in the butterfly and janitor dives). */
+const flatInAir = (s: Sample) => s.left > 0.12 && s.right > 0.12 && Math.abs(s.head - s.hips.y) < 0.35;
+/** The scissor: the right hand on the semi-piked right leg. */
+const scissorGrab = (s: Sample) => s.palmR.distanceTo(s.ballR) < 0.4;
+
+describe.each([
+  ["arabian-scissor", "arabian", inverted],
+  ["butterfly-kick-scissor", "butterfly", flatInAir],
+  ["janitor-scissor-twist", "janitor-twist", flatInAir],
+] as const)("%s", (id, base, during) => {
+  it(`grabs the right leg with the right hand in the air, which the ${base} never does`, () => {
+    const grabs = (trickId: string) => sampleClip(byId(trickId)).some((s) => scissorGrab(s) && during(s));
+    expect(grabs(id)).toBe(true);
+    expect(grabs(base)).toBe(false);
+  });
+});
+
+describe("janitor scissor twist", () => {
+  it("grabs before the twist turns the chest up", () => {
+    const samples = sampleClip(byId("janitor-scissor-twist"));
+    const grab = samples.findIndex((s) => scissorGrab(s) && flatInAir(s));
+    const twist = samples.findIndex(chestUpFlat);
+    expect(grab).toBeGreaterThan(0);
+    expect(twist, "twists chest up after the grab").toBeGreaterThan(grab);
+  });
+});
+
+describe("cheat 720 twist", () => {
+  it("turns chest down while flat on the tilted spin (a full twist), which the raiz never does", () => {
+    const chestDownFlat = (s: Sample) => s.fwdY < -0.6 && Math.abs(s.head - s.hips.y) < 0.35;
+    const air = (id: string) => {
+      const samples = sampleClip(byId(id));
+      const [a, b] = longestFlight(samples)!;
+      return samples.slice(a, b + 1);
+    };
+    expect(air("cheat-720-twist").some(chestDownFlat)).toBe(true);
+    expect(air("raiz").some(chestDownFlat)).toBe(false);
   });
 });

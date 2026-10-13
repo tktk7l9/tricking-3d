@@ -1468,3 +1468,55 @@ export function buildGainerScissor(): THREE.AnimationClip {
   r.at(1, { pitch: -360, twist: 180, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("gainer-scissor");
 }
+
+/** Arabian Scissor: the arabian with a scissor before landing: in the front
+ * flip the right leg folds up straight-ish into a semi-pike and the right hand
+ * grabs its shin, then lets go for a two-footed landing. */
+export function buildArabianScissor(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.32);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.32, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.32, 0.8, { travel: [0, -0.5] });
+  r.at(0.42, { pitch: -75, twist: 100, ...legL(15, 5, 25), ...legR(15, -5, 25), ...armsTight, ...torso(-5, 0, 0), ...head(-15, 0) });
+  r.at(0.5, { pitch: -140, twist: 180, ...legL(90, 5, 110), ...legR(90, -5, 110), ...armsTight, ...torso(30, 0, 0), ...head(25, 0) });
+  // The scissor: semi-piked right leg, the right hand on its shin.
+  r.at(0.57, { pitch: -200, twist: 180, ...legL(110, 5, 125), ...legR(115, -5, 15), ...armL(60, 60, 20), ...armR(105, -10, 5), ...torso(35, 0, 0), ...head(25, 0) });
+  r.at(0.64, { pitch: -260, twist: 180, ...legL(110, 5, 125), ...legR(110, -5, 20), ...armL(60, 60, 20), ...armR(100, -10, 5), ...torso(35, 0, 0), ...head(25, 0) });
+  r.at(0.72, { pitch: -320, twist: 180, ...legL(50, 8, 50), ...legR(50, -8, 50), ...armsWide, ...torso(15, 0, 0), ...head(10, 0) });
+  r.at(0.8, { pitch: -360, twist: 180, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { pitch: -360, twist: 180, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("arabian-scissor");
+}
+
+/** Janitor Scissor Twist: the janitor twist with a scissor before the twist:
+ * in the chest-down dive the right leg folds straight-ish into a semi-pike and
+ * the right hand grabs its shin; then the legs close, the arms pull in for the
+ * full twist and both feet land facing back. */
+export function buildJanitorScissorTwist(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  // As in the janitor, both feet push off and land together with the legs parallel.
+  r.start({ ...armsDown, ...legL(0, 0), ...legR(0, 0) });
+  r.pin("L", 0, 0.3);
+  r.at(0.16, { heading: 0, ...legL(40, 0, 55), ...legR(40, 0, 55), ...armsBack, ...torso(20, 0, 0), ...head(5, 0) });
+  r.at(0.3, { heading: 0, pitch: 55, twist: 0, ...legL(55, 0, 5, 0, 35), ...legR(55, 0, 5, 0, 35), ...armL(100, 10, 10), ...armR(100, -10, 10), ...torso(10, 0, 10), ...head(-20, 10) });
+  r.flight(0.3, 0.78, { travel: [0.1, 0.6] });
+  // Both legs leave the floor alike, so neither foot slides before takeoff.
+  r.at(0.33, { heading: 12, pitch: 70, twist: 0, ...legL(40, 0, 5), ...legR(40, 0, 5), ...armL(100, 10, 10), ...armR(100, -10, 10), ...torso(5, 0, 5), ...head(-20, 10) });
+  // The scissor: the right leg semi-piked under the chest, the right hand on its shin.
+  r.at(0.38, { heading: 35, pitch: 82, twist: 0, ...legL(-15, 5, 10), ...legR(100, -5, 15), ...armL(80, 90, 20), ...armR(100, -10, 5), ...torso(15, 0, 0), ...head(-20, 10) });
+  r.at(0.43, { heading: 58, pitch: 85, twist: 5, ...legL(-15, 5, 10), ...legR(105, -5, 15), ...armL(80, 90, 20), ...armR(100, -10, 5), ...torso(20, 0, 0), ...head(-20, 10) });
+  // Let go, close the legs and pull the arms in for the twist.
+  r.at(0.48, { heading: 80, pitch: 85, twist: 40, ...legL(-12, 5, 5), ...legR(-12, -5, 5), ...armsTight, ...torso(-5, 0, 0), ...head(-25, 20) });
+  r.at(0.56, { heading: 116, pitch: 85, twist: 175, ...legL(-10, 5, 5), ...legR(-10, -5, 5), ...armsTight, ...head(-20, 20) });
+  r.at(0.64, { heading: 150, pitch: 80, twist: 300, ...legL(-5, 5, 5), ...legR(-5, -5, 5), ...armsTight, ...head(-20, 10) });
+  r.at(0.72, { heading: 172, pitch: 55, twist: 360, ...legL(50, 5, 20), ...legR(50, -5, 20), ...armL(90, 60, 20), ...armR(90, -60, 20), ...torso(0, 0, 0), ...head(-10, 0) });
+  r.at(0.78, { heading: 180, pitch: 20, twist: 360, ...legL(40, 0, 45), ...legR(40, 0, 45), ...armsWide, ...torso(20, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.78, 1);
+  r.at(1, { heading: 180, pitch: 0, twist: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
+  return r.build("janitor-scissor-twist");
+}
