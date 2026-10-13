@@ -87,7 +87,7 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
 
 /* Trick names wrap only between their words (lib/phrases.ts marks the break
  * points with <wbr>), never mid-word, and their lines come out even (SHIG 11, 69, 95). */
-.title-block .jp, .trick-btn .jp, .info-panel h2 {
+.title-block .jp, .trick-btn .jp, .info-panel h2, .info-panel .prog-link .jp {
   word-break: keep-all;
   overflow-wrap: break-word;
   text-wrap: balance;
@@ -185,13 +185,13 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
   border-top: 1px solid var(--border);
   padding-top: 12px;
 }
-.info-panel .keypoints h3 .hint {
+.info-panel .keypoints h3 .hint, .info-panel .progression h3 .hint {
   letter-spacing: 0;
   text-transform: none;
   font-weight: 400;
   font-size: 11px;
 }
-.info-panel .keypoints h3 {
+.info-panel .keypoints h3, .info-panel .progression h3 {
   margin: 0 0 8px;
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -224,6 +224,47 @@ body { background: var(--bg); color: var(--fg); overflow: hidden; }
   font-size: 11px;
   min-width: 36px;
 }
+
+/* Progression: the tricks before and after this one (SHIG 59). The two groups
+ * are told apart by their headings, and the links by their outline, not by
+ * colour alone (SHIG 96); each link is a finger-sized target (SHIG 13, 78). */
+.info-panel .progression {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.info-panel .progression h4 {
+  margin: 12px 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg);
+}
+.info-panel .prog-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.info-panel .prog-list li { max-width: 100%; }
+.info-panel .prog-link {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-2);
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.info-panel .prog-link:hover { background: var(--bg-3); border-color: rgba(88, 164, 255, 0.5); }
+.info-panel .prog-link .en { color: var(--muted); font-size: 11px; }
+.info-panel .prog-none { margin: 0; font-size: 12px; color: var(--muted); }
 
 /* Timeline */
 .tl-button {

@@ -21,6 +21,9 @@ export type TrickMeta = {
   takeoff: Leg;
   /** foot that touches down first */
   landing: Leg;
+  /** ids of the tricks in this catalogue that Loopkicks lists as this trick's
+   * prerequisites (prerequisites outside the catalogue are left out) */
+  prerequisites?: string[];
   description: string;
   keypoints: Keypoint[];
   /** total clip duration in seconds */
@@ -77,6 +80,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["cheat-kick"],
     description:
       "トルネードの回し蹴りの代わりに横蹴り（サイドキック）を出す技。TKT ではチート360サイドキック。チートステップから右足で踏み切り、空中で右膝を胸へ引きつけてから、身体の右側を的に向けてかかとから真横へ蹴り出し、左足から着地する。前提技はトルネード。",
     keypoints: [
@@ -99,6 +103,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["cheat-kick"],
     description:
       "着地の前に右脚で回し蹴りを2回出すトルネード。TKT ではチート360ダブルラウンド。チートステップから右足で踏み切り、空中で右脚の回し蹴りを出していったんたたみ直し、もう一度回し蹴りを的に当ててから左足で着地する。前提技はトルネード。",
     keypoints: [
@@ -122,6 +127,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["cheat-kick"],
     description:
       "振り上げる外側の脚（蹴らない左脚）を三日月蹴り（クレセント）のように振り、右脚の回し蹴りと合わせて2つの蹴りを出すトルネード。TKT ではチート360フェイロン。チートステップから右足で踏み切り、伸ばした左脚を弧を描くように振り抜いてから右脚の回し蹴りを出し、左足から着地する。前提技はトルネード。",
     keypoints: [
@@ -144,6 +150,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["cheat-kick"],
     description:
       "内側の脚（右脚）で回転の向きと逆向きにフックを蹴る（ホークアイ）トルネード。TKT ではチート360ホークアイ。チートステップから右足で踏み切り、右膝を身体の前で抱え込んでから、伸ばした右脚をかかとから身体の右側へ振り抜き、左足から着地する。前提技はトルネード。",
     keypoints: [
@@ -166,6 +173,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "right",
+    prerequisites: ["cheat-kick"],
     description:
       "トルネードにさらに180°を足し、蹴った右脚で着地（ハイパー）するキック。踏切・キック・着地がすべて同じ脚で、反対の左脚は空中で引きつけたまま。トルネードの次に覚えるチート系の基本技。",
     keypoints: [
@@ -188,6 +196,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["540-kick"],
     description:
       "回し蹴りのあともう1回転（ジャイロ）してから、コンプリート（左回りの人なら左足）で着地する540。TKT ではチート360カタナジャイロ。チートステップから右足で踏み切って右脚の回し蹴りを出し、腕と脚を締めてもう1回転してから左足で着地する。前提技は540。",
     keypoints: [
@@ -232,6 +241,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "right",
+    prerequisites: ["cheat-720"],
     description:
       "蹴りを2回入れるチート720。TKT ではチート540サイクロン。1回目の蹴りは抱え込んだ脚を伸ばすだけのもの。チートステップから右足で踏み切り、空中で左脚を横へ伸ばしていったんたたみ直してから、左脚のフックを的に当て、右足から着地する。前提技はチート720。",
     keypoints: [
@@ -255,6 +265,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["cheat-720", "backside-900"],
     description:
       "チートステップで的に背を向けて右足で踏み切り、空中で約540°回って、踏み切った右脚の回し蹴りを的に当てる。左脚でフックを蹴るチート720より180°多く回る技で、別名チート720ラウンド。左足から着地する。蹴った右足で着地するとチート900ハイパー。前提技はチート720とバックサイド900。",
     keypoints: [
@@ -278,6 +289,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["cheat-900"],
     description:
       "回し蹴りのかわりに横蹴り（サイドキック）で終えるチート900。TKT ではチート720サイドキック。チートステップから右足で踏み切って空中で回り、右膝を胸へ引きつけてから身体の右側を的に向けて真横へ蹴り出し、左足から着地する。前提技はチート900。",
     keypoints: [
@@ -301,6 +313,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "right",
+    prerequisites: ["cheat-900"],
     description:
       "蹴った右脚（インサイドの脚）でハイパー着地するチート900。TKT ではチート720カタナ。チートステップから右足で踏み切って空中で回り、右脚の回し蹴りを的に当てたあと、その右足から着地して左脚をあとから下ろす。前提技はチート900。",
     keypoints: [
@@ -323,6 +336,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["cheat-900"],
     description:
       "右脚の回し蹴り（インサイドキック）を空中で2回出すチート900。TKT ではチート720タイフーン。540のあとにもう一度遅れて回し蹴りを出す技のようにも見える。チートステップから右足で踏み切り、1回目の回し蹴りのあと右脚をたたみ直して、もう一度回し蹴りを的に当ててから左足で着地する。前提技はチート900。",
     keypoints: [
@@ -346,6 +360,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["cheat-900"],
     description:
       "着地の前にフェイロン（外側の脚の三日月蹴りと回し蹴りの2つの蹴り）を入れるチート900。TKT ではチート720フェイロン。チートステップから右足で踏み切って空中で回り、伸ばした左脚を三日月蹴り（クレセント）のように振り抜いてから右脚の回し蹴りを出し、左足から着地する。前提技はチート900。",
     keypoints: [
@@ -369,6 +384,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["cheat-900-hyper", "540-gyro"],
     description:
       "もう1回転してから、コンプリート（左回りの人なら左足）で着地するチート900。TKT ではチート720カタナジャイロ、別名 Cheat 900 Snapu。チートステップから右足で踏み切って空中で回り、右脚の回し蹴りを的に当てたあと、腕と脚を締めてもう1回転してから左足で着地する。前提技はチート900ハイパーと540ジャイロ。",
     keypoints: [
@@ -413,6 +429,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "left",
+    prerequisites: ["pop-kick"],
     description:
       "フロントサイドの構えから両足で踏み切り、空中で約180°回ってアウトサイドクレセントキックを的に当て、コンプリート（左回りの人なら左足）で着地する。TKT ではポップ180シュリケン。多くのトリッカーが最初に覚えるシュリケンで、ほかのシュリケン系の技の土台になる。左脚のクレセントを当てたらその左足から着地し、右足をあとから下ろす。前提技はポップ360。",
     keypoints: [
@@ -434,6 +451,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["pop-kick"],
     description:
       "着地の前にもう360°回る（ジャイロ）ポップ360。TKT ではポップ180シュリケンジャイロ。正面構えから両足で跳んで左脚のアウトサイドクレセントを出したあと、腕と脚を締めてもう1回転し、跳んだときと同じ正面向きで両足で着地する。前提技はポップ360。",
     keypoints: [
@@ -456,6 +474,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "left",
+    prerequisites: ["cheat-kick"],
     description:
       "最も基本的なポップキック。フロントサイド（進行方向へ体の正面を向けた構え）から両足で跳び、空中で回って右脚の回し蹴りを的に当てる。別名ポップ180ラウンド。左足から着地し、蹴った右脚でハイパーに着地するとポップ540になる。前提技はトルネードで、バックサイド900の前提技でもある。",
     keypoints: [
@@ -478,6 +497,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "right",
+    prerequisites: ["pop-tornado"],
     description:
       "ポップトルネードを、蹴った右脚でハイパーに着地したもの。トルネードに対する540と同じ関係。別名ポップ180カタナ。前提技はポップトルネード。",
     keypoints: [
@@ -501,6 +521,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "right",
+    prerequisites: ["pop-540"],
     description:
       "フロントサイドの構えから両足で踏み切り、空中で約540°回ってから左脚のフックキック（アウトサイドキック）を的に当てる。TKT ではポップ540フック。蹴った左脚は最後に下ろし、右足から着地する。前提技はポップ540。",
     keypoints: [
@@ -523,6 +544,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "left",
+    prerequisites: ["pop-720", "backside-900"],
     description:
       "フロントサイドの構えから両足で踏み切り、空中で約720°回ってから右脚の回し蹴りを的に当てる。TKT ではポップ720ラウンド。身体を締めて2回転近く回ったあと右脚を蹴り出し、左足から着地して右足を下ろす。前提技はポップ720とバックサイド900。",
     keypoints: [
@@ -568,6 +590,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "left",
+    prerequisites: ["pop-tornado"],
     description:
       "的に背を向けたバックサイドの構えから両足で跳び、空中で約540°回って右脚の回し蹴りを的に当てる。別名ポップ540ラウンド。同じ回転量を片足踏切で行うのがチート900とスイング900で、その練習台にもなる。左足から着地する。前提技はポップトルネード（両足踏切のトルネード）。",
     keypoints: [
@@ -591,6 +614,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "right",
+    prerequisites: ["backside-900", "540-kick"],
     description:
       "バックサイドの構え（的に背を向ける）から両足で踏み切り、空中で約540°回って右脚の回し蹴りを出し、その蹴り脚でハイパーに着地する。TKT ではポップ540カタナ。前提技はバックサイド900と540。",
     keypoints: [
@@ -613,6 +637,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "left",
+    prerequisites: ["backside-900"],
     description:
       "回し蹴りのかわりに横蹴り（サイドキック）で終えるバックサイド900。TKT ではポップ540サイドキック。的に背を向けたバックサイドの構えから両足で跳んで空中で回り、右膝を胸へ引きつけてから身体の右側を的に向けて真横へ蹴り出し、左足から着地する。前提技はバックサイド900。",
     keypoints: [
@@ -635,6 +660,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "y",
     takeoff: "left",
     landing: "both",
+    prerequisites: ["pop-kick"],
     description:
       "片足（多くの場合は右足）をもう片方の足の前に蹴り抜く勢いを利用して繰り出すキック。スイング360は左足で立った状態から右脚を前に振り抜き、その勢いで左足踏切・約360°回転して左脚のアウトサイドキックを当て、両足で着地する。スキップフックを両足着地にしたもの。",
     keypoints: [
@@ -656,6 +682,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "left",
+    prerequisites: ["backside-900"],
     description:
       "右脚を振り込む勢い（スイング）で、ほぼバックサイドの向きで踏み切り、空中で約540°回って右脚のインサイドキック（回し蹴り）を出すキック。縦に行うコークスクリューラウンドと考えることもできる。別名スイング720ラウンド。チート900・バックサイド900と回転量は同じで、踏切だけが違う。前提技はバックサイド900。",
     keypoints: [
@@ -679,6 +706,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "right",
+    prerequisites: ["swing-900"],
     description:
       "スイングで踏み切って空中でおよそ2回転し、外側の蹴り（フック）を出すスイングキック。縦に回るボックスカッターとも説明され、別名スイング900フック。左足で立って右脚を振り込み、ほぼ背を向けた向きで左足から踏み切って回り、左脚のフックを的に当てる。ここでは右足から着地し、蹴った左脚をあとから下ろす。前提技はスイング900。",
     keypoints: [
@@ -722,6 +750,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["back-flip"],
     description:
       "開脚して蹴り出す（ストラドル／スプリットキック）バク宙。ここでは両足で踏み切り、回転の頂点で両脚を伸ばしたまま前後に開き、閉じてから両足で着地する。前提技はバク宙。",
     keypoints: [
@@ -744,6 +773,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["x-out", "full"],
     description:
       "ひねりを加えたエックスアウト。両足で踏み切ってバク宙し、回転の頂点で両脚を伸ばしたまま前後に開いたあと、脚を閉じて腕を締め、360°ひねってから両足で着地する。前提技はエックスアウトとフル。",
     keypoints: [
@@ -766,6 +796,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["back-flip"],
     description:
       "パイク（膝を伸ばしたまま脚を胸へたたむ姿勢）で回るバク宙。両足で踏み切り、頂点で脚を伸ばしたまま胸へ引きつけ、開いてから両足で着地する。前提技はバク宙。",
     keypoints: [
@@ -787,6 +818,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "both",
     landing: "right",
+    prerequisites: ["back-flip"],
     description:
       "バク宙の頂点で脚を開いて蹴り上げる技。右脚が先行して回転をリードし、そのまま右足から着地する。片足踏切のゲイナーフラッシュ、さらにコークスクリューへ進む前提技。",
     keypoints: [
@@ -809,6 +841,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["back-flip", "front-flip"],
     description:
       "後方宙返りで踏み切り、離陸直後から半ひねりを始めて、そのまま前方宙返りへつなげる技。前提技はバク宙と前宙で、フルツイストの前提技。",
     keypoints: [
@@ -833,6 +866,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["arabian", "front-x-out"],
     description:
       "エックスアウト（ストラドル）で終えるアラビアン。両足で踏み切って後ろへ倒れながら半ひねりし、前宙になった回転の中で両脚を伸ばしたまま前後に開き、閉じてから両足で着地する。前提技はアラビアンとフロントエックスアウト。",
     keypoints: [
@@ -857,6 +891,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["arabian", "full"],
     description:
       "アラビアンにもう半ひねりを加えて、フルの変形にした技。両足で踏み切って後ろへ倒れながら半ひねりし、前宙になった回転の中でさらに半ひねりして、跳んだときと同じ向きで両足で着地する。前提技はアラビアンとフル。",
     keypoints: [
@@ -881,6 +916,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "right",
+    prerequisites: ["arabian", "front-axe"],
     description:
       "アックスキック（かかと落とし）／ステップアウトで終えるアラビアン。両足で踏み切って後ろへ倒れながら半ひねりし、前宙になった回転の終わりに右脚を伸ばしたまま上へ開いて振り下ろし、その右足から着地して左足をあとから下ろす。前提技はアラビアンとフロントアックス。",
     keypoints: [
@@ -905,6 +941,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["arabian-axe"],
     description:
       "着地の前にシザー（内側の蹴り脚を半分パイクの姿勢でつかむ）を入れるアラビアン。両足で踏み切って半ひねりし、前宙の回転に入ったところで右脚を伸ばし気味にたたんで右手ですねをつかみ、放してから両足で着地する。前提技はアラビアンアックス。",
     keypoints: [
@@ -928,6 +965,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "both",
+    prerequisites: ["gainer-flash", "arabian"],
     description:
       "スイング（ゲイナー）の踏切から入るアラビアン。左足で踏み切って右脚を振り上げ、離陸直後から半ひねりして、残りを前宙の形で回り切る。ゲイナーと同じく前へ進み、来た方向を向いて両足で着地する。前提技はゲイナーフラッシュとアラビアン。",
     keypoints: [
@@ -951,6 +989,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "both",
+    prerequisites: ["gainer-arabian"],
     description:
       "回転の頂点でシザー（内側の蹴り脚を半分パイクの姿勢でつかむ）を入れるゲイナーアラビアン。左足で踏み切って右脚を振り上げ、半ひねりしながら回る頂点で右脚を伸ばし気味にたたんで右手ですねをつかみ、放してから後ろ向きで両足で着地する。前提技はゲイナーアラビアン。",
     keypoints: [
@@ -973,6 +1012,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "left",
     landing: "both",
+    prerequisites: ["back-flip"],
     description:
       "片足で地面を離れて後方回転する技。左足で踏み切り、右脚を前上に振り上げた勢いで前進しながらバク宙する。ひねりを加えれば空中での捻り動作になる。トリッキングで単に「ゲイナー」と言う場合は開脚のゲイナーフラッシュを指すことが多い。",
     keypoints: [
@@ -993,6 +1033,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "left",
     landing: "right",
+    prerequisites: ["flash-kick"],
     description:
       "ステップから左足で踏み切り、右脚を振り上げて脚を開いたまま後方回転するゲイナー。右足から着地する。バックスイング系（コークスクリュー等）すべての土台になる技で、トリッキングで「ゲイナー」といえばこれを指すことが多い。",
     keypoints: [
@@ -1014,6 +1055,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "left",
     landing: "left",
+    prerequisites: ["gainer-flash"],
     description:
       "ゲイナーフラッシュの空中で脚を入れ替え（スイッチ）、踏み切った左足でもう一度着地する技。右脚を振り上げて後方回転したあと、下降しながら左脚を前へ通して右脚を後ろへ引き、左足一本で着地する。右脚が後ろに残るので、そのままバックスイングで次のゲイナー系の技につなげられ、ゲイナースイッチだけを何本も連続することもできる。",
     keypoints: [
@@ -1037,6 +1079,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "left",
+    prerequisites: ["gainer-switch", "gainer-arabian"],
     description:
       "着地の前にもう180°回るゲイナースイッチ。左足で踏み切って右脚を振り上げ、後方へ回りながら脚を入れ替えて半ひねりし、後ろ向きで左足から着地する。右脚は後ろに上げたまま残す。前提技はゲイナースイッチとゲイナーアラビアン。",
     keypoints: [
@@ -1059,6 +1102,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "left",
     landing: "both",
+    prerequisites: ["gainer", "x-out"],
     description:
       "エックスアウト（ストラドル）を入れたゲイナー。左足で踏み切って右脚を振り上げ、前へ進みながら後方へ回る頂点で両脚を伸ばしたまま前後に開き、閉じてから両足で着地する。前提技はゲイナーとエックスアウト。",
     keypoints: [
@@ -1080,6 +1124,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["arabian"],
     description:
       "両足から地面を離れてひねりを伴って回転する技。バク宙＋360°ツイスト。回転と捻りの軸が直交する点が分析ポイント。",
     keypoints: [
@@ -1101,6 +1146,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "left",
+    prerequisites: ["full", "backside-900"],
     description:
       "着地の前に回し蹴りを出すフル。両足で踏み切ってバク宙しながら360°ひねり、ひねり終わったところで右脚の回し蹴りを出す。ここでは左足から着地し、蹴った右脚をあとから下ろす。前提技はフルとバックサイド900。",
     keypoints: [
@@ -1124,6 +1170,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "right",
+    prerequisites: ["full"],
     description:
       "ハイパー（右足）で着地するフル。両足で踏み切ってバク宙しながら360°ひねり、右足から着地して左脚をあとから下ろす。前提技はフル。",
     keypoints: [
@@ -1146,6 +1193,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "right",
+    prerequisites: ["full"],
     description:
       "スワイプ（そのままハイパー着地する回し蹴り）で終えるフル。両足で踏み切ってバク宙しながら360°ひねり、右脚の回し蹴りをそのまま振り下ろして右足から着地し、左脚をあとから下ろす。前提技はフル。",
     keypoints: [
@@ -1169,6 +1217,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["full"],
     description:
       "ひねりを遅らせたバク宙で、フルの変形。両足で踏み切って抱え込んだまま逆さを通り、下りながら腕を締めて360°ひねってから両足で着地する。前提技はフル。",
     keypoints: [
@@ -1192,6 +1241,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "left",
+    prerequisites: ["gainer-flash"],
     description:
       "片足で地面を離れて回転する技。地面から離れる前から既にひねりを仕掛け、横倒しの軸でスクリューのように回る。ゲイナーフラッシュに360°の捻りを加えたもので、左足で踏み切り右脚を振り上げ、踏み切った左足で着地（コンプリート）する。",
     keypoints: [
@@ -1213,6 +1263,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "right",
+    prerequisites: ["corkscrew"],
     description:
       "ハイパースタンス（左回りの人なら右足）で着地するコークスクリュー。左足で踏み切って右脚を振り上げ、後方回転しながら左へ360°ひねり、右足から着地する。前提技はコークスクリューで、コークスクリュースワイプの前提技。",
     keypoints: [
@@ -1235,6 +1286,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "right",
+    prerequisites: ["corkscrew-hyper"],
     description:
       "コークスクリューの終わりに右脚の回し蹴り（スワイプ）を出し、蹴った右足で着地（ハイパー）する技。左足で踏み切って右脚を振り上げ、後方回転しながら左へ360°ひねる。ひねりが終わる頃、まだ身体が傾いているうちに右脚を蹴り出し、振り下ろしながらほぼ真下へ降りて右足から着地する。スワイプは回し蹴りを出してその脚でハイパー着地するバリエーションで、床へ向かって降りながら蹴るのが特徴。前提技はコークスクリューハイパー。",
     keypoints: [
@@ -1258,6 +1310,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "left",
+    prerequisites: ["corkscrew"],
     description:
       "着地の前に回し蹴りを出すコークスクリュー。逆さに回るスイング900と考えることもできる。左足で踏み切って右脚を振り上げ、横倒しの軸でスクリューのように回り、ひねり終わって身体が起き上がるところで右脚の回し蹴りを出して左足から着地する。前提技はコークスクリュー。",
     keypoints: [
@@ -1299,6 +1352,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["front-flip"],
     description:
       "半ひねりを加えた前宙（別名バラニ、ブランディ）。両足で踏み切って前方へ回りながら半ひねりし、来た方向を向いて両足で着地する。前提技は前宙で、ウェブスターハーフの前提技でもある。",
     keypoints: [
@@ -1320,6 +1374,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["front-flip"],
     description:
       "開脚して蹴り出す（スプリットキック／ストラドル）前宙。ここでは両足で踏み切り、回転の頂点で両脚を伸ばしたまま前後に開き、閉じてから両足で着地する。前提技は前宙。",
     keypoints: [
@@ -1341,6 +1396,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["front-flip"],
     description:
       "パイク（膝を伸ばしたまま脚を胸へたたむ姿勢）を保って回る前宙。両足で踏み切り、頂点で脚を伸ばしたまま胸へ引きつけ、開いてから両足で着地する。前提技は前宙。",
     keypoints: [
@@ -1362,6 +1418,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "both",
     landing: "right",
+    prerequisites: ["front-flip"],
     description:
       "アックスキック（かかと落とし）／ステップアウトで終える前宙。両足で踏み切って前方へ回り、頂点を過ぎたところで右脚を伸ばしたまま上へ開いて振り下ろし、その右足から着地して左足をあとから下ろす。前提技は前宙。",
     keypoints: [
@@ -1384,6 +1441,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "right",
     landing: "both",
+    prerequisites: ["front-flip", "aerial"],
     description:
       "片足踏切の前宙。右足で踏み切り、左脚を後方へ振り上げた（スイングスルー）勢いで前方回転する。ゲイナーと違って決まった踏切足はなく、どちらの足からでも入れる。",
     keypoints: [
@@ -1404,6 +1462,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "both",
+    prerequisites: ["front-half"],
     description:
       "半ひねりを加えたウェブスター。右足で踏み切って左脚を後ろへ振り上げ、前方へ回りながら半ひねりして、来た方向を向いて両足で着地する。前提技はフロントハーフ。",
     keypoints: [
@@ -1425,6 +1484,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "right",
     landing: "both",
+    prerequisites: ["webster", "front-x-out"],
     description:
       "エックスアウト（ストラドル）を入れたウェブスター。右足で踏み切って左脚を後方へ振り上げ、前方へ回る頂点で両脚を伸ばしたまま前後に開き、閉じてから両足で着地する。前提技はウェブスターとフロントエックスアウト。",
     keypoints: [
@@ -1445,6 +1505,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "x",
     takeoff: "right",
     landing: "right",
+    prerequisites: ["webster"],
     description:
       "アックスキック（かかと落とし）／ステップアウトで終えるウェブスター。右足で踏み切って左脚を後方へ振り上げて前方へ回り、頂点を過ぎたところで右脚を伸ばしたまま上へ開いて振り下ろし、その右足から着地して左足をあとから下ろす。前提技はウェブスター。",
     keypoints: [
@@ -1487,6 +1548,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["butterfly"],
     description:
       "両足踏切で前方に胸から飛び込み、水平姿勢のまま縦軸まわりに約180°回って来た方向を向いて両足で着地する。フラットスピン軸で行うフロントハーフ（バラニ）、あるいは両足踏切のスパイダーと説明される。",
     keypoints: [
@@ -1509,6 +1571,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["butterfly-twist"],
     description:
       "着地の前にもうひとひねり入れるジャニター。両足踏切（パンチ）のバタフライツイストとも考えられる。両足で前方へ飛び込んで水平に回りながら、腕と脚を締めて身体の長軸まわりに360°ひねり、後ろ向きで両足で着地する。前提技はバタフライツイスト。",
     keypoints: [
@@ -1532,6 +1595,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["janitor"],
     description:
       "ひねり始める前にシザー（内側の蹴り脚を半分パイクの姿勢でつかむ）を入れるジャニターツイスト。両足で踏み切って胸を床に向けて飛び込み、右脚を伸ばし気味にたたんで右手ですねをつかんだあと、放して脚を閉じ、腕を締めて身体の長軸まわりに1回ひねってから、後ろ向きで両足で着地する。前提技はジャニターフリップ。",
     keypoints: [
@@ -1554,6 +1618,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "y",
     takeoff: "left",
     landing: "right",
+    prerequisites: ["cartwheel"],
     description:
       "武術由来のキック。上体を右に巻いてから左へ振り、胸を床に向けて水平に倒しながら左足で踏み切る。右脚、左脚の順に後方へ振り上げ、縦軸まわりに身体が一回転して右足（ハイパー）から着地する。バタフライツイストの土台。",
     keypoints: [
@@ -1575,6 +1640,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "y",
     takeoff: "left",
     landing: "left",
+    prerequisites: ["butterfly"],
     description:
       "空中で脚を入れ替えるバタフライキックで、反対の脚（左回りの人なら左足）のコンプリートで着地する。左足で踏み切り、胸を床に向けた水平姿勢で右脚・左脚の順に振り上げたあと、右脚を後ろへ戻しながら左脚を下ろして着地する。前提技はバタフライキック。",
     keypoints: [
@@ -1596,6 +1662,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "y",
     takeoff: "left",
     landing: "right",
+    prerequisites: ["butterfly"],
     description:
       "シザー（内側の蹴り脚を半分パイクの姿勢でつかむ）を入れるバタフライキック。胸を床に向けて水平に倒しながら左足で踏み切り、後ろへ振り上げた右脚を身体の下へ伸ばし気味にたたんで右手ですねをつかみ、放してから右足で着地する。前提技はバタフライキック。",
     keypoints: [
@@ -1619,6 +1686,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "left",
+    prerequisites: ["butterfly"],
     description:
       "バタフライキックの踏切から、水平になった身体の長軸まわりに360°ひねる技。腕を締め脚を揃えて回り、左肩越しに床を見て踏み切った左足から着地（コンプリート）する。右足で着地すればハイパー。",
     keypoints: [
@@ -1642,6 +1710,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "left",
+    prerequisites: ["butterfly-twist", "backside-900"],
     description:
       "着地の前に回し蹴りを出すバタフライツイスト。バタフライキックの踏切から水平になった身体の長軸まわりにひねり、ひねり終わって身体が起き上がるところで右脚の回し蹴りを出し、左足から着地する。前提技はバタフライツイストとバックサイド900。",
     keypoints: [
@@ -1666,6 +1735,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "right",
+    prerequisites: ["butterfly-twist"],
     description:
       "ハイパー（右足）で着地するバタフライツイスト。バタフライキックの踏切から水平になった身体の長軸まわりに360°ひねり、踏み切った左足ではなく右足から着地して、左脚をあとから下ろす。前提技はバタフライツイスト。",
     keypoints: [
@@ -1688,6 +1758,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "right",
+    prerequisites: ["butterfly-twist-round"],
     description:
       "回し蹴りをそのままハイパー着地まで振り抜くバタフライツイストラウンド。バタフライキックの踏切から水平になってひねり、身体が起き上がるところで右脚の回し蹴りを出して、その右足から着地し、左脚をあとから下ろす。前提技はバタフライツイストラウンド。",
     keypoints: [
@@ -1712,6 +1783,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "right",
+    prerequisites: ["butterfly-twist"],
     description:
       "着地の前にアックスキック（かかと落とし）を入れるバタフライツイスト。バタフライキックの踏切から水平になってひねり、身体が起き上がるところで右脚を伸ばしたまま頭上へ振り上げて振り下ろし、その右足から着地して左足をあとから下ろす。前提技はバタフライツイスト。",
     keypoints: [
@@ -1736,6 +1808,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "left",
+    prerequisites: ["butterfly-twist-hyper"],
     description:
       "着地の前にもう1回ひねるバタフライツイスト。バタフライキックの踏切から水平になった身体の長軸まわりに2回（720°）ひねり、左足から着地する。前提技はバタフライツイストハイパー。",
     keypoints: [
@@ -1759,6 +1832,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "both",
+    prerequisites: ["butterfly-twist"],
     description:
       "着地の前にダブルレッグ（両脚をそろえて振り回す蹴り）を入れるバタフライツイスト。バタフライキックの踏切から水平になってひねり、身体が起き上がるところで両脚をそろえてたたみ、伸ばしながら一緒に振り回してから両足で着地する。前提技はバタフライツイスト。",
     keypoints: [
@@ -1783,6 +1857,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "left",
+    prerequisites: ["butterfly-twist-round"],
     description:
       "ホークアイ（内側の脚で回転の向きと逆向きにフックを蹴る）を入れるバタフライツイスト。バタフライキックの踏切から水平になってひねり、身体が起き上がるところで右膝を身体の前で抱え込んでから、伸ばした右脚をかかとから身体の右側へ振り抜き、左足から着地する。前提技はバタフライツイストラウンド。",
     keypoints: [
@@ -1827,6 +1902,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "z",
     takeoff: "left",
     landing: "right",
+    prerequisites: ["cartwheel"],
     description:
       "床に近い側の手だけを使う側転。左へ進む側転なら左手だけを床につき、右腕は前へ伸ばして床につけず、脚を大きく開いて逆立ちを通過し、右足・左足の順に着地する。前提技は側転で、エアリアル（手をつかない側転）の前提技でもある。",
     keypoints: [
@@ -1849,6 +1925,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "both",
+    prerequisites: ["cartwheel"],
     description:
       "両足をそろえて着地し、来た方向を向いて終わる側転。左足を踏み出して左手・右手の順に床につき、逆立ちの上で脚をそろえながら身体を4分の1ひねって、手で床を押し両足で同時に着地する。前提技は側転。",
     keypoints: [
@@ -1871,6 +1948,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "z",
     takeoff: "left",
     landing: "right",
+    prerequisites: ["cartwheel", "one-handed-cartwheel"],
     description:
       "手をつかない側転。左足で踏み込んで横に身体を倒し、右脚を先に振り上げて開脚のまま逆さを通過し、右足（ハイパー）から着地する。体操のエアリアルと違い横へ進む。",
     keypoints: [
@@ -1893,6 +1971,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "left",
     landing: "left",
+    prerequisites: ["aerial", "butterfly-twist"],
     description:
       "ひねりを加えたエアリアルで、コンプリート（左回りの人なら左足）で着地する。逆さにしたバタフライツイストと考えることもできる。前提技はエアリアルとバタフライツイスト。",
     keypoints: [
@@ -1935,6 +2014,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "y",
     takeoff: "right",
     landing: "right",
+    prerequisites: ["scoot"],
     description:
       "ハイパー（左回りの人なら右足）で着地するスクート。しゃがんで左手を床につき、右足で蹴って回り、振り回した右脚から着地して左脚は前に浮かせたまま残す。前提技はスクート。",
     keypoints: [
@@ -1955,6 +2035,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["scoot"],
     description:
       "マスタースイングは右足ハイパー着地から、浮いている左脚を止めずに後方へ振り抜いて次のインサイド系の技へつなぐトランジション。ここではその代表技マスタースクート（両手をつき、側転に近い高さまで倒れ込むスクート）を示す。右足で蹴って回り、左足から着地する。",
     keypoints: [
@@ -1976,6 +2057,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["full"],
     description:
       "右足ハイパー着地から、浮いている左足を軸足の後ろに巻き付ける（ラップ）ように引き込み、右足一本で踏み切るフルツイスト。軸はやや斜めになり、踏み切った足と逆の左足で着地（コンプリート）する。タックフルの近縁。",
     keypoints: [
@@ -1998,6 +2080,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["wrap"],
     description:
       "着地の前に回し蹴りを出すラップフル。右足ハイパー着地から左脚をラップして右足で踏み切り、斜めの軸でひねりながら後方へ回って、身体が起き上がるところで右脚の回し蹴りを出し、左足から着地する。前提技はラップフル。",
     keypoints: [
@@ -2021,6 +2104,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "right",
+    prerequisites: ["wrap"],
     description:
       "ハイパー（右足）で着地するラップフル。右足ハイパー着地から左脚をラップして右足で踏み切り、斜めの軸でひねりながら後方へ回って、踏み切った右足から着地し、左脚をあとから下ろす。前提技はラップフル。",
     keypoints: [
@@ -2043,6 +2127,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "right",
+    prerequisites: ["wrap", "full-swipe"],
     description:
       "スワイプ（そのままハイパー着地する回し蹴り）で終えるラップフル。右足ハイパー着地から左脚をラップして右足で踏み切り、斜めの軸でひねりながら後方へ回って、右脚の回し蹴りをそのまま振り下ろして右足から着地し、左脚をあとから下ろす。前提技はラップフルとフルスワイプ。",
     keypoints: [
@@ -2066,6 +2151,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["cheat-900", "full"],
     description:
       "チートステップ（トルネードと同じ入り）からラップフルを行う技。右足で踏み切り、左脚を巻き込みながら後方回転＋360°ひねる。チート入りのため回転軸は水平に近く、あまり逆さにならない。左足で着地する。",
     keypoints: [
@@ -2088,6 +2174,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["tak", "cheat-900"],
     description:
       "回し蹴りで終えるタックフル。別名 Tak9。より逆さになるチート900とも考えられる。チートステップから右足で踏み切り、斜めの軸でひねりながら後方へ回って、身体が起き上がるところで右脚の回し蹴りを出し、左足から着地する。前提技はタックフルとチート900。",
     keypoints: [
@@ -2111,6 +2198,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "right",
+    prerequisites: ["tak", "full-swipe"],
     description:
       "スワイプ（そのままハイパー着地する回し蹴り）で終えるタックフル。チートステップから右足で踏み切り、斜めの軸でひねりながら後方へ回って、右脚の回し蹴りをそのまま振り下ろして右足から着地し、左脚をあとから下ろす。前提技はタックフルとフルスワイプ。",
     keypoints: [
@@ -2134,6 +2222,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "z",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["cartwheel"],
     description:
       "ライズ系の技すべての土台。反対側へ反って行う側転と考えることができ、手をつかずに行うとライズになる。カポエイラのメイア・ルーア・ジ・コンパッソ（Meia Lua De Compasso）にあたる。前提技は側転。",
     keypoints: [
@@ -2157,6 +2246,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "z",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["gumbi", "cheat-kick"],
     description:
       "手をつかないガンビー、または上体を反らせて寝かせたトルネードと説明されるアウトサイド系の技。右足を進行方向へ踏み込み、左脚のかかとを後方へ蹴り上げながら上体を後ろ側へ倒し、斜めに傾いた軸のまわりを一回転して左足から着地する。タッチダウンライズなど多くのセットアップの元。",
     keypoints: [
@@ -2179,6 +2269,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "z",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["raiz", "butterfly-twist", "cheat-900"],
     description:
       "もうひとひねり入れるライズで、別名ライズツイスト（同じ技かには議論があるが、違うとしても形とタイミングの差で、軸はほぼ同じ）。もとはダブルバタフライツイストを「チート」して生まれた技で、名前に反してチート720（キック）とは関係がない。右足で踏み切って上体を寝かせ、斜めの軸で回りながら脚を閉じて腕を締め、水平になった身体の長軸まわりに1回ひねってから左足で着地する。前提技はライズ、バタフライツイスト、チート900。",
     keypoints: [
@@ -2202,6 +2293,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "z",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["raiz"],
     description:
       "ライズの終盤で左手を床について着地するセットアップ技。右足で踏み切り、左脚のかかとを後方へ蹴り上げて低く斜め軸で回り、左肩越しに床を見ながら左手を伸ばして先につく。続いて左足で着地し、右脚を後ろに残したまま左手で床を押して上体を起こす。残した右脚のバックスイングからゲイナーやコークへつなぐ定番の入り。踏み切る直前に反対の右手をつくのはセーラームーンという別の技。",
     keypoints: [
@@ -2225,6 +2317,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "z",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["raiz"],
     description:
       "踏み切る直前に右手を床につくライズ。左手をつくタッチダウンライズとは反対の手を使う。前提技はライズ。",
     keypoints: [
@@ -2247,6 +2340,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "z",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["sailor-moon"],
     description:
       "着地の前に回し蹴りを出すセーラームーン。右手をついて右足で踏み切り、斜めの軸で回って身体が起き上がるところで右脚の回し蹴りを的に当て、左足から着地する。前提技はセーラームーン。",
     keypoints: [
@@ -2269,6 +2363,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "z",
     takeoff: "right",
     landing: "both",
+    prerequisites: ["sailor-moon"],
     description:
       "ダブルレッグ（両脚をそろえて振り回す蹴り）で終えるセーラームーン。右手をついて右足で踏み切り、斜めの軸で回ったあと、両脚をそろえてたたみ、伸ばしながら一緒に振り回してから両足で着地する。前提技はセーラームーン。",
     keypoints: [
@@ -2292,6 +2387,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "z",
     takeoff: "right",
     landing: "both",
+    prerequisites: ["sailor-moon-doubleleg"],
     description:
       "着地の前にもうひとひねり入れるセーラームーンダブルレッグ。右手をついて右足で踏み切り、斜めの軸で回って両脚をそろえて振り回したあと、脚を閉じて腕を締め、身体の長軸まわりに1回ひねってから両足で着地する。前提技はセーラームーンダブルレッグ。",
     keypoints: [
@@ -2315,6 +2411,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "right",
     landing: "right",
+    prerequisites: ["raiz", "540-kick"],
     description:
       "ライズにスワイプ（右脚の回し蹴りを出し、その脚でハイパー着地する）を足した技で、「逆さの540」とも呼ばれる。右足で踏み切って左脚を伸ばしたまま後方へ振り上げ、ライズより軸を倒して逆さに近づく。頂点で左脚を畳み、右脚を頭上越しに振り抜いて（スワイプ）、ほぼ真下へ降りて右足から着地する。前提技はライズと540。",
     keypoints: [
@@ -2337,6 +2434,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["pop-kick"],
     description:
       "カポエイラのアルマーダ・ドゥプラに由来する技。両足で踏み切り、上体を巻いてから後ろに倒しつつ、揃えた両脚を伸ばしたまま横に振り回して身体をV字にする。腰が胸より上がらない点でパイクのサイドフリップと区別される。両足で着地。ポップ360が前提技。",
     keypoints: [
@@ -2358,6 +2456,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "y",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["double-leg"],
     description:
       "跳躍の頂点でエックスアウト（開脚）を入れるダブルレッグ。別名 Kim Do Kick（考案者 Kim Do Nguyen にちなむ）。両足で踏み切り、揃えて振り上げた脚を頂点で前後に大きく開き、閉じてから両足で着地する。前提技はダブルレッグ。",
     keypoints: [
@@ -2380,6 +2479,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "y",
     takeoff: "both",
     landing: "left",
+    prerequisites: ["double-leg"],
     description:
       "横蹴り（サイドキック）で終えるダブルレッグ。両足で踏み切って揃えた両脚を振り回し、回り続けながら右膝を胸へ引きつけて、身体の右側を的に向けて真横へ蹴り出す。ここでは左足から着地し、蹴った右脚をあとから下ろす。前提技はダブルレッグ。",
     keypoints: [
@@ -2403,6 +2503,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "left",
+    prerequisites: ["double-leg"],
     description:
       "ひねりを1回加えたダブルレッグで、コンプリート（左回りの人なら左足）で着地する。両足で踏み切り、揃えた両脚を振り回して身体をV字にしたあと、脚を下ろして腕を締めてひねる。前提技はダブルレッグ。",
     keypoints: [
@@ -2425,6 +2526,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "y",
     takeoff: "both",
     landing: "left",
+    prerequisites: ["double-leg"],
     description:
       "着地の前に回し蹴りを出すダブルレッグツイスト。両足で踏み切り、揃えた両脚を振り回して身体をV字にしたあと腕を締めてひねり、ひねり終わったところで右脚の回し蹴りを出して左足から着地する。前提技はダブルレッグ。",
     keypoints: [
@@ -2470,6 +2572,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "z",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["spider", "butterfly-twist"],
     description:
       "着地の前に空中でもう一回転（ひねり）を加えるスパイダー。ライズと同じステップから右足で踏み切り、胸を床に向けた水平姿勢で回りながら、脚をそろえ腕を締めて身体の長軸まわりに一回ひねり、左足から着地する。前提技はスパイダーとバタフライツイスト。",
     keypoints: [
@@ -2492,6 +2595,7 @@ export const TRICKS: TrickMeta[] = [
     twistAxis: "z",
     takeoff: "right",
     landing: "left",
+    prerequisites: ["spyder-twist"],
     description:
       "着地の前に回し蹴りを出すスパイダーツイスト。ステップで背を向けて右足で踏み切り、水平の姿勢で身体の長軸まわりにひねったあと、身体が起き上がるところで右脚の回し蹴りを出して左足から着地する。前提技はスパイダーツイスト。",
     keypoints: [
@@ -2557,6 +2661,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "z",
     takeoff: "both",
     landing: "left",
+    prerequisites: ["side-flip"],
     description:
       "着地の前に回し蹴りを出すサイドフリップ。両足で踏み切って横向きに回り、身体が起き上がるところで右脚の回し蹴りを出す。ここでは左足から着地し、蹴った右脚をあとから下ろす。前提技はサイドフリップ。",
     keypoints: [
@@ -2579,6 +2684,7 @@ export const TRICKS: TrickMeta[] = [
     primaryAxis: "z",
     takeoff: "both",
     landing: "both",
+    prerequisites: ["side-flip"],
     description:
       "空中で2回転するサイドフリップ。両足で踏み切って高く跳び、小さく抱え込んだまま横向きに2回まわってから脚を下ろし、両足で着地する。前提技はサイドフリップ。",
     keypoints: [

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hashForTrick, trickIdFromHash } from "./hash";
+import { hashForTrick, trickIdFromHash, trickIdOnHashChange } from "./hash";
 
 const known = ["back-flip", "side-flip"];
 
@@ -25,5 +25,16 @@ describe("trickIdFromHash", () => {
 describe("hashForTrick", () => {
   it("builds a hash", () => {
     expect(hashForTrick("side-flip")).toBe("#side-flip");
+  });
+});
+
+describe("trickIdOnHashChange", () => {
+  it("goes back to the default trick when the hash is emptied (back to the page as first opened)", () => {
+    expect(trickIdOnHashChange("", known, "back-flip")).toBe("back-flip");
+    expect(trickIdOnHashChange("#", known, "back-flip")).toBe("back-flip");
+  });
+  it("follows a hash that names a trick and ignores an unknown one", () => {
+    expect(trickIdOnHashChange("#side-flip", known, "back-flip")).toBe("side-flip");
+    expect(trickIdOnHashChange("#nope", known, "back-flip")).toBeNull();
   });
 });
