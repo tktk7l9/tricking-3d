@@ -37,6 +37,22 @@ function rollOntoRightHand(r: Rig, u0: number, u1: number, plant: Pose, roll: nu
   r.at(uLevel, { roll: 0 });
 }
 
+/** The doublelegs' setup: turn on the left foot while the right foot swings
+ * round, stops right over the spot under its hip and comes straight down beside
+ * the left; then both legs squat and push off as a mirrored pair with the feet
+ * kept under the hips and the heading held, so neither foot slides. */
+function doublelegSetup(r: Rig, uDown: number, uSquat: number, uOff: number) {
+  turnOnLeftFoot(r, 0, 90, 15);
+  const raised = legR(40, -15, 80, 0, -40);
+  const stand = { heading: 90, ...legL(0, 15), ...legR(0, -15) };
+  r.at(0.14, raised);
+  r.at(0.145, { heading: 90, ...legL(0, 15), ...raised });
+  r.at(uDown, stand);
+  r.at(uDown + 0.02, stand);
+  r.at(uSquat, { heading: 90, ...legL(25, 15, 50, 0, -25), ...legR(25, -15, 50, 0, -25) });
+  r.at(uOff, { heading: 90, ...legL(2.5, 15, 5, 0, 32.5), ...legR(2.5, -15, 5, 0, 32.5) });
+}
+
 /** Raiz: right-foot takeoff, left heel drives up behind, body lays back and
  * spins over an axis tilted ~55° from vertical, lands on the left foot. */
 export function buildRaiz(): THREE.AnimationClip {
@@ -517,9 +533,9 @@ export function buildSideswipe(): THREE.AnimationClip {
   });
   r.pin("R", 0.82, 1);
   // Finish the turn with the left foot still up, then set it down behind and hold.
-  r.at(0.88, { heading: 365, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
-  r.at(0.95, { heading: 365, ...legR(15, 0, 30), ...legL(-15, 10, 20) });
-  r.at(1, { heading: 365, ...legR(15, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0) });
+  r.at(0.88, { heading: 365, spin: 360, ...legR(22, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  r.at(0.95, { heading: 365, ...legR(22, 0, 30), ...legL(-15, 10, 20) });
+  r.at(1, { heading: 365, ...legR(22, 0, 30), ...legL(-15, 10, 20), ...armsDown, ...torso(5, 0, 0) });
   return r.build("sideswipe");
 }
 
@@ -530,22 +546,16 @@ export function buildDoubleleg(): THREE.AnimationClip {
   const r = new Rig(D);
   r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -15) });
   r.pin("L", 0, 0.36);
-  turnOnLeftFoot(r, 0, 90, 15);
+  doublelegSetup(r, 0.18, 0.27, 0.36);
   r.at(0.2, {
-    heading: 90,
-    ...legL(35, 15, 50),
-    ...legR(35, -15, 50),
     ...armL(45, 10, 20),
     ...armR(60, -140, 20),
     ...torso(15, 0, -35),
     ...head(5, -20),
   });
   r.at(0.36, {
-    heading: 95,
     tilt: 25,
     spin: 0,
-    ...legL(0, 15, 5, 0, 35),
-    ...legR(0, -15, 5, 0, 35),
     ...armL(150, 90, 10),
     ...armR(130, -30, 20),
     ...torso(-10, 0, 35),
@@ -591,7 +601,7 @@ export function buildDoubleleg(): THREE.AnimationClip {
   });
   r.pin("L", 0.78, 1);
   // Both feet are down: keep their spacing and only soften the knees.
-  r.at(1, { heading: 360, ...legL(30, 10, 45), ...legR(30, -10, 45), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(1, { heading: 360, spin: 360, ...legL(30, 10, 45), ...legR(30, -10, 45), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("double-leg");
 }
 
@@ -602,23 +612,17 @@ export function buildDoublelegTwist(): THREE.AnimationClip {
   const r = new Rig(D);
   r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -15) });
   r.pin("L", 0, 0.34);
-  turnOnLeftFoot(r, 0, 90, 15);
+  doublelegSetup(r, 0.17, 0.26, 0.34);
   r.at(0.18, {
-    heading: 90,
-    ...legL(35, 15, 50),
-    ...legR(35, -15, 50),
     ...armL(45, 10, 20),
     ...armR(60, -140, 20),
     ...torso(15, 0, -35),
     ...head(5, -20),
   });
   r.at(0.34, {
-    heading: 95,
     tilt: 25,
     spin: 0,
     twist: 0,
-    ...legL(0, 15, 5, 0, 35),
-    ...legR(0, -15, 5, 0, 35),
     ...armL(150, 90, 10),
     ...armR(130, -30, 20),
     ...torso(-10, 0, 35),
@@ -677,7 +681,7 @@ export function buildDoublelegTwist(): THREE.AnimationClip {
     ...head(5, 0),
   });
   r.pin("L", 0.82, 1);
-  settle(r, "R", 0.87, 0.93, { heading: 360 });
+  settle(r, "R", 0.87, 0.93, { heading: 360, spin: 360, twist: 360 });
   r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("doubleleg-twist");
 }

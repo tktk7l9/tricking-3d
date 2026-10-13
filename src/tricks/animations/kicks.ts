@@ -118,8 +118,8 @@ export function buildTornado(): THREE.AnimationClip {
     ...torso(8, 0, 0),
   });
   r.pin("L", 0.8, 1);
-  r.at(0.9, { heading: 430, ...legsAbsorb });
-  r.at(1, { heading: 430, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  settle(r, "R", 0.86, 0.92, { heading: 430 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("cheat-kick");
 }
 
@@ -267,8 +267,8 @@ export function buildCheat900(): THREE.AnimationClip {
     ...torso(8, 0, 0),
   });
   r.pin("L", 0.84, 1);
-  r.at(0.92, { heading: 800, ...legsAbsorb });
-  r.at(1, { heading: 800, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  settle(r, "R", 0.9, 0.96, { heading: 800 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("cheat-900");
 }
 
@@ -578,8 +578,8 @@ export function buildPopTornado(): THREE.AnimationClip {
     ...torso(8, 0, 0),
   });
   r.pin("L", 0.8, 1);
-  r.at(0.9, { heading: 430, ...legsAbsorb });
-  r.at(1, { heading: 430, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  settle(r, "R", 0.86, 0.92, { heading: 430 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("pop-tornado");
 }
 
@@ -726,8 +726,8 @@ export function buildTornadoSidekick(): THREE.AnimationClip {
   });
   r.at(0.8, { heading: 470, ...legL(20, 5, 30), ...legR(45, -40, 80), ...armsWide, ...torso(8, 0, 0), ...head(0, -20) });
   r.pin("L", 0.8, 1);
-  r.at(0.9, { heading: 480, ...legsAbsorb });
-  r.at(1, { heading: 480, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  settle(r, "R", 0.86, 0.92, { heading: 480 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("tornado-sidekick");
 }
 
@@ -811,8 +811,8 @@ export function buildSwing900(): THREE.AnimationClip {
     ...torso(8, 0, 0),
   });
   r.pin("L", 0.84, 1);
-  r.at(0.92, { heading: 800, ...legsAbsorb });
-  r.at(1, { heading: 800, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  settle(r, "R", 0.9, 0.96, { heading: 800 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("swing-900");
 }
 

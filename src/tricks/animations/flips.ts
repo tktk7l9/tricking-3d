@@ -59,6 +59,14 @@ function flashFlight(r: Rig, u0: number, u1: number) {
   r.at(1, { pitch: -360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0) });
 }
 
+/** Two-footed squat with the feet flat under the hips (hip bend half the knee
+ * bend, ankles flexed as far as the shins lean), so both feet stay put. */
+const squat = { ...legL(22, 8, 45, 0, -23), ...legR(22, -8, 45, 0, -23) };
+/** Both feet pushing off, toes pointed. */
+const pushOff = { ...legL(0, 8, 5, 0, 35), ...legR(0, -8, 5, 0, 35) };
+/** Two-footed landing stance; the knees soften without moving the feet. */
+const landStance = { ...legL(25, 8, 40), ...legR(25, -8, 40) };
+
 /** Flash kick: two-foot backflip with the right leg kicking up at the peak. */
 export function buildFlashKick(): THREE.AnimationClip {
   const D = 1.6;
@@ -469,7 +477,7 @@ export function buildArabian(): THREE.AnimationClip {
     ...head(5, 0),
   });
   r.pin("L", 0.8, 1);
-  r.at(1, { pitch: -360, twist: 180, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(1, { pitch: -360, twist: 180, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("arabian");
 }
 
@@ -513,7 +521,7 @@ export function buildXOut(): THREE.AnimationClip {
   });
   r.at(0.8, { pitch: -360, ...legL(25, 8, 40), ...legR(25, -8, 40), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
   r.pin("L", 0.8, 1);
-  r.at(1, { pitch: -360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(1, { pitch: -360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("x-out");
 }
 
@@ -582,7 +590,7 @@ export function buildGainerArabian(): THREE.AnimationClip {
     ...head(5, 0),
   });
   r.pin("L", 0.8, 1);
-  r.at(1, { pitch: -360, twist: 180, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(1, { pitch: -360, twist: 180, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("gainer-arabian");
 }
 
@@ -648,7 +656,7 @@ export function buildFrontHalf(): THREE.AnimationClip {
     ...head(0, 0),
   });
   r.pin("L", 0.8, 1);
-  r.at(1, { pitch: 360, twist: 180, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(1, { pitch: 360, twist: 180, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("front-half");
 }
 
@@ -669,7 +677,7 @@ export function buildBackPike(): THREE.AnimationClip {
   r.at(0.72, { pitch: -325, ...legL(40, 8, 25), ...legR(40, -8, 25), ...armL(80, 90, 20), ...armR(80, -90, 20), ...torso(10, 0, 0), ...head(0, 0) });
   r.at(0.8, { pitch: -360, ...legL(25, 8, 40), ...legR(25, -8, 40), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
   r.pin("L", 0.8, 1);
-  r.at(1, { pitch: -360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(1, { pitch: -360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("back-pike");
 }
 
@@ -690,7 +698,7 @@ export function buildFrontXOut(): THREE.AnimationClip {
   r.at(0.72, { pitch: 330, ...legL(25, 8, 35), ...legR(40, -8, 35), ...armL(80, 90, 20), ...armR(80, -90, 20), ...torso(12, 0, 0), ...head(5, 0) });
   r.at(0.8, { pitch: 360, ...legL(25, 8, 40), ...legR(25, -8, 40), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
   r.pin("L", 0.8, 1);
-  r.at(1, { pitch: 360, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(1, { pitch: 360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("front-x-out");
 }
 
@@ -721,17 +729,10 @@ export function buildWebsterHalf(): THREE.AnimationClip {
   r.at(0.68, { pitch: 305, twist: 125, ...legL(45, 8, 45), ...legR(45, -8, 45), ...armsTight, ...torso(15, 0, 0), ...head(10, 0) });
   r.at(0.8, { pitch: 360, twist: 180, ...legL(25, 8, 40), ...legR(25, -8, 40), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
   r.pin("L", 0.8, 1);
-  r.at(1, { pitch: 360, twist: 180, ...legsAbsorb, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(1, { pitch: 360, twist: 180, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("webster-half");
 }
 
-/** Two-footed squat with the feet flat under the hips (hip bend half the knee
- * bend, ankles flexed as far as the shins lean), so both feet stay put. */
-const squat = { ...legL(22, 8, 45, 0, -23), ...legR(22, -8, 45, 0, -23) };
-/** Both feet pushing off, toes pointed. */
-const pushOff = { ...legL(0, 8, 5, 0, 35), ...legR(0, -8, 5, 0, 35) };
-/** Two-footed landing stance; the knees soften without moving the feet. */
-const landStance = { ...legL(25, 8, 40), ...legR(25, -8, 40) };
 
 /** Back tuck: two-footed takeoff, the knees pulled to the chest over the top,
  * opened out to land on both feet. */
