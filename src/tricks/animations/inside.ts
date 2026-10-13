@@ -535,8 +535,8 @@ export function buildButterflyTwistAxe(): THREE.AnimationClip {
   r.at(0.58, { heading: 215, pitch: 85, twist: 230, ...legR(-10, -5, 5), ...legL(-10, 5, 5), ...head(-20, 30) });
   r.at(0.65, { heading: 265, pitch: 70, twist: 340, ...legL(20, 10, 10), ...legR(-15, -10, 5), ...armL(80, 60, 40), ...armR(80, -60, 40), ...head(-20, 10) });
   // The axe: the right leg rises straight overhead as the body comes up, then chops down.
-  r.at(0.72, { heading: 305, pitch: 40, twist: 360, ...legL(30, 10, 40), ...legR(150, -5, 5), ...armL(80, 90, 30), ...armR(80, -90, 30), ...torso(0, 0, 0), ...head(-5, 0) });
-  r.at(0.78, { heading: 335, pitch: 15, ...legL(45, 10, 70), ...legR(95, -5, 5), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.73, { heading: 310, pitch: -5, twist: 360, ...legL(30, 10, 40), ...legR(160, -5, 5), ...armL(80, 90, 30), ...armR(80, -90, 30), ...torso(-10, 0, 0), ...head(-5, 0) });
+  r.at(0.79, { heading: 335, pitch: 0, ...legL(45, 10, 70), ...legR(100, -5, 5), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
   r.at(0.84, { heading: 350, pitch: 0, ...legR(20, -10, 25), ...legL(50, 10, 85, 0, -35), ...armsWide, ...torso(10, 0, 0) });
   r.pin("R", 0.84, 1);
   settle(r, "L", 0.9, 0.96, { heading: 360, pitch: 0, twist: 360 });

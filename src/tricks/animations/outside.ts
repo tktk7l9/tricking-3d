@@ -927,7 +927,7 @@ export function buildSailorMoonDoubleleg(): THREE.AnimationClip {
   r.at(0.64, { heading: 280, spin: 225, ...legL(-20, 30, 10), ...legR(-30, -30, 10), ...armL(120, 120, 10), ...armR(140, -60, 10), ...torso(-20, 0, 0), ...head(-20, 0) });
   // The doubleleg: both legs fold up together, then swing round straight as one.
   r.at(0.71, { heading: 315, spin: 300, ...legL(70, 10, 60), ...legR(70, -10, 60), ...armL(110, 60, 10), ...armR(110, -60, 10), ...torso(10, 0, 10), ...head(-10, 10) });
-  r.at(0.77, { heading: 345, spin: 350, ...legL(95, 5, 5), ...legR(95, -5, 5), ...armsWide, ...torso(15, 0, 0), ...head(0, 0) });
+  r.at(0.77, { heading: 345, spin: 350, ...legL(115, 5, 5), ...legR(115, -5, 5), ...armsWide, ...torso(0, 0, 0), ...head(0, 0) });
   r.at(0.84, { heading: 360, spin: 360, ...legL(30, 10, 40), ...legR(30, -10, 40), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
   r.pin("L", 0.84, 1);
   // Both feet are down: keep their spacing and only soften the knees.
