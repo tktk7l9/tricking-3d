@@ -857,7 +857,7 @@ export const TRICKS: TrickMeta[] = [
       { t: 0.3, label: "左手をつく・右脚振り上げ" },
       { t: 0.48, label: "右手をつく（逆立ち通過）" },
       { t: 0.61, label: "右足で接地" },
-      { t: 0.88, label: "左足で接地" },
+      { t: 0.9, label: "左足で接地" },
       { t: 1.0, label: "着地" },
     ],
     duration: 1.8,

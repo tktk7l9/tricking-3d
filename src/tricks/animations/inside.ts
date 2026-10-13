@@ -177,6 +177,18 @@ export function buildButterflyTwist(): THREE.AnimationClip {
   return r.build("butterfly-twist");
 }
 
+/** Cartwheel entry shared by the cartwheel, one-handed cartwheel and
+ * roundoff: the right foot holds the weight while the left foot lifts and
+ * steps out to the side, then the body leans onto the left foot (pinned until
+ * the left hand takes over) and the right foot comes up. */
+function cartwheelEntry(r: Rig) {
+  r.pin("R", 0, 0.13);
+  r.at(0.03, { roll: 0, ...legL(20, 40, 40, 0, -20), ...legR(0, -10) });
+  r.at(0.09, { roll: -6, ...legL(40, 80, 35, 0, -5) });
+  r.at(0.13, { roll: -12, ...legL(45, 80, 45), ...legR(0, -10, 0) });
+  r.pin("L", 0.13, 0.3);
+}
+
 /** Left cartwheel, side to side (travels toward +X): left foot, left hand,
  * right hand, right foot, left foot. */
 export function buildCartwheel(): THREE.AnimationClip {
@@ -184,7 +196,7 @@ export function buildCartwheel(): THREE.AnimationClip {
   const r = new Rig(D, { hands: true });
   const up = { ...armL(165, 90, 5), ...armR(165, -90, 5) };
   r.start({ ...up, ...legL(0, 15), ...legR(0, -10), ...head(0, 0, 10) });
-  r.pin("L", 0, 0.3);
+  cartwheelEntry(r);
   r.at(0.14, { roll: -25, ...legL(45, 80, 50), ...legR(0, -10, 5), ...torso(0, 15, 0), ...up });
   r.at(0.24, { roll: -65, ...legL(60, 85, 60, 0, 20), ...legR(40, -90, 5), ...torso(0, 20, 0), ...up });
   r.pin("handL", 0.3, 0.48);
@@ -196,7 +208,7 @@ export function buildCartwheel(): THREE.AnimationClip {
   r.at(0.68, { roll: -300, ...legL(20, 80, 10), ...legR(40, -70, 30), ...torso(0, -15, 0), ...up });
   r.at(0.78, { roll: -340, ...legL(30, 60, 30), ...legR(30, -50, 30), ...torso(0, -10, 0), ...up });
   // The left foot comes down in the final stance, so neither foot slides once both are down.
-  r.at(0.88, { roll: -356, ...legL(10, 25, 15), ...legR(8, -20, 12), ...torso(0, -4, 0) });
+  r.at(0.88, { roll: -358, ...legL(20, 15, 40, 0, -20), ...legR(0, -15), ...torso(0, -4, 0) });
   r.at(0.93, { roll: -360, ...legL(0, 15), ...legR(0, -15), ...torso(0, 0, 0) });
   r.pin("L", 0.93, 1);
   r.at(1, { roll: -360, ...legL(0, 15), ...legR(0, -15), ...torso(0, 0, 0), ...armsWide, ...head(0, 0, 0) });
@@ -214,7 +226,7 @@ export function buildOneHandedCartwheel(): THREE.AnimationClip {
   const left = armL(165, 90, 5);
   const free = armR(90, 0, 10);
   r.start({ ...left, ...armR(165, -90, 5), ...legL(0, 15), ...legR(0, -10), ...head(0, 0, 10) });
-  r.pin("L", 0, 0.3);
+  cartwheelEntry(r);
   r.at(0.14, { roll: -25, ...legL(45, 80, 50), ...legR(0, -10, 5), ...torso(0, 15, 0), ...left, ...armR(150, -95, 10) });
   r.at(0.26, { roll: -65, ...legL(60, 85, 60, 0, 20), ...legR(40, -90, 5), ...torso(0, 20, 0), ...left, ...armR(100, -40, 20) });
   r.at(0.3, { roll: -90 });
@@ -241,7 +253,7 @@ export function buildRoundoff(): THREE.AnimationClip {
   const r = new Rig(D, { hands: true });
   const up = { ...armL(165, 90, 5), ...armR(165, -90, 5) };
   r.start({ ...up, ...legL(0, 15), ...legR(0, -10), ...head(0, 0, 10) });
-  r.pin("L", 0, 0.3);
+  cartwheelEntry(r);
   r.at(0.14, { roll: -25, ...legL(45, 80, 50), ...legR(0, -10, 5), ...torso(0, 15, 0), ...up });
   r.at(0.24, { roll: -65, ...legL(60, 85, 60, 0, 20), ...legR(40, -90, 5), ...torso(0, 20, 0), ...up });
   r.pin("handL", 0.3, 0.46);
@@ -281,8 +293,10 @@ export function buildAerial(): THREE.AnimationClip {
   const r = new Rig(D);
   const up = { ...armL(165, 90, 5), ...armR(165, -90, 5) };
   r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -10), ...head(0, 0, 10) });
-  r.pin("L", 0, 0.3);
-  r.at(0.14, { roll: -15, ...legL(40, 70, 50), ...legR(-10, -10, 10), ...torso(10, 10, 0), ...armL(60, 60, 20), ...armR(50, -150, 20) });
+  cartwheelEntry(r);
+  // Both feet hold still while the weight moves onto the left foot, then the right foot lifts.
+  r.at(0.145, { roll: -12, ...legL(45, 80, 45), ...legR(0, -10, 0) });
+  r.at(0.17, { roll: -15, ...legL(45, 80, 50), ...legR(17, -10, 35, 0, -18), ...torso(10, 10, 0), ...armL(60, 60, 20), ...armR(50, -150, 20) });
   r.at(0.3, {
     roll: -55,
     ...legL(55, 80, 25, 0, 35),
@@ -292,6 +306,8 @@ export function buildAerial(): THREE.AnimationClip {
     ...armR(120, -60, 20),
     ...head(-10, 0, 20),
   });
+  // The roll eases through takeoff so the pushing foot leaves the floor cleanly.
+  r.at(0.31, { roll: -57 });
   r.flight(0.3, 0.72, { travel: [0.9, 0] });
   r.at(0.42, { roll: -130, ...legL(10, 85, 10), ...legR(10, -90, 0), ...torso(0, 10, 0), ...up });
   r.at(0.52, { roll: -200, ...legL(0, 85, 0), ...legR(0, -85, 0), ...torso(0, 0, 0), ...up });
@@ -300,7 +316,7 @@ export function buildAerial(): THREE.AnimationClip {
   r.pin("R", 0.72, 0.96);
   r.at(0.86, { roll: -345, ...legL(35, 55, 35), ...legR(30, -45, 35), ...torso(0, -10, 0) });
   // The left foot comes down in the final stance, so neither foot slides once both are down.
-  r.at(0.92, { roll: -356, ...legL(16, 22, 24), ...legR(12, -17, 22), ...torso(0, -4, 0) });
+  r.at(0.92, { roll: -358, ...legL(25, 15, 50, 0, -25), ...legR(10, -15, 20), ...torso(0, -4, 0) });
   r.at(0.96, { roll: -360, ...legL(10, 15, 20), ...legR(10, -15, 20), ...torso(0, 0, 0) });
   r.pin("L", 0.96, 1);
   r.at(1, { roll: -360, ...legL(10, 15, 20), ...legR(10, -15, 20), ...torso(0, 0, 0), ...armsDown, ...head(0, 0, 0) });
@@ -315,8 +331,10 @@ export function buildAerialTwist(): THREE.AnimationClip {
   const D = 1.8;
   const r = new Rig(D);
   r.start({ ...armsDown, ...legL(0, 15), ...legR(0, -10), ...head(0, 0, 10) });
-  r.pin("L", 0, 0.3);
-  r.at(0.14, { roll: -15, ...legL(40, 70, 50), ...legR(-10, -10, 10), ...torso(10, 10, 0), ...armL(60, 60, 20), ...armR(50, -150, 20) });
+  cartwheelEntry(r);
+  // Both feet hold still while the weight moves onto the left foot, then the right foot lifts.
+  r.at(0.145, { roll: -12, ...legL(45, 80, 45), ...legR(0, -10, 0) });
+  r.at(0.17, { roll: -15, ...legL(45, 80, 50), ...legR(17, -10, 35, 0, -18), ...torso(10, 10, 0), ...armL(60, 60, 20), ...armR(50, -150, 20) });
   r.at(0.3, {
     roll: -55,
     twist: 0,
@@ -336,9 +354,9 @@ export function buildAerialTwist(): THREE.AnimationClip {
   r.at(0.64, { roll: -290, twist: 350, ...legL(15, 25, 10), ...legR(20, -40, 40), ...armL(90, 90, 20), ...armR(90, -90, 20), ...head(-5, 0, 0) });
   r.at(0.74, { roll: -345, twist: 360, ...legL(15, 20, 15), ...legR(45, -45, 100), ...torso(0, -5, 0), ...armsWide, ...head(0, 0, 0) });
   r.pin("L", 0.74, 1);
-  r.at(0.82, { roll: -356, ...legL(25, 15, 35), ...legR(35, -20, 85), ...torso(0, 0, 0) });
-  r.at(0.9, { roll: -360, ...legL(25, 12, 40), ...legR(25, -12, 40) });
-  r.at(1, { roll: -360, twist: 360, ...legL(25, 12, 40), ...legR(25, -12, 40), ...torso(0, 0, 0), ...armsDown, ...head(0, 0, 0) });
+  settle(r, "R", 0.84, 0.91, { roll: -360, twist: 360 }, 12);
+  r.at(0.84, { ...torso(0, 0, 0) });
+  r.at(1, { ...torso(0, 0, 0), ...armsDown, ...head(0, 0, 0) });
   return r.build("aerial-twist");
 }
 
