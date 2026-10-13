@@ -557,6 +557,29 @@ function frontsidePop(r: Rig, uOff: number) {
   });
 }
 
+/** Pop 360 Gyro: the pop 360's left-leg kick, then another full spin with
+ * the arms in before both feet land facing the way it started (frontside). */
+export function buildPop360Gyro(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.38);
+  turnOnLeftFoot(r, 0, 85);
+  r.at(0.2, { heading: 85, ...legL(35, 8, 50), ...legR(35, -8, 50), ...armL(45, 10, 20), ...armR(55, -140, 20), ...torso(15, 0, -30), ...head(5, -20) });
+  r.at(0.38, { heading: 88, ...legL(0, 8, 5, 0, 35), ...legR(0, -8, 5, 0, 35), ...armL(150, 90, 15), ...armR(120, -30, 25), ...torso(-5, 0, 35), ...head(-5, 45) });
+  r.flight(0.38, 0.84, { travel: [0.08, 0.05], apex: 0.6 });
+  r.at(0.48, { heading: 185, ...legL(30, -10, 40), ...legR(45, -10, 70), ...armL(80, 30, 80), ...armR(80, -30, 80), ...torso(5, 0, 20), ...head(0, 40) });
+  r.at(0.56, { heading: 250, ...legL(95, -40, 10), ...legR(40, -10, 80), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(0, 30) });
+  r.at(0.63, { heading: 300, ...legL(115, 60, 10), ...legR(35, -10, 70), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
+  // The gyro: legs together and arms in for one more full spin.
+  r.at(0.7, { heading: 420, ...legL(40, 8, 60), ...legR(40, -8, 60), ...armsTight, ...torso(5, 0, 0), ...head(0, 20) });
+  r.at(0.77, { heading: 600, ...legL(30, 8, 40), ...legR(30, -8, 40), ...armsTight, ...torso(5, 0, 0), ...head(0, 10) });
+  r.at(0.84, { heading: 720, ...legL(25, 10, 35), ...legR(25, -10, 35), ...armsWide, ...torso(10, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.84, 1);
+  r.at(1, { heading: 720, ...legL(25, 10, 40), ...legR(25, -10, 40), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("pop-360-gyro");
+}
+
 /** Pop Tornado: frontside pop off both feet, the left knee drives while the
  * body turns, right-leg round kick at the target, land on the left foot. */
 export function buildPopTornado(): THREE.AnimationClip {
@@ -832,6 +855,28 @@ export function buildCheat900Double(): THREE.AnimationClip {
   settle(r, "R", 0.9, 0.96, { heading: 800 });
   r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
   return r.build("cheat-900-double");
+}
+
+/** Cheat 900 Feilong: the cheat 900 finished with a feilong: after about a
+ * turn and a half the straight left leg sweeps across like a crescent kick,
+ * then the right leg's round kick, and the left foot lands. */
+export function buildCheat900Feilong(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.84, { travel: [0.05, 0.2], apex: 0.5 });
+  r.at(0.5, { heading: 340, ...legL(90, 30, 115), ...legR(60, -60, 125, 60), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  r.at(0.59, { heading: 490, ...legL(80, 35, 120), ...legR(45, -30, 90), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) });
+  // The crescent: the straight left leg arcs from the right across to the left.
+  r.at(0.64, { heading: 565, ...legL(100, -15, 5), ...legR(35, -20, 60), ...armL(110, 70, 30), ...armR(90, -70, 40), ...torso(0, 5, 20), ...head(0, 40) });
+  r.at(0.68, { heading: 625, ...legL(95, 55, 10), ...legR(60, -70, 125, 70), ...armL(90, 110, 40), ...armR(80, -60, 60), ...torso(5, 10, 10), ...head(0, 30) });
+  r.at(0.74, { heading: 715, ...legL(60, 30, 100), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.8, { heading: 770, ...legL(45, 15, 60), ...legR(60, -20, 70, 30), ...armL(40, 110, 30), ...armR(45, -60, 40), ...torso(5, 0, 0) });
+  r.at(0.84, { heading: 790, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 800 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("cheat-900-feilong");
 }
 
 export function buildTornadoSidekick(): THREE.AnimationClip {

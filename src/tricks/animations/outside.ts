@@ -907,3 +907,30 @@ export function buildSpyderTwistRound(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("spyder-twist-round");
 }
+
+/** Sailor Moon Doubleleg: the sailor moon's hand plant and tilted spin,
+ * finished with a doubleleg: both legs swing round together, straight, before
+ * both feet land. */
+export function buildSailorMoonDoubleleg(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D, { hands: true });
+  outsideStep(r);
+  r.at(0.28, { tilt: 55, spin: 0 });
+  r.at(0.36, { heading: 180, tilt: 55, spin: 40, ...legL(-35, 10, 40), ...legR(15, 0, 35), ...armL(60, 170, 10), ...armR(37, -114, 0), ...torso(-5, 0, 0), ...head(-20, 10) });
+  r.at(0.4, { ...legL(-50, 15, 70) });
+  rollOntoRightHand(r, 0.4, 0.43, { heading: 190, tilt: 55, spin: 70, ...legR(25, 0, 50, 0, 20), ...armR(67, -118, 0), ...torso(-5, 0, 0) }, 6, 0.56);
+  r.pin("handR", 0.4, 0.47);
+  r.at(0.45, { heading: 205, spin: 100, ...legL(-50, 20, 75), ...legR(5, -10, 10, 0, 35), ...armR(98, -121, 0), ...torso(-20, 0, 0), ...head(-25, 10) });
+  r.at(0.47, { heading: 215, spin: 120, ...legL(-45, 20, 30), ...legR(-10, -15, 10), ...armR(120, -110, 10) });
+  r.flight(0.47, 0.84, { travel: [0.3, 0.3] });
+  r.at(0.56, { heading: 245, spin: 175, ...legL(-40, 20, 15), ...legR(-15, -20, 10), ...armL(90, 160, 10), ...armR(170, -30, 10), ...torso(-25, 0, 0), ...head(-25, 0) });
+  r.at(0.64, { heading: 280, spin: 225, ...legL(-20, 30, 10), ...legR(-30, -30, 10), ...armL(120, 120, 10), ...armR(140, -60, 10), ...torso(-20, 0, 0), ...head(-20, 0) });
+  // The doubleleg: both legs fold up together, then swing round straight as one.
+  r.at(0.71, { heading: 315, spin: 300, ...legL(70, 10, 60), ...legR(70, -10, 60), ...armL(110, 60, 10), ...armR(110, -60, 10), ...torso(10, 0, 10), ...head(-10, 10) });
+  r.at(0.77, { heading: 345, spin: 350, ...legL(95, 5, 5), ...legR(95, -5, 5), ...armsWide, ...torso(15, 0, 0), ...head(0, 0) });
+  r.at(0.84, { heading: 360, spin: 360, ...legL(30, 10, 40), ...legR(30, -10, 40), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.84, 1);
+  // Both feet are down: keep their spacing and only soften the knees.
+  r.at(1, { heading: 360, spin: 360, ...legL(30, 10, 45), ...legR(30, -10, 45), ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("sailor-moon-doubleleg");
+}

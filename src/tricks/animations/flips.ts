@@ -1335,3 +1335,93 @@ export function buildWrapFullHyper(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("wrap-full-hyper");
 }
+
+/** Arabian Axe: the arabian's half twist into a front flip, finished with an
+ * axe kick / step-out: the right leg opens straight up over the top and comes
+ * down first, the left steps down after. */
+export function buildArabianAxe(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.32);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.32, { pitch: -15, twist: 0, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.32, 0.8, { travel: [0, -0.5] });
+  r.at(0.42, { pitch: -75, twist: 100, ...legL(15, 5, 25), ...legR(15, -5, 25), ...armsTight, ...torso(-5, 0, 0), ...head(-15, 0) });
+  r.at(0.52, { pitch: -150, twist: 180, ...legL(90, 5, 110), ...legR(90, -5, 110), ...armsTight, ...torso(30, 0, 0), ...head(25, 0) });
+  // The axe: the right leg opens straight up over the top while the left stays folded.
+  r.at(0.62, { pitch: -240, twist: 180, ...legL(110, 5, 120), ...legR(140, -5, 5), ...armL(80, 60, 20), ...armR(80, -60, 20), ...torso(30, 0, 0), ...head(20, 0) });
+  r.at(0.71, { pitch: -315, twist: 180, ...legL(90, 5, 110), ...legR(95, -5, 5), ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.8, { pitch: -360, twist: 180, ...legR(20, -8, 25), ...legL(60, 8, 95, 0, -35), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("R", 0.8, 1);
+  settle(r, "L", 0.86, 0.92, { pitch: -360, twist: 180 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("arabian-axe");
+}
+
+/** Gainer Switch Half: the gainer switch with a half twist before the left
+ * foot lands, facing back, the right leg still up behind. */
+export function buildGainerSwitchHalf(): THREE.AnimationClip {
+  const D = 1.7;
+  const r = new Rig(D);
+  swingStance(r);
+  r.pin("L", 0, 0.36);
+  r.at(0.2, { ...legL(25, 5, 35), ...legR(45, -5, 50), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.36, { pitch: -20, twist: 0, ...legL(0, 5, 5, 0, 35), ...legR(100, -5, 5), ...armsUp, ...torso(-15, 0, 0), ...head(-30, 0) });
+  r.flight(0.36, 0.8, { travel: [0, 0.5] });
+  r.at(0.48, { pitch: -120, twist: 0, ...legR(85, 0, 5), ...legL(5, 0, 40), ...armL(130, 100, 10), ...armR(130, -100, 10), ...torso(-15, 0, 0), ...head(-40, 0) });
+  // The half twist, arms in, while the legs switch.
+  r.at(0.6, { pitch: -210, twist: 40, ...legR(60, 0, 10), ...legL(-10, 0, 30), ...armsTight, ...torso(-10, 0, 0), ...head(-30, 0) });
+  r.at(0.7, { pitch: -300, twist: 145, ...legR(10, 0, 45), ...legL(35, 0, 30), ...armsTight, ...torso(0, 0, 0), ...head(-10, 0) });
+  r.at(0.8, { pitch: -360, twist: 180, ...legL(20, 0, 20), ...legR(-30, 0, 55), ...armL(50, 90, 20), ...armR(50, -90, 20), ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(0.9, { ...legL(25, 0, 40), ...legR(-35, -5, 50), ...torso(15, 0, 0) });
+  r.at(1, { pitch: -360, twist: 180, ...legL(20, 0, 35), ...legR(-30, -5, 40), ...armL(40, 60, 20), ...armR(40, -60, 20), ...torso(12, 0, 0) });
+  return r.build("gainer-switch-half");
+}
+
+/** Tak Full Swipe: the tak full's off-axis full twist finished with a swipe,
+ * a round kick that carries on down into a hyper landing on the right foot. */
+export function buildTakFullSwipe(): THREE.AnimationClip {
+  const D = 2.0;
+  const r = new Rig(D);
+  cheatStep(r, 0.4);
+  r.at(0.28, { pitch: 0, heading: 165, ...legR(35, 0, 55), ...legL(45, 10, 85, 0, -40), ...armL(55, 110, 30), ...armR(50, -40, 30), ...torso(18, 0, 25), ...head(5, 50) });
+  r.at(0.4, { heading: 210, pitch: -20, ...legL(60, 30, 40), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 30), ...head(-20, 40) });
+  r.flight(0.4, 0.86, { travel: [0.2, 0] });
+  r.at(0.5, { heading: 230, pitch: -110, twist: 90, roll: -15, ...legL(25, 5, 60), ...legR(25, -5, 60), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
+  r.at(0.6, { heading: 250, pitch: -215, twist: 220, roll: -15, ...legL(20, 5, 50), ...legR(20, -5, 50), ...head(-20, 30) });
+  r.at(0.69, { heading: 265, pitch: -290, twist: 300, roll: -10, ...legL(30, 5, 40), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-10, 10) });
+  r.at(0.76, { heading: 275, pitch: -340, twist: 350, roll: 0, ...legL(40, 8, 60), ...legR(118, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  // The swipe: the kicking leg carries on down to land while the left lifts out of its way.
+  r.at(0.81, { heading: 280, pitch: -355, twist: 360, roll: 0, ...legL(55, 8, 85, 0, -35), ...legR(55, -10, 45, 30), ...armsWide, ...torso(8, 5, 0), ...head(0, 0) });
+  r.at(0.86, { heading: 285, pitch: -360, twist: 360, roll: 0, ...legR(20, -8, 25), ...legL(50, 8, 85, 0, -35), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("R", 0.86, 1);
+  settle(r, "L", 0.91, 0.96, { heading: 290, pitch: -360, twist: 360, roll: 0 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("tak-full-swipe");
+}
+
+/** Wrap Full Swipe: the wrap full's off-axis full twist finished with a swipe,
+ * a round kick that carries on down into a hyper landing on the right foot. */
+export function buildWrapFullSwipe(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legR(5, -5, 10), ...legL(40, 10, 60), ...torso(5, 0, 0) });
+  r.pin("R", 0, 0.38);
+  r.at(0.18, { heading: 30, ...legL(-10, -35, 60, 0, -60), ...legR(30, -5, 45), ...armL(50, 20, 20), ...armR(50, -160, 20), ...torso(15, 0, -20), ...head(5, -10) });
+  r.at(0.3, { heading: 80, ...legL(-20, -20, 55, 0, -60), ...legR(35, 0, 50), ...armL(120, 60, 15), ...armR(100, -120, 20), ...torso(5, 0, 10), ...head(0, 20) });
+  r.at(0.38, { heading: 120, pitch: -20, ...legL(10, 10, 70, 0, -50), ...legR(0, 0, 5, 0, 35), ...armsUp, ...torso(-10, 0, 20), ...head(-20, 30) });
+  r.flight(0.38, 0.84, { travel: [0.2, 0] });
+  r.at(0.48, { heading: 140, pitch: -110, twist: 90, roll: -15, ...legL(25, 5, 60), ...legR(25, -5, 60), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
+  r.at(0.58, { heading: 160, pitch: -215, twist: 220, roll: -15, ...legL(20, 5, 50), ...legR(20, -5, 50), ...head(-20, 30) });
+  r.at(0.67, { heading: 175, pitch: -290, twist: 300, roll: -10, ...legL(30, 5, 40), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-10, 10) });
+  r.at(0.74, { heading: 185, pitch: -340, twist: 350, roll: 0, ...legL(40, 8, 60), ...legR(118, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  // The swipe: the kicking leg carries on down to land while the left lifts out of its way.
+  r.at(0.79, { heading: 190, pitch: -355, twist: 360, roll: 0, ...legL(55, 8, 85, 0, -35), ...legR(55, -10, 45, 30), ...armsWide, ...torso(8, 5, 0), ...head(0, 0) });
+  r.at(0.84, { heading: 195, pitch: -360, twist: 360, roll: 0, ...legR(20, -8, 25), ...legL(50, 8, 85, 0, -35), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("R", 0.84, 1);
+  settle(r, "L", 0.9, 0.96, { heading: 200, pitch: -360, twist: 360, roll: 0 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("wrap-full-swipe");
+}
