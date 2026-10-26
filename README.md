@@ -74,5 +74,6 @@ npm run preview
 
 2026-08-11、Vercel 無料枠の超過でアカウントが停止（全プロジェクトが
 `402 DEPLOYMENT_DISABLED`）したため移行した。`wrangler.jsonc` の `assets` だけで
-配信し、セキュリティヘッダーは `public/_headers`（`vercel.json` の `headers` を
-移植）。`npm run deploy` で build + wrangler deploy。vercel.json は残置。
+配信し、セキュリティヘッダーは `public/_headers`（Vercel 時代の `vercel.json` の
+`headers` を移植したもの。`vercel.json` は移行後に削除済み）。`npm run deploy` で
+build + wrangler deploy。
