@@ -102,6 +102,8 @@ export function phraseHtml(name: string): string {
     .join("");
 }
 
-function escapeHtml(s: string): string {
+/** Escape text for insertion into an HTML string (names and labels come from the
+ * static catalogue, but every innerHTML sink escapes the same way). */
+export function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }

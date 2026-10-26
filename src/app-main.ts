@@ -14,7 +14,7 @@ import { CameraSwitcher, OverlaySwitcher } from "./ui/CameraSwitcher";
 import { DEFAULT_TRICK_ID, TRICKS, getTrick } from "./tricks/catalog";
 import { hashForTrick, trickIdFromHash, trickIdOnHashChange } from "./lib/hash";
 import { STILL, buildFollowPath, followOffsetAt, type FollowPath } from "./lib/follow";
-import { phraseHtml } from "./lib/phrases";
+import { escapeHtml, phraseHtml } from "./lib/phrases";
 import { PanelTabs } from "./ui/PanelTabs";
 
 /** URL of the optional skinned character, set at build time only when public/models/character.glb exists. */
@@ -91,7 +91,7 @@ export async function startApp() {
     annotations.setTrick(meta);
     comTracer.bake();
     follow = buildFollowPath(comTracer.samples, player.getDuration());
-    titleBlock.innerHTML = `<span class="jp">${phraseHtml(meta.nameJp)}</span><span class="en">${meta.nameEn}</span>`;
+    titleBlock.innerHTML = `<span class="jp">${phraseHtml(meta.nameJp)}</span><span class="en">${escapeHtml(meta.nameEn)}</span>`;
     updateLabelKeepOut();
   };
 
