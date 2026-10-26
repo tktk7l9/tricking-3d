@@ -73,7 +73,8 @@
     <div id="app" hidden>
       <aside id="sidebar" aria-label="技一覧"></aside>
       <main id="viewport">
-        <canvas id="canvas"></canvas>
+        <!-- A canvas has no text of its own: name it (app-main sets the trick name; WCAG 1.1.1, SHIG 94). -->
+        <canvas id="canvas" role="img" aria-label="技の3Dアニメーション"></canvas>
         <div id="hud-top"></div>
         <div id="hud-camera"></div>
         <div id="hud-overlays"></div>

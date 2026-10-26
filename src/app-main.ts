@@ -13,6 +13,7 @@ import { InfoPanel } from "./ui/InfoPanel";
 import { CameraSwitcher, OverlaySwitcher } from "./ui/CameraSwitcher";
 import { DEFAULT_TRICK_ID, TRICKS, getTrick } from "./tricks/catalog";
 import { hashForTrick, trickIdFromHash, trickIdOnHashChange } from "./lib/hash";
+import { sceneLabel } from "./lib/labels";
 import { STILL, buildFollowPath, followOffsetAt, type FollowPath } from "./lib/follow";
 import { phraseHtml } from "./lib/phrases";
 import { PanelTabs } from "./ui/PanelTabs";
@@ -87,6 +88,7 @@ export async function startApp() {
     const meta = getTrick(id);
     state.set("duration", meta.duration);
     state.set("time", 0);
+    canvas.setAttribute("aria-label", sceneLabel(meta));
     axisOverlay.setTrick(meta);
     annotations.setTrick(meta);
     comTracer.bake();
