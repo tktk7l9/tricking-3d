@@ -2,7 +2,7 @@ import type { AppState } from "../state/AppState";
 import { getTrick, type TrickMeta } from "../tricks/catalog";
 import { clampSeekTime } from "../lib/seek";
 import { axisLabel, categoryLabel, takeoffLabel } from "../lib/labels";
-import { phraseHtml } from "../lib/phrases";
+import { escapeHtml, phraseHtml } from "../lib/phrases";
 import { hashForTrick } from "../lib/hash";
 import { prerequisitesOf, unlocksOf } from "../lib/progression";
 
@@ -116,12 +116,4 @@ function trickLinks(tricks: TrickMeta[]): string {
       )}</span> <span class="en" lang="en">${escapeHtml(x.nameEn)}</span></a></li>`,
   );
   return `<ul class="prog-list">${items.join("")}</ul>`;
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }

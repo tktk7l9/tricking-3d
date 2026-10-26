@@ -2,7 +2,7 @@ import type { AppState } from "../state/AppState";
 import { TRICKS, type TrickCategory, type TrickMeta } from "../tricks/catalog";
 import { CATEGORY_LABEL } from "../lib/labels";
 import { matchesQuery, normalizeSearch } from "../lib/search";
-import { phraseHtml } from "../lib/phrases";
+import { escapeHtml, phraseHtml } from "../lib/phrases";
 
 export class TrickPicker {
   constructor(host: HTMLElement, state: AppState) {
@@ -44,7 +44,7 @@ export class TrickPicker {
       btn.className = "trick-btn";
       btn.dataset.id = t.id;
       btn.dataset.search = normalizeSearch(`${t.nameJp} ${t.nameEn} ${t.id}`);
-      btn.innerHTML = `<div class="jp">${phraseHtml(t.nameJp)}</div><div class="en">${t.nameEn}</div>`;
+      btn.innerHTML = `<div class="jp">${phraseHtml(t.nameJp)}</div><div class="en">${escapeHtml(t.nameEn)}</div>`;
       btn.addEventListener("click", () => state.set("trickId", t.id));
       groups[t.category].appendChild(btn);
       buttons.push(btn);
