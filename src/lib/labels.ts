@@ -32,3 +32,11 @@ export const CATEGORY_LABEL: Record<TrickCategory, string> = {
 export function categoryLabel(c: TrickCategory): string {
   return CATEGORY_LABEL[c];
 }
+
+/**
+ * Accessible name of the 3D canvas. A screen reader cannot see the scene, so the
+ * name says which trick is playing; the info panel holds the description.
+ */
+export function sceneLabel(meta: Pick<TrickMeta, "nameJp" | "nameEn">): string {
+  return `${meta.nameJp}（${meta.nameEn}）の3Dアニメーション`;
+}

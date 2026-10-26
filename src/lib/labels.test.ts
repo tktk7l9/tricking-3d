@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { axisLabel, categoryLabel, takeoffLabel } from "./labels";
+import { axisLabel, categoryLabel, sceneLabel, takeoffLabel } from "./labels";
 
 describe("axisLabel", () => {
   it("explains each axis in plain words", () => {
@@ -21,5 +21,13 @@ describe("takeoffLabel / categoryLabel", () => {
     expect(categoryLabel("flip")).toBe("フリップ");
     expect(categoryLabel("twist")).toBe("ツイスト");
     expect(categoryLabel("transition")).toBe("トランジション");
+  });
+});
+
+describe("sceneLabel", () => {
+  it("names the 3D canvas after the trick that is playing", () => {
+    expect(sceneLabel({ nameJp: "バク宙", nameEn: "Backflip (Back Tuck)" })).toBe(
+      "バク宙（Backflip (Back Tuck)）の3Dアニメーション",
+    );
   });
 });
