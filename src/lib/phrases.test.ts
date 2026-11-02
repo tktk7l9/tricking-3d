@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { TRICKS } from "../tricks/catalog";
-import { nameTokens, phraseHtml } from "./phrases";
+import { escapeHtml, nameTokens, phraseHtml } from "./phrases";
 
 describe("nameTokens", () => {
   it("splits a name into its words, numbers and brackets", () => {
@@ -40,5 +40,12 @@ describe("phraseHtml", () => {
     for (const piece of phraseHtml(name).split("<wbr>")) {
       expect(piece.length, piece).toBeLessThanOrEqual(9);
     }
+  });
+});
+
+describe("escapeHtml", () => {
+  it("escapes the characters that would start markup or end an attribute", () => {
+    expect(escapeHtml('<b a="1">&</b>')).toBe("&lt;b a=&quot;1&quot;&gt;&amp;&lt;/b&gt;");
+    expect(escapeHtml("Cheat Kick (Tornado / Cheat 360)")).toBe("Cheat Kick (Tornado / Cheat 360)");
   });
 });
