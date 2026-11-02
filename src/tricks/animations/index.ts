@@ -46,6 +46,9 @@ import {
   buildJackknife,
   buildWackknife,
   buildParafuso,
+  buildCheat1260,
+  buildBackside1440,
+  buildCheat900Doubleleg,
 } from "./kicks";
 import {
   buildAerial,
@@ -190,6 +193,11 @@ import {
   buildWrapFullHyperhook,
   buildTakFullHyperhook,
   buildGainerHook,
+  buildShurikenCutter,
+  buildCorkscrewSwipeknife,
+  buildCorkscrewSnapu,
+  buildRodeoCorkscrew,
+  buildFullWackknife,
 } from "./flips";
 
 /* Trick animation registry. Every trick lives in kicks.ts / inside.ts /
@@ -365,6 +373,14 @@ export const TRICK_FACTORIES: Record<string, Factory> = {
   "spyder-twist": buildSpyderTwist,
   "spyder-twist-round": buildSpyderTwistRound,
   lotus: buildLotus,
+  "cheat-1260": buildCheat1260,
+  "backside-1440": buildBackside1440,
+  "cheat-900-doubleleg": buildCheat900Doubleleg,
+  "shuriken-cutter": buildShurikenCutter,
+  "corkscrew-swipeknife": buildCorkscrewSwipeknife,
+  "corkscrew-snapu": buildCorkscrewSnapu,
+  "rodeo-corkscrew": buildRodeoCorkscrew,
+  "full-wackknife": buildFullWackknife,
   "skip-hook": buildSkipHook,
   "cheat-1080": buildCheat1080,
   "backside-1260": buildBackside1260,

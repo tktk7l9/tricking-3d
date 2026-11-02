@@ -1458,3 +1458,55 @@ describe("dragonfly corkscrew", () => {
     expect(reach("dragonfly-corkscrew")).toBeGreaterThan(reach("corkscrew"));
   });
 });
+
+describe("backside 1440", () => {
+  it("spins about 1080° in the air", () => {
+    const yaw = airYaw("backside-1440");
+    expect(yaw).toBeGreaterThan(960);
+    expect(yaw).toBeLessThan(1200);
+  });
+});
+
+describe("cheat 1260", () => {
+  it("spins as far in the air as the cheat 1080, ending on the round kick", () => {
+    expect(airYaw("cheat-1260")).toBeGreaterThan(airYaw("cheat-1080"));
+  });
+});
+
+describe("rodeo corkscrew", () => {
+  it("holds the left foot in the left hand on the way up, before the twist", () => {
+    const grabbed = inAir("rodeo-corkscrew").filter((s) => s.palmL.distanceTo(s.ballL) < 0.27);
+    expect(grabbed.length, "frames with the foot in the hand").toBeGreaterThan(15);
+  });
+});
+
+describe("corkscrew snapu", () => {
+  it("faces the start direction twice in the air, a double corkscrew variation", () => {
+    expect(stretches(inAir("corkscrew-snapu", 600), (s) => s.fwdZ > 0.6)).toBe(2);
+  });
+});
+
+describe.each(["full-wackknife", "corkscrew-swipeknife"])("%s", (id) => {
+  it("kicks with the right leg first, then the left", () => {
+    const air = inAir(id);
+    const right = air.findIndex((s) => s.right > s.hips.y);
+    const left = air.length - 1 - [...air].reverse().findIndex((s) => s.left > s.hips.y);
+    expect(right, "right kick").toBeGreaterThanOrEqual(0);
+    expect(left, "left kick after it").toBeGreaterThan(right);
+  });
+});
+
+describe("cheat 900 doubleleg", () => {
+  it("swings both legs up together with the body upright, which the cheat 900 never does", () => {
+    const doubleleg = (trick: string) => inAir(trick).some((s) => legsUp(s) && upright(s));
+    expect(doubleleg("cheat-900-doubleleg")).toBe(true);
+    expect(doubleleg("cheat-900")).toBe(false);
+  });
+});
+
+describe("shuriken cutter", () => {
+  it("raises the left leg twice on the way down: the crescent, then the hook", () => {
+    const air = inAir("shuriken-cutter");
+    expect(stretches(air, (s) => s.left > s.hips.y + 0.05 && s.right < s.hips.y)).toBeGreaterThanOrEqual(2);
+  });
+});
