@@ -1331,3 +1331,182 @@ describe("triple aerial twist", () => {
     expect(turns("triple-aerial-twist")).toBeGreaterThan(turns("double-aerial-twist"));
   });
 });
+
+/* Contracts for the nineteenth batch (2026-11). */
+
+/** The samples of the longest flight. */
+const inAir = (id: string, steps = 300) => {
+  const samples = sampleClip(byId(id), steps);
+  const [a, b] = longestFlight(samples)!;
+  return samples.slice(a, b + 1);
+};
+
+/** Yaw travelled between leaving the floor and landing. */
+const airYaw = (id: string) => {
+  const air = inAir(id);
+  return yawTravel(air, air[0].t, air[air.length - 1].t);
+};
+
+const sideOn = (s: Sample) => Math.abs(Math.sin((s.yaw * Math.PI) / 180)) > 0.8 && Math.abs(s.fwdY) < 0.6;
+const upright = (s: Sample) => s.head > s.hips.y + 0.3;
+
+describe("double back tuck", () => {
+  it("goes upside down twice in the air, where the back tuck does it once", () => {
+    expect(stretches(inAir("double-back-tuck"), inverted)).toBe(2);
+    expect(stretches(inAir("back-flip"), inverted)).toBe(1);
+  });
+});
+
+describe("corkscrews with more twists", () => {
+  it("faces the start direction once per twist in the air", () => {
+    const turns = (id: string) => stretches(inAir(id, 600), (s) => s.fwdZ > 0.6);
+    expect(turns("corkscrew")).toBe(1);
+    expect(turns("double-corkscrew")).toBe(2);
+    expect(turns("triple-corkscrew")).toBe(3);
+  });
+});
+
+describe("skip hook", () => {
+  it("spins about 180° in the air, as Loopkicks says of its two-footed form", () => {
+    const yaw = airYaw("skip-hook");
+    expect(yaw).toBeGreaterThan(140);
+    expect(yaw).toBeLessThan(220);
+  });
+
+  it("hooks with the left foot above the hips", () => {
+    expect(inAir("skip-hook").some((s) => s.left > s.hips.y && s.right < s.hips.y)).toBe(true);
+  });
+});
+
+describe("cheat 1080", () => {
+  it("spins one more turn in the air than the cheat 720", () => {
+    const extra = airYaw("cheat-1080") - airYaw("cheat-720");
+    expect(extra).toBeGreaterThan(300);
+    expect(extra).toBeLessThan(420);
+  });
+});
+
+describe("backside 1260", () => {
+  it("spins about 900° in the air", () => {
+    const yaw = airYaw("backside-1260");
+    expect(yaw).toBeGreaterThan(800);
+    expect(yaw).toBeLessThan(960);
+  });
+});
+
+describe.each(["jackknife", "wackknife"])("%s", (id) => {
+  it("kicks with the right leg first, then the left", () => {
+    const air = inAir(id);
+    const right = air.findIndex((s) => s.right > s.hips.y);
+    const left = air.length - 1 - [...air].reverse().findIndex((s) => s.left > s.hips.y);
+    expect(right, "right kick").toBeGreaterThanOrEqual(0);
+    expect(left, "left kick after it").toBeGreaterThan(right);
+  });
+});
+
+describe("wackknife", () => {
+  it("spins far less in the air than the jackknife", () => {
+    expect(airYaw("wackknife")).toBeLessThan(airYaw("jackknife") - 200);
+  });
+});
+
+describe.each([
+  ["parafuso", "cheat-kick"],
+  ["corkscrew-doubleleg", "corkscrew"],
+  ["lotus-doubleleg", "corkscrew"],
+])("%s", (id, without) => {
+  it("swings both legs up together with the body upright, which its plain form never does", () => {
+    const doubleleg = (trick: string) => inAir(trick).some((s) => legsUp(s) && upright(s));
+    expect(doubleleg(id)).toBe(true);
+    expect(doubleleg(without)).toBe(false);
+  });
+});
+
+describe("rodeo full", () => {
+  it("holds the left foot in the left hand on the way up, before the twist", () => {
+    // Palm to the ball of the foot: within a foot's length means the hand is on the foot.
+    const grabbed = inAir("rodeo-full").filter((s) => s.palmL.distanceTo(s.ballL) < 0.27);
+    expect(grabbed.length, "frames with the foot in the hand").toBeGreaterThan(15);
+  });
+});
+
+describe.each([
+  ["snapu", "sideswipe"],
+  ["full-snapu", "full-swipe"],
+])("%s", (id, swipe) => {
+  it("turns side on more often than the swipe it extends (the extra twist)", () => {
+    const turns = (trick: string) => stretches(inAir(trick), sideOn);
+    expect(turns(id)).toBeGreaterThan(turns(swipe));
+  });
+});
+
+describe.each(["boxcutter", "gainer-hook", "tak-full-hyperhook", "wrap-full-hyperhook", "lotus-doubleleg-hyperhook", "lotus-shuriken"])("%s", (id) => {
+  it("raises the left leg above the hips in the last third of the flight, the right staying below", () => {
+    const air = inAir(id);
+    const end = air.slice(Math.floor((air.length * 2) / 3));
+    expect(end.some((s) => s.left > s.hips.y - 0.05 && s.right < s.hips.y && upright(s))).toBe(true);
+  });
+});
+
+describe("dragonfly corkscrew", () => {
+  it("reaches the right foot out further early in the flight than the corkscrew does", () => {
+    const reach = (id: string) => {
+      const air = inAir(id);
+      const early = air.slice(0, Math.floor(air.length / 3));
+      return Math.max(...early.map((s) => planarDistance(s.ballR, s.hips)));
+    };
+    expect(reach("dragonfly-corkscrew")).toBeGreaterThan(reach("corkscrew"));
+  });
+});
+
+describe("backside 1440", () => {
+  it("spins about 1080° in the air", () => {
+    const yaw = airYaw("backside-1440");
+    expect(yaw).toBeGreaterThan(960);
+    expect(yaw).toBeLessThan(1200);
+  });
+});
+
+describe("cheat 1260", () => {
+  it("spins as far in the air as the cheat 1080, ending on the round kick", () => {
+    expect(airYaw("cheat-1260")).toBeGreaterThan(airYaw("cheat-1080"));
+  });
+});
+
+describe("rodeo corkscrew", () => {
+  it("holds the left foot in the left hand on the way up, before the twist", () => {
+    const grabbed = inAir("rodeo-corkscrew").filter((s) => s.palmL.distanceTo(s.ballL) < 0.27);
+    expect(grabbed.length, "frames with the foot in the hand").toBeGreaterThan(15);
+  });
+});
+
+describe("corkscrew snapu", () => {
+  it("faces the start direction twice in the air, a double corkscrew variation", () => {
+    expect(stretches(inAir("corkscrew-snapu", 600), (s) => s.fwdZ > 0.6)).toBe(2);
+  });
+});
+
+describe.each(["full-wackknife", "corkscrew-swipeknife"])("%s", (id) => {
+  it("kicks with the right leg first, then the left", () => {
+    const air = inAir(id);
+    const right = air.findIndex((s) => s.right > s.hips.y);
+    const left = air.length - 1 - [...air].reverse().findIndex((s) => s.left > s.hips.y);
+    expect(right, "right kick").toBeGreaterThanOrEqual(0);
+    expect(left, "left kick after it").toBeGreaterThan(right);
+  });
+});
+
+describe("cheat 900 doubleleg", () => {
+  it("swings both legs up together with the body upright, which the cheat 900 never does", () => {
+    const doubleleg = (trick: string) => inAir(trick).some((s) => legsUp(s) && upright(s));
+    expect(doubleleg("cheat-900-doubleleg")).toBe(true);
+    expect(doubleleg("cheat-900")).toBe(false);
+  });
+});
+
+describe("shuriken cutter", () => {
+  it("raises the left leg twice on the way down: the crescent, then the hook", () => {
+    const air = inAir("shuriken-cutter");
+    expect(stretches(air, (s) => s.left > s.hips.y + 0.05 && s.right < s.hips.y)).toBeGreaterThanOrEqual(2);
+  });
+});

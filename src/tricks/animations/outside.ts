@@ -1110,3 +1110,83 @@ export function buildCheat720TwistRound(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("cheat-720-twist-round");
 }
+
+/** Snapu: the sideswipe's right-leg kick, then one more twist before the left
+ * foot lands (complete), the right set down after. */
+export function buildSnapu(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  outsideStep(r);
+  r.at(0.4, { heading: 190, tilt: 75, spin: 0, twist: 0, ...legL(-45, 15, 0), ...legR(5, 0, 5, 0, 35), ...armL(60, 170, 10), ...armR(170, -60, 10), ...torso(-25, 0, 0), ...head(-25, 10) });
+  r.flight(0.4, 0.84, { travel: [0.3, 0.3], apex: 0.55 });
+  r.at(0.5, { heading: 220, spin: 110, twist: 0, ...legL(-70, 20, 0), ...legR(-15, -15, 20), ...armL(100, 160, 10), ...armR(170, -40, 10), ...torso(-25, 0, 0), ...head(-25, 0) });
+  r.at(0.57, { heading: 255, spin: 190, twist: 0, ...legL(-40, 20, 70), ...legR(35, -30, 40), ...armL(120, 120, 10), ...armR(140, -60, 10), ...torso(-15, 0, 0), ...head(-20, 0) });
+  r.at(0.64, { heading: 290, spin: 245, twist: 0, ...legL(0, 25, 90), ...legR(110, -10, 5), ...armL(90, 90, 20), ...armR(90, -90, 20), ...torso(0, 0, 0), ...head(-10, 0) });
+  // The kicking leg snaps back in and the arms pull in for the extra twist.
+  r.at(0.71, { heading: 315, spin: 295, twist: 150, ...legL(20, 5, 30), ...legR(30, -5, 25), ...armsTight, ...torso(5, 0, 0), ...head(-5, 0) });
+  r.at(0.78, { heading: 335, spin: 335, twist: 315, ...legL(25, 5, 25), ...legR(0, -5, 35), ...armsTight, ...torso(8, 0, 0), ...head(0, 0) });
+  r.at(0.84, { heading: 345, spin: 360, twist: 360, ...legL(25, 10, 15), ...legR(-35, -10, 45), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 360, spin: 360, twist: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("snapu");
+}
+
+/** The lotus swing: the right leg swings through off the left foot and the body
+ * flips on the raiz axis with both legs piked together, up to the top. */
+function lotusEntry(r: Rig, uLand: number) {
+  r.start({ ...armsDown, ...legL(20, 5, 0, 0, 20), ...legR(-15, -5, 35, 0, -20), ...torso(8, 0, 0) });
+  r.at(0.1, { ...legR(5, -5, 80, 0, -40) });
+  r.pin("L", 0, 0.36);
+  r.at(0.2, { heading: 15, ...legL(25, 5, 35), ...legR(45, -5, 50), ...armL(45, 10, 20), ...armR(50, -150, 20), ...torso(10, 0, -25), ...head(0, -10) });
+  r.at(0.36, { heading: 40, tilt: 40, spin: 0, ...legL(0, 5, 5, 0, 35), ...legR(100, -5, 5), ...armL(160, 80, 10), ...armR(140, -40, 15), ...torso(-10, 0, 25), ...head(-15, 30) });
+  r.flight(0.36, uLand, { travel: [0.3, 0.3], apex: 0.55 });
+  r.at(0.47, { heading: 120, spin: 110, ...legL(75, 5, 10), ...legR(100, -5, 10), ...armL(110, 60, 10), ...armR(110, -60, 10), ...torso(10, 0, 20), ...head(-10, 20) });
+  r.at(0.57, { heading: 200, spin: 200, ...legL(100, 5, 5), ...legR(100, -5, 5), ...armL(100, 20, 10), ...armR(100, -20, 10), ...torso(20, 0, 10), ...head(0, 10) });
+}
+
+/** Lotus Doubleleg: the lotus swing with the piked legs carried round, landing
+ * on both feet. */
+export function buildLotusDoubleleg(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  lotusEntry(r, 0.8);
+  const stance = { ...legL(30, 10, 40), ...legR(30, -10, 40) };
+  r.at(0.68, { heading: 290, spin: 290, ...legL(70, 5, 10), ...legR(70, -5, 10), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.8, { heading: 360, spin: 360, ...stance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.8, 1);
+  r.at(1, { heading: 360, spin: 360, ...stance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("lotus-doubleleg");
+}
+
+/** Lotus Shuriken: the lotus doubleleg with the left leg peeling off into an
+ * outside crescent and landing first (complete), the right set down after. */
+export function buildLotusShuriken(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  lotusEntry(r, 0.84);
+  r.at(0.65, { heading: 270, spin: 270, ...legL(95, -40, 10), ...legR(45, -10, 75), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(0, 10) });
+  r.at(0.72, { heading: 320, spin: 325, ...legL(115, 60, 10), ...legR(40, -10, 75), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
+  r.at(0.79, { heading: 345, spin: 350, ...legL(55, 30, 20), ...legR(45, -15, 85), ...armsTight, ...torso(5, 5, 0), ...head(0, 5) });
+  r.at(0.84, { heading: 355, spin: 360, ...legL(20, 8, 30), ...legR(45, -20, 85), ...armL(60, 60, 30), ...armR(60, -60, 30), ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 360, spin: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("lotus-shuriken");
+}
+
+/** Lotus Doubleleg Hyperhook: the lotus doubleleg landing in a hyperhook: the
+ * left leg hooks and the right foot lands first, the left set down behind. */
+export function buildLotusDoublelegHyperhook(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  lotusEntry(r, 0.84);
+  r.at(0.65, { heading: 265, spin: 270, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 20) });
+  r.at(0.73, { heading: 310, spin: 335, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.84, { heading: 345, spin: 360, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { heading: 360, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.93, 0.97, { heading: 360, spin: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("lotus-doubleleg-hyperhook");
+}

@@ -240,10 +240,9 @@ export function buildLoser(): THREE.AnimationClip {
   return r.build("loser");
 }
 
-/** Corkscrew entry shared by the Corkscrew Swipe / Corkscrew Hyper: wind to the
- * right, left-foot takeoff with the right leg swinging up, then the first 210°
- * of the backflip with the left twist (flight 0.36 → 0.82). */
-function corkEntry(r: Rig) {
+/** The corkscrew takeoff: wind to the right, then push off the left foot with
+ * the right leg swinging up. */
+function corkTakeoff(r: Rig) {
   swingStance(r);
   r.pin("L", 0, 0.36);
   r.at(0.2, {
@@ -267,6 +266,12 @@ function corkEntry(r: Rig) {
     ...torso(-10, 0, 25),
     ...head(-25, 30),
   });
+}
+
+/** Corkscrew entry shared by the Corkscrew Swipe / Corkscrew Hyper: the takeoff,
+ * then the first 210° of the backflip with the left twist (flight 0.36 → 0.82). */
+function corkEntry(r: Rig) {
+  corkTakeoff(r);
   r.flight(0.36, 0.82, { travel: [0.3, 0.5], apex: 0.55 });
   r.at(0.46, {
     heading: 60,
@@ -2125,4 +2130,314 @@ export function buildCorkscrewShuriken(): THREE.AnimationClip {
   settle(r, "R", 0.88, 0.94, { heading: 110, pitch: -360, twist: 360, roll: 0 });
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("corkscrew-shuriken");
+}
+
+/** Double Back Tuck: a back tuck with two rotations, held in a tight tuck,
+ * landing on both feet. */
+export function buildDoubleBackTuck(): THREE.AnimationClip {
+  const D = 2.0;
+  const r = new Rig(D);
+  r.start({ ...armsDown, ...legL(0, 8), ...legR(0, -8) });
+  r.pin("L", 0, 0.32);
+  r.at(0.18, { ...squat, ...armsBack, ...torso(15, 0, 0), ...head(5, 0) });
+  r.at(0.32, { pitch: -15, ...pushOff, ...armsUp, ...torso(-10, 0, 0), ...head(-25, 0) });
+  r.flight(0.32, 0.82, { travel: [0, -0.4] });
+  r.at(0.39, { pitch: -100, ...legL(60, 5, 70), ...legR(60, -5, 70), ...armL(110, 30, 30), ...armR(110, -30, 30), ...torso(10, 0, 0), ...head(-25, 0) });
+  r.at(0.47, { pitch: -250, ...legsTuck, ...armsTight, ...torso(40, 0, 0), ...head(35, 0) });
+  r.at(0.56, { pitch: -420, ...legsTuck, ...armsTight, ...torso(40, 0, 0), ...head(35, 0) });
+  r.at(0.65, { pitch: -570, ...legsTuck, ...armsTight, ...torso(40, 0, 0), ...head(35, 0) });
+  r.at(0.72, { pitch: -660, ...legL(110, 5, 120), ...legR(110, -5, 120), ...armsTight, ...torso(35, 0, 0), ...head(25, 0) });
+  r.at(0.78, { pitch: -700, ...legL(40, 8, 40), ...legR(40, -8, 40), ...armsWide, ...torso(12, 0, 0), ...head(5, 0) });
+  r.at(0.82, { pitch: -720, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.82, 1);
+  r.at(1, { pitch: -720, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("double-back-tuck");
+}
+
+/** Rodeo Full: the full with an arched back and the left foot grabbed by the
+ * left hand on the way up, then released for the twist, landing on both feet. */
+export function buildRodeoFull(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  fullTakeoff(r);
+  r.flight(0.33, 0.82, { travel: [0, -0.4] });
+  const grab = { ...legL(-30, 5, 125, 0, 40), ...legR(15, -5, 30), ...armL(55, 170, 10), ...armR(150, -80, 15), ...torso(-30, 0, 0), ...head(-30, 0) };
+  // The legs bend away only after leaving the floor, or the push-off keeps moving the planted feet.
+  r.at(0.36, { ...legL(10, 8, 10, 0, 35), ...legR(10, -8, 10, 0, 35) });
+  r.at(0.42, { pitch: -85, twist: 20, ...grab });
+  r.at(0.5, { pitch: -155, twist: 50, ...grab });
+  // Let go and pull in for the twist.
+  r.at(0.58, { pitch: -215, twist: 170, ...legL(20, 5, 30), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-5, 0) });
+  r.at(0.68, { pitch: -285, twist: 325, ...legL(25, 5, 25), ...legR(25, -5, 25), ...armsTight, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.82, { pitch: -360, twist: 360, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.82, 1);
+  r.at(1, { pitch: -360, twist: 360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("rodeo-full");
+}
+
+/** Full Snapu: the full swipe's round kick early, then one more twist before
+ * the left foot lands (complete), which makes it a double full variation. */
+export function buildFullSnapu(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  fullTakeoff(r);
+  r.flight(0.33, 0.84, { travel: [0, -0.4] });
+  r.at(0.43, { pitch: -105, twist: 110, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.51, { pitch: -170, twist: 230, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
+  r.at(0.58, { pitch: -225, twist: 330, ...legL(30, 5, 35), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-5, 0) });
+  r.at(0.64, { pitch: -270, twist: 365, ...legL(40, 8, 60), ...legR(120, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  // The kicking leg snaps back in and the arms pull in for the extra twist.
+  r.at(0.7, { pitch: -310, twist: 490, ...legL(25, 5, 25), ...legR(30, -5, 25), ...armsTight, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(0.77, { pitch: -345, twist: 660, ...legL(25, 5, 25), ...legR(0, -5, 35), ...armsTight, ...torso(8, 0, 0), ...head(0, 0) });
+  r.at(0.84, { pitch: -360, twist: 720, ...legL(20, 8, 20), ...legR(-20, -8, 50), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { pitch: -360, twist: 720 }, 8);
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("full-snapu");
+}
+
+/** The hyperhook finish of a corkscrew once it is 210° round: chamber out to
+ * the side, hook, land on the right foot and set the left down behind. */
+function corkHyperhookFinish(r: Rig) {
+  r.at(0.66, { heading: 92, pitch: -290, twist: 300, roll: -6, ...legL(70, 60, 70), ...legR(40, -10, 70), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(-5, 10) });
+  r.at(0.73, { heading: 100, pitch: -340, twist: 345, roll: 0, ...legL(118, 95, 10, 0, 20), ...legR(30, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.82, { heading: 110, pitch: -360, twist: 360, roll: 0, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.82, 1);
+  r.at(0.87, { ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.91, 0.96, { heading: 110, pitch: -360, twist: 360, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+}
+
+/** Boxcutter (Corkscrew Hyperhook): the corkscrew finished with a left-leg hook,
+ * landing on the right foot (hyper). */
+export function buildBoxcutter(): THREE.AnimationClip {
+  const r = new Rig(1.9);
+  corkEntry(r);
+  corkHyperhookFinish(r);
+  return r.build("boxcutter");
+}
+
+/** Corkscrew Doubleleg: the corkscrew finished with both legs piked together in
+ * a sweep past the target, landing on both feet. */
+export function buildCorkscrewDoubleleg(): THREE.AnimationClip {
+  const r = new Rig(1.9);
+  corkEntry(r);
+  r.at(0.64, { heading: 90, pitch: -280, twist: 280, roll: -10, ...legL(20, 10, 10), ...legR(20, -10, 10), ...armL(80, 60, 40), ...armR(80, -60, 40), ...torso(5, 0, 0), ...head(-5, 0) });
+  // Both legs fold up together, then swing round straight as one.
+  r.at(0.7, { heading: 98, pitch: -335, twist: 330, roll: 0, ...legL(70, 10, 60), ...legR(70, -10, 60), ...armL(110, 60, 10), ...armR(110, -60, 10), ...torso(10, 0, 10), ...head(-10, 10) });
+  r.at(0.76, { heading: 106, pitch: -355, twist: 355, roll: 0, ...legL(115, 5, 5), ...legR(115, -5, 5), ...armsWide, ...torso(0, 0, 0), ...head(0, 0) });
+  r.at(0.82, { heading: 110, pitch: -360, twist: 360, roll: 0, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.82, 1);
+  r.at(1, { heading: 110, pitch: -360, twist: 360, roll: 0, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("corkscrew-doubleleg");
+}
+
+/** Dragonfly Corkscrew: the corkscrew's swing goes into a right-leg side kick
+ * before the twist starts, landing on the left foot (complete). */
+export function buildDragonflyCorkscrew(): THREE.AnimationClip {
+  const r = new Rig(2.0);
+  corkTakeoff(r);
+  r.flight(0.36, 0.84, { travel: [0.3, 0.5], apex: 0.55 });
+  r.at(0.44, { heading: 50, pitch: -70, twist: 0, roll: -5, ...legR(110, -90, 0, 0, 30), ...legL(10, 5, 40), ...armL(60, 120, 30), ...armR(60, -110, 40), ...torso(0, 20, 0), ...head(-15, -40) });
+  r.at(0.51, { heading: 60, pitch: -135, twist: 60, roll: -15, ...legR(70, -10, 25), ...legL(10, 5, 40), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
+  r.at(0.6, { heading: 80, pitch: -215, twist: 210, roll: -15, ...legR(40, -5, 40), ...legL(0, 5, 40), ...armsTight, ...head(-20, 30) });
+  r.at(0.7, { heading: 95, pitch: -295, twist: 305, roll: -10, ...legL(30, 5, 30), ...legR(-5, -5, 45), ...armL(80, 60, 30), ...armR(80, -60, 30), ...head(-10, 10) });
+  r.at(0.78, { heading: 105, pitch: -340, twist: 350, roll: 0, ...legL(30, 0, 25), ...legR(-20, -5, 50), ...armsWide, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(0.84, { heading: 110, pitch: -360, twist: 360, roll: 0, ...legL(25, 0, 25), ...legR(-30, -5, 50), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 110, pitch: -360, twist: 360, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("dragonfly-corkscrew");
+}
+
+/** The flight of a double or triple corkscrew: `turns` twists on the tilted
+ * axis, arms in, landing on the left foot (complete). */
+function multiCorkFlight(r: Rig, turns: number) {
+  const tw = 360 * turns;
+  r.flight(0.36, 0.82, { travel: [0.3, 0.5], apex: 0.55 });
+  const tightLow = { ...legL(5, 5, 20), ...legR(25, -5, 25), ...armsTight, ...torso(5, 0, 0) };
+  r.at(0.44, { heading: 60, pitch: -90, twist: tw * 0.24, roll: -15, ...legL(10, 5, 30), ...legR(60, -10, 25), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
+  r.at(0.52, { heading: 72, pitch: -170, twist: tw * 0.53, roll: -15, ...tightLow, ...head(-20, 30) });
+  r.at(0.6, { heading: 84, pitch: -245, twist: tw * 0.82, roll: -12, ...tightLow, ...head(-15, 20) });
+  r.at(0.68, { heading: 95, pitch: -300, twist: tw * 0.97, roll: -8, ...legL(30, 5, 30), ...legR(-5, -5, 45), ...armL(80, 60, 30), ...armR(80, -60, 30), ...head(-10, 10) });
+  r.at(0.76, { heading: 105, pitch: -342, twist: tw * 0.995, roll: 0, ...legL(30, 0, 25), ...legR(-20, -5, 50), ...armsWide, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(0.82, { heading: 110, pitch: -360, twist: tw, roll: 0, ...legL(25, 0, 25), ...legR(-30, -5, 50), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.82, 1);
+  settle(r, "R", 0.88, 0.94, { heading: 110, pitch: -360, twist: tw, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+}
+
+/** Double Corkscrew: a corkscrew with two twists, a double full off one foot. */
+export function buildDoubleCorkscrew(): THREE.AnimationClip {
+  const r = new Rig(2.0);
+  corkTakeoff(r);
+  multiCorkFlight(r, 2);
+  return r.build("double-corkscrew");
+}
+
+/** Triple Corkscrew: a corkscrew with three twists. */
+export function buildTripleCorkscrew(): THREE.AnimationClip {
+  const r = new Rig(2.1);
+  corkTakeoff(r);
+  multiCorkFlight(r, 3);
+  return r.build("triple-corkscrew");
+}
+
+/** The hyperhook finish of the off-axis fulls: once the flip is nearly round
+ * the left leg chambers and hooks, and the right foot lands first (hyper). */
+function offAxisHyperhookFlight(r: Rig, uOff: number, uLand: number, h: number) {
+  const mid = (k: number) => uOff + (uLand - uOff) * k;
+  r.flight(uOff, uLand, { travel: [0.2, 0] });
+  r.at(mid(0.25), { heading: h + 20, pitch: -110, twist: 90, roll: -15, ...legL(25, 5, 60), ...legR(25, -5, 60), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
+  r.at(mid(0.5), { heading: h + 38, pitch: -215, twist: 220, roll: -15, ...legL(20, 5, 50), ...legR(20, -5, 50), ...armsTight, ...head(-20, 30) });
+  r.at(mid(0.68), { heading: h + 50, pitch: -295, twist: 300, roll: -6, ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(-5, 20) });
+  r.at(mid(0.82), { heading: h + 58, pitch: -345, twist: 345, roll: 0, ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(uLand, { heading: h + 65, pitch: -360, twist: 360, roll: 0, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", uLand, 1);
+  r.at(uLand + 0.05, { ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, uLand + 0.09, uLand + 0.13, { heading: h + 70, pitch: -360, twist: 360, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+}
+
+/** Wrap Full Hyperhook: the wrap full finished with a left-leg hook. */
+export function buildWrapFullHyperhook(): THREE.AnimationClip {
+  const r = new Rig(1.9);
+  wrapSetup(r);
+  offAxisHyperhookFlight(r, 0.38, 0.83, 120);
+  return r.build("wrap-full-hyperhook");
+}
+
+/** Tak Full Hyperhook: the tak full finished with a left-leg hook. */
+export function buildTakFullHyperhook(): THREE.AnimationClip {
+  const r = new Rig(1.9);
+  takEntry(r);
+  offAxisHyperhookFlight(r, 0.4, 0.84, 210);
+  return r.build("tak-full-hyperhook");
+}
+
+/** Gainer Hook: the gainer flash finished with a left-leg outside kick as the
+ * flip comes round, landing on the right foot, the left set down behind. */
+export function buildGainerHook(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  swingStance(r);
+  r.pin("L", 0, 0.36);
+  r.at(0.2, { ...legL(25, 5, 35), ...legR(45, -5, 50), ...armsBack, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.36, { pitch: -20, ...legL(0, 5, 5, 0, 35), ...legR(100, -5, 5), ...armsUp, ...torso(-15, 0, 0), ...head(-30, 0) });
+  r.flight(0.36, 0.84, { travel: [0, 0.5] });
+  r.at(0.48, { pitch: -125, ...legR(85, 0, 5), ...legL(5, 0, 40), ...armL(130, 100, 10), ...armR(130, -100, 10), ...torso(-15, 0, 0), ...head(-40, 0) });
+  r.at(0.59, { pitch: -225, ...legR(50, 0, 30), ...legL(70, 60, 70), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(-20, 20) });
+  r.at(0.67, { pitch: -310, ...legR(25, -10, 60), ...legL(100, 80, 40), ...armL(50, 90, 50), ...armR(75, -35, 75), ...torso(0, 18, 5), ...head(-5, 20) });
+  r.at(0.74, { pitch: -350, ...legR(20, -10, 60), ...legL(118, 95, 10, 0, 20), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.84, { pitch: -360, ...legR(20, 0, 30), ...legL(50, 70, 80), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.93, 0.97, { pitch: -360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("gainer-hook");
+}
+
+/** Shuriken Cutter: the corkscrew shuriken finished with a hyperhook: the left
+ * leg crescents, chambers again and hooks, and the right foot lands first. */
+export function buildShurikenCutter(): THREE.AnimationClip {
+  const r = new Rig(2.0);
+  corkTakeoff(r);
+  r.flight(0.36, 0.84, { travel: [0.3, 0.5], apex: 0.55 });
+  r.at(0.45, { heading: 60, pitch: -110, twist: 90, roll: -15, ...legR(70, -10, 25), ...legL(10, 5, 40), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
+  r.at(0.54, { heading: 78, pitch: -200, twist: 210, roll: -15, ...legR(40, -5, 40), ...legL(0, 5, 40), ...armsTight, ...head(-20, 30) });
+  // The crescent: the straight left leg sweeps from the right across to the left.
+  r.at(0.61, { heading: 88, pitch: -270, twist: 280, roll: -8, ...legL(95, -40, 10), ...legR(40, -10, 80), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(-5, 10) });
+  r.at(0.66, { heading: 94, pitch: -310, twist: 320, roll: -4, ...legL(115, 60, 10), ...legR(35, -10, 70), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
+  // The leg folds and hooks back at the target.
+  r.at(0.71, { heading: 100, pitch: -335, twist: 345, roll: 0, ...legL(70, 60, 70), ...legR(30, -10, 70), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 20) });
+  r.at(0.77, { heading: 106, pitch: -352, twist: 355, roll: 0, ...legL(118, 95, 10, 0, 20), ...legR(25, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.84, { heading: 110, pitch: -360, twist: 360, roll: 0, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.93, 0.97, { heading: 110, pitch: -360, twist: 360, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("shuriken-cutter");
+}
+
+/** Corkscrew Swipeknife: the corkscrew with a right-leg round kick followed by a
+ * left-leg hyperhook, the right foot landing first. */
+export function buildCorkscrewSwipeknife(): THREE.AnimationClip {
+  const r = new Rig(2.0);
+  corkTakeoff(r);
+  r.flight(0.36, 0.84, { travel: [0.3, 0.5], apex: 0.55 });
+  r.at(0.45, { heading: 60, pitch: -110, twist: 100, roll: -15, ...legR(70, -10, 25), ...legL(10, 5, 40), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
+  r.at(0.54, { heading: 78, pitch: -195, twist: 230, roll: -15, ...legR(40, -5, 40), ...legL(0, 5, 40), ...armsTight, ...head(-20, 30) });
+  r.at(0.61, { heading: 88, pitch: -265, twist: 300, roll: -8, ...legL(30, 5, 35), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-5, 10) });
+  r.at(0.67, { heading: 95, pitch: -315, twist: 335, roll: -3, ...legL(35, 8, 50), ...legR(115, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.72, { heading: 100, pitch: -340, twist: 350, roll: 0, ...legL(70, 60, 70), ...legR(50, -10, 70), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 20) });
+  r.at(0.78, { heading: 106, pitch: -354, twist: 357, roll: 0, ...legL(118, 95, 10, 0, 20), ...legR(25, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) });
+  r.at(0.84, { heading: 110, pitch: -360, twist: 360, roll: 0, ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.93, 0.97, { heading: 110, pitch: -360, twist: 360, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("corkscrew-swipeknife");
+}
+
+/** Corkscrew Snapu: the corkscrew's right-leg kick early, then one more twist
+ * before the left foot lands, a double corkscrew variation. */
+export function buildCorkscrewSnapu(): THREE.AnimationClip {
+  const r = new Rig(2.0);
+  corkTakeoff(r);
+  r.flight(0.36, 0.84, { travel: [0.3, 0.5], apex: 0.55 });
+  r.at(0.44, { heading: 60, pitch: -95, twist: 100, roll: -15, ...legR(70, -10, 25), ...legL(10, 5, 40), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
+  r.at(0.52, { heading: 75, pitch: -165, twist: 230, roll: -15, ...legR(40, -5, 40), ...legL(0, 5, 40), ...armsTight, ...head(-20, 30) });
+  r.at(0.58, { heading: 82, pitch: -220, twist: 330, roll: -10, ...legL(30, 5, 35), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-5, 10) });
+  r.at(0.64, { heading: 88, pitch: -265, twist: 365, roll: -8, ...legL(40, 8, 60), ...legR(120, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  // The kicking leg snaps back in and the arms pull in for the extra twist.
+  r.at(0.7, { heading: 95, pitch: -310, twist: 490, roll: -5, ...legL(25, 5, 25), ...legR(30, -5, 25), ...armsTight, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(0.77, { heading: 104, pitch: -345, twist: 660, roll: 0, ...legL(25, 5, 25), ...legR(0, -5, 35), ...armsTight, ...torso(8, 0, 0), ...head(0, 0) });
+  r.at(0.84, { heading: 110, pitch: -360, twist: 720, roll: 0, ...legL(25, 0, 25), ...legR(-30, -5, 50), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 110, pitch: -360, twist: 720, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("corkscrew-snapu");
+}
+
+/** Rodeo Corkscrew: the corkscrew with an arched back and the left foot in the
+ * left hand on the way up, then released for the twist, landing on the left foot. */
+export function buildRodeoCorkscrew(): THREE.AnimationClip {
+  const r = new Rig(2.0);
+  corkTakeoff(r);
+  r.flight(0.36, 0.84, { travel: [0.3, 0.5], apex: 0.55 });
+  const grab = { ...legL(-30, 5, 125, 0, 40), ...legR(40, -5, 30), ...armL(55, 170, 10), ...armR(150, -80, 15), ...torso(-30, 0, 0), ...head(-30, 0) };
+  // The legs bend away only after leaving the floor, or the push-off keeps moving the planted foot.
+  r.at(0.39, { ...legL(10, 8, 10, 0, 35) });
+  r.at(0.45, { heading: 50, pitch: -85, twist: 20, roll: -5, ...grab });
+  r.at(0.53, { heading: 60, pitch: -150, twist: 50, roll: -10, ...grab });
+  // Let go and pull in for the twist.
+  r.at(0.61, { heading: 78, pitch: -220, twist: 180, roll: -15, ...legR(40, -5, 40), ...legL(0, 5, 40), ...armsTight, ...torso(5, 0, 0), ...head(-20, 30) });
+  r.at(0.71, { heading: 95, pitch: -295, twist: 320, roll: -10, ...legL(30, 5, 30), ...legR(-5, -5, 45), ...armL(80, 60, 30), ...armR(80, -60, 30), ...head(-10, 10) });
+  r.at(0.78, { heading: 105, pitch: -340, twist: 355, roll: 0, ...legL(30, 0, 25), ...legR(-20, -5, 50), ...armsWide, ...torso(5, 0, 0), ...head(0, 0) });
+  r.at(0.84, { heading: 110, pitch: -360, twist: 360, roll: 0, ...legL(25, 0, 25), ...legR(-30, -5, 50), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 110, pitch: -360, twist: 360, roll: 0 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("rodeo-corkscrew");
+}
+
+/** Full Wackknife: the full finished with a right-leg round kick and a left-leg
+ * outside crescent, landing on both feet. */
+export function buildFullWackknife(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  fullTakeoff(r);
+  r.flight(0.33, 0.84, { travel: [0, -0.4] });
+  r.at(0.43, { pitch: -105, twist: 110, ...legL(20, 5, 20), ...legR(20, -5, 20), ...armsTight, ...torso(5, 0, 0), ...head(-15, 0) });
+  r.at(0.52, { pitch: -190, twist: 230, ...legL(25, 5, 30), ...legR(25, -5, 30), ...armsTight, ...torso(15, 0, 0), ...head(-5, 0) });
+  r.at(0.59, { pitch: -255, twist: 310, ...legL(30, 5, 35), ...legR(60, -60, 120, 60), ...armL(80, 90, 40), ...armR(80, -60, 60), ...torso(-5, 5, 0), ...head(-5, 0) });
+  r.at(0.65, { pitch: -305, twist: 345, ...legL(40, 8, 60), ...legR(115, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  // The right leg comes back in while the straight left leg sweeps across.
+  r.at(0.71, { pitch: -338, twist: 355, ...legL(95, -30, 10), ...legR(55, -20, 80), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(0, 10) });
+  r.at(0.76, { pitch: -352, twist: 360, ...legL(115, 60, 10), ...legR(45, -10, 80), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
+  r.at(0.8, { pitch: -357, twist: 360, ...legL(55, 20, 50), ...legR(45, -10, 60), ...armsTight, ...torso(5, 5, 0), ...head(0, 5) });
+  r.at(0.84, { pitch: -360, twist: 360, ...landStance, ...armsWide, ...torso(15, 0, 0), ...head(5, 0) });
+  r.pin("L", 0.84, 1);
+  r.at(1, { pitch: -360, twist: 360, ...landStance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("full-wackknife");
 }

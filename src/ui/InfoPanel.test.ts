@@ -146,7 +146,7 @@ describe("InfoPanel progression", () => {
     const host = mountHost("aside");
     new InfoPanel(host, makeState({ trickId: "back-flip" }));
     expect(group(host, "先に覚える技").text).toBe("収録している技の中にはありません");
-    expect(group(host, "次に挑戦できる技").hrefs).toEqual(["#x-out", "#back-pike", "#flash-kick", "#arabian", "#gainer"]);
+    expect(group(host, "次に挑戦できる技").hrefs).toEqual(["#x-out", "#back-pike", "#double-back-tuck", "#flash-kick", "#arabian", "#gainer"]);
   });
 
   it("follows the links as page navigation and keeps the new trick's name in focus", async () => {
