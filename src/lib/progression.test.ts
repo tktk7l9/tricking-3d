@@ -13,7 +13,7 @@ describe("progression", () => {
 
   it("lists the tricks a trick unlocks in catalogue order", () => {
     expect(ids(unlocksOf("540-gyro"))).toEqual(["cheat-900-gyro", "backside-900-gyro"]);
-    expect(ids(unlocksOf("back-flip"))).toEqual(["x-out", "back-pike", "flash-kick", "arabian", "gainer"]);
+    expect(ids(unlocksOf("back-flip"))).toEqual(["x-out", "back-pike", "double-back-tuck", "flash-kick", "arabian", "gainer"]);
     expect(ids(unlocksOf("butterfly-twist"))).toEqual([
       "janitor-twist",
       "butterfly-twist-round",
@@ -26,6 +26,12 @@ describe("progression", () => {
       "cheat-720-twist",
       "spyder-twist",
     ]);
+  });
+
+  it("traces the cheat 720 and backside 720 back to the skip hook", () => {
+    expect(ids(prerequisitesOf("cheat-720"))).toEqual(["skip-hook"]);
+    expect(ids(prerequisitesOf("backside-720"))).toEqual(["skip-hook"]);
+    expect(ids(unlocksOf("skip-hook"))).toEqual(["cheat-720", "backside-720", "gainer-hook"]);
   });
 
   it("has nothing before a family's base trick and nothing after the newest variations", () => {

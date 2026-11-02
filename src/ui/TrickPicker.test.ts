@@ -62,10 +62,10 @@ describe("TrickPicker", () => {
 
     await userEvent.type(search, "こーく");
     const shown = visibleTrickButtons(host);
-    expect(shown.map((b) => b.dataset.id)).toEqual(["corkscrew-round", "corkscrew-shuriken", "corkscrew", "corkscrew-hyper", "cork-swipe"]);
+    expect(shown.map((b) => b.dataset.id)).toEqual(["corkscrew-round", "corkscrew-shuriken", "boxcutter", "dragonfly-corkscrew", "corkscrew-doubleleg", "corkscrew", "corkscrew-hyper", "cork-swipe", "double-corkscrew", "triple-corkscrew"]);
     const groups = Array.from(host.querySelectorAll<HTMLElement>(".group"));
     const visibleHeadings = groups.filter((g) => !g.hidden).map((g) => g.querySelector("h3")!.textContent);
-    expect(visibleHeadings).toEqual(["キック", "ツイスト"]);
+    expect(visibleHeadings).toEqual(["キック", "フリップ", "ツイスト"]);
     expect(queryByRole(host, "status")).toBeNull();
   });
 

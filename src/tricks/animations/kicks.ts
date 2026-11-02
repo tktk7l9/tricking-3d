@@ -1541,3 +1541,125 @@ export function buildLotus(): THREE.AnimationClip {
   r.at(1, { ...armsDown, ...torso(5, 0, 0) });
   return r.build("lotus");
 }
+
+const hookChamber = { ...legL(70, 60, 70), ...legR(25, -10, 75), ...armL(70, 20, 90), ...armR(70, -40, 90), ...torso(0, 10, 10), ...head(0, 40) };
+const hookImpact = { ...legL(118, 95, 10, 0, 20), ...legR(20, -10, 60), ...armL(35, 150, 20), ...armR(80, -30, 60), ...torso(0, 25, 0), ...head(0, 20) };
+const hookLanding = { ...legL(50, 70, 80), ...legR(20, 0, 30), ...armL(60, 90, 30), ...armR(60, -90, 30), ...torso(8, 10, 0), ...head(0, 0) };
+
+/** Skip Hook: the step round, then the right foot takes off with about 180° left
+ * for the air, the left leg hooks at the target, and the right foot lands
+ * (hyper) with the left set down behind. */
+export function buildSkipHook(): THREE.AnimationClip {
+  const D = 1.6;
+  const r = new Rig(D);
+  cheatStep(r, 0.38);
+  r.at(0.28, { heading: 150, ...legR(35, 0, 55), ...legL(45, 10, 85, 0, -40), ...armL(55, 110, 30), ...armR(50, -40, 30), ...torso(18, 0, 25), ...head(5, 50) });
+  r.at(0.38, { heading: 175, ...legL(85, 30, 35), ...legR(0, 0, 5, 0, 35), ...armL(130, 60, 20), ...armR(110, -70, 20), ...torso(-5, 0, 30), ...head(-5, 50) });
+  r.flight(0.38, 0.78, { travel: [0.05, 0.15] });
+  r.at(0.48, { heading: 215, ...hookChamber });
+  r.at(0.6, { heading: 265, ...hookImpact });
+  r.at(0.78, { heading: 335, ...hookLanding });
+  r.pin("R", 0.78, 1);
+  r.at(0.86, { heading: 360, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.91, 0.96, { heading: 360 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("skip-hook");
+}
+
+/** Cheat 1080: the cheat 720 with one more full spin before the left-leg hook,
+ * about 720° in the air, landing on the right foot. */
+export function buildCheat1080(): THREE.AnimationClip {
+  const D = 2.0;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "swing");
+  r.flight(0.4, 0.84, { travel: [0.05, 0.2], apex: 0.5 });
+  const spin = { ...legL(60, 30, 110), ...legR(35, -10, 90), ...armsTight, ...torso(5, 0, 10), ...head(0, 40) };
+  r.at(0.47, { heading: 380, ...spin });
+  r.at(0.55, { heading: 590, ...spin });
+  r.at(0.64, { heading: 800, ...hookChamber });
+  r.at(0.69, { heading: 890, ...hookChamber, ...armsTight });
+  r.at(0.76, { heading: 985, ...hookImpact });
+  r.at(0.84, { heading: 1055, ...hookLanding });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { heading: 1080, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.93, 0.97, { heading: 1080 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("cheat-1080");
+}
+
+/** Backside 1260: from backside stance off both feet, about 900° in the air, and
+ * a right-leg round kick at the target, landing on the left foot. */
+export function buildBackside1260(): THREE.AnimationClip {
+  const D = 2.0;
+  const r = new Rig(D);
+  backsidePop(r, 0.38, 80);
+  r.flight(0.38, 0.84, { travel: [0.05, 0.1], apex: 0.5 });
+  const spin = { ...legL(90, 30, 115), ...legR(60, -60, 125, 60), ...armsTight, ...torso(5, 5, 10), ...head(0, 40) };
+  r.at(0.46, { heading: 430, ...spin });
+  r.at(0.54, { heading: 650, ...spin });
+  r.at(0.62, { heading: 860, ...spin });
+  r.at(0.68, { heading: 975, ...legL(75, 35, 115), ...legR(75, -60, 120, 70), ...armL(80, 90, 50), ...armR(80, -60, 60), ...torso(5, 10, 5), ...head(0, 30) });
+  r.at(0.75, { heading: 1075, ...legL(70, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 0) });
+  r.at(0.84, { heading: 1150, ...legL(20, 5, 30), ...legR(50, -20, 80), ...armsWide, ...torso(8, 0, 0) });
+  r.pin("L", 0.84, 1);
+  settle(r, "R", 0.9, 0.96, { heading: 1160 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("backside-1260");
+}
+
+/** Jackknife: the cheat 720 with a right-leg round kick before the left-leg
+ * hook, landing on the right foot. */
+export function buildJackknife(): THREE.AnimationClip {
+  const D = 1.9;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.84, { travel: [0.05, 0.2], apex: 0.5 });
+  r.at(0.5, { heading: 300, ...legL(95, 30, 110), ...legR(60, -70, 125, 70), ...armL(90, 90, 40), ...armR(80, -60, 60), ...torso(5, 10, 10), ...head(0, 40) });
+  r.at(0.58, { heading: 370, ...legL(70, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 10) });
+  r.at(0.66, { heading: 490, ...hookChamber, ...legR(40, -10, 85) });
+  r.at(0.75, { heading: 625, ...hookImpact });
+  r.at(0.84, { heading: 695, ...hookLanding });
+  r.pin("R", 0.84, 1);
+  r.at(0.89, { heading: 720, ...legR(15, 0, 30), ...legL(15, 20, 75, 0, -30) });
+  stepDownBehind(r, 0.93, 0.97, { heading: 720 });
+  r.at(1, { ...armsDown, ...torso(5, 0, 0) });
+  return r.build("jackknife");
+}
+
+/** Wackknife: a jackknife with no extra rotation: about 180° in the air, a
+ * right-leg round kick, a left-leg outside crescent, and both feet land. */
+export function buildWackknife(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.82, { travel: [0.05, 0.25] });
+  const stance = { ...legL(25, 8, 40), ...legR(25, -8, 40) };
+  r.at(0.49, { heading: 295, ...legL(95, 30, 110), ...legR(60, -70, 125, 70), ...armL(90, 90, 40), ...armR(80, -60, 60), ...torso(5, 10, 10), ...head(0, 40) });
+  r.at(0.56, { heading: 340, ...legL(70, 30, 110), ...legR(112, 5, 5, 70), ...armL(40, 130, 30), ...armR(60, -20, 70), ...torso(0, 15, -10), ...head(0, 10) });
+  // The right leg comes back in while the straight left leg sweeps across.
+  r.at(0.63, { heading: 375, ...legL(95, -30, 10), ...legR(60, -20, 80), ...armL(60, 60, 40), ...armR(70, -60, 40), ...torso(5, 0, 10), ...head(0, 10) });
+  r.at(0.69, { heading: 400, ...legL(115, 60, 10), ...legR(45, -10, 80), ...armL(40, 140, 30), ...armR(70, -20, 60), ...torso(5, 15, 0), ...head(0, 10) });
+  r.at(0.76, { heading: 420, ...legL(50, 20, 50), ...legR(45, -10, 60), ...armsTight, ...torso(5, 5, 0), ...head(0, 5) });
+  r.at(0.82, { heading: 430, ...stance, ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.82, 1);
+  r.at(1, { heading: 430, ...stance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("wackknife");
+}
+
+/** Parafuso: the cheat setup into a vertical doubleleg: the legs come together
+ * early, sweep past the target piked, and both feet land. */
+export function buildParafuso(): THREE.AnimationClip {
+  const D = 1.8;
+  const r = new Rig(D);
+  cheatSetup(r, 0.4, "knee");
+  r.flight(0.4, 0.82, { travel: [0.05, 0.25] });
+  const stance = { ...legL(25, 8, 40), ...legR(25, -8, 40) };
+  r.at(0.49, { heading: 300, ...legL(90, 15, 50), ...legR(75, -10, 40), ...armL(110, 60, 10), ...armR(110, -60, 10), ...torso(10, 0, 20), ...head(-5, 30) });
+  r.at(0.57, { heading: 375, ...legL(100, 5, 5), ...legR(100, -5, 5), ...armL(100, 20, 10), ...armR(100, -20, 10), ...torso(20, 0, 10), ...head(0, 10) });
+  r.at(0.67, { heading: 445, ...legL(70, 5, 10), ...legR(70, -5, 10), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.76, { heading: 485, ...legL(40, 8, 30), ...legR(40, -8, 30), ...armsWide, ...torso(10, 0, 0), ...head(0, 0) });
+  r.at(0.82, { heading: 500, ...stance, ...armsWide, ...torso(12, 0, 0), ...head(0, 0) });
+  r.pin("L", 0.82, 1);
+  r.at(1, { heading: 500, ...stance, ...armsDown, ...torso(5, 0, 0), ...head(0, 0) });
+  return r.build("parafuso");
+}
