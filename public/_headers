@@ -1,5 +1,5 @@
 # Header definitions for Cloudflare Workers static assets, ported from the
-# headers in vercel.json (the same content is also kept on the Vercel side).
+# headers in the former vercel.json (removed after the Cloudflare migration).
 # https://developers.cloudflare.com/workers/static-assets/headers/
 
 /*
